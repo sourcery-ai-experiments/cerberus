@@ -259,7 +259,7 @@ class BookingSlot(models.Model):
 
         print(f"Checking for other slots between {self.start} and {self.end}")
         if self.overlaps():
-            raise ValidationError(f"{self.__name__} overlaps another {self.__name__}")
+            raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
 
     def moveSlot(self, start, end=None):
         if not all(b.canMove for b in self.bookings.all()):
@@ -283,7 +283,7 @@ class BookingSlot(models.Model):
 
     def containsAll(self, bookingIDs):
         ids = [b.id for b in self.bookings.all()]
-        return all(id for id in ids)
+        return all(id in ids for id in bookingIDs)
 
     @classmethod
     def cleanEmptySlots(cls):
@@ -380,7 +380,7 @@ class Booking(models.Model):
         if slot.overlaps():
             overlaps = slot.getOverlapping()
 
-            if not all([all([b.id == self.id for b in o.bookings.all()]) for o in overlaps]):
+            if not all(all(b.id == self.id for b in o.bookings.all()) for o in overlaps):
                 raise BookingSlotOverlaps("Overlaps another slot")
 
         return slot

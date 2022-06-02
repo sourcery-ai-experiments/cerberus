@@ -1,4 +1,5 @@
 django
 django-fsm
+django-fsm-log
 django-htmx
 django-reversion

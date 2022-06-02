@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "reversion" "crm",
+    "reversion",
+    "django_fsm_log",
+    "crm",
 ]
 
 MIDDLEWARE = [
