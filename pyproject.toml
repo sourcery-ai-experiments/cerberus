@@ -1,0 +1,27 @@
+[project]
+name = "Cerberus"
+version = "1.0.0"
+description = "Cerber, the dog walkers CRM"
+authors = [
+    "Ben Gosney <bengosney@googlemail.com>"
+]
+python = "^3.10"
+homepage = "https://cerberus.stretchtheirlegs.co.uk/"
+repository = "http://www.github.com/bengosney/cerberus"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 128
+target-version = ['py310']
+
+[tool.pycln]
+all = true
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "stl.settings"

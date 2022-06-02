@@ -1,0 +1,4 @@
+django
+django-fsm
+django-htmx
+django-reversion

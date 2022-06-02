@@ -1,0 +1,18 @@
+-c requirements.txt
+black
+django-debug-toolbar
+django-debugtools
+django-stubs
+freezegun
+hypothesis
+icecream
+model_bakery
+mypy
+pip-tools
+pre-commit
+pytest
+pytest-clarity
+pytest-cov
+pytest-django
+pytest-picked
+pytest-watch
