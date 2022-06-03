@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.timezone import make_aware
+from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
@@ -41,33 +42,21 @@ class Customer(models.Model):
 
 @reversion.register()
 class Pet(models.Model):
-    YES = "yes"
-    ANNON = "annon"
-    NO = "no"
-    IMPLANT = "implant"
-    UNKNOWN = "unknown"
+    class SocialMedia(models.TextChoices):
+        YES = "yes", _("Yes")
+        NO = "no", _("No")
+        ANNON = "annon", _("Anonymous")
 
-    MALE = "male"
-    FEMALE = "female"
+    class Neutered(models.TextChoices):
+        YES = "yes", _("Yes")
+        NO = "no", _("No")
+        IMPLANT = "implant", _("Implant")
+        __empty__ = _("(Unknown)")
 
-    SOCIAL_MEDIA_CHOICES = [
-        (YES, "Yes"),
-        (ANNON, "Anonymous"),
-        (NO, "No"),
-    ]
-
-    NEUTERED_CHOICES = [
-        (UNKNOWN, "Unknown"),
-        (YES, "Yes"),
-        (NO, "No"),
-        (IMPLANT, "Implant"),
-    ]
-
-    SEX_CHOICES = [
-        (UNKNOWN, "Unknown"),
-        (MALE, "Male"),
-        (FEMALE, "Female"),
-    ]
+    class Sex(models.TextChoices):
+        MALE = "male", _("Male")
+        FEMALE = "female", _("Female")
+        __empty__ = _("(Unknown)")
 
     # Fields
     name = models.CharField(max_length=255)
@@ -75,12 +64,18 @@ class Pet(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
-    social_media_concent = models.CharField(
-        default=YES, choices=SOCIAL_MEDIA_CHOICES, max_length=max(len(i[1]) for i in SOCIAL_MEDIA_CHOICES)
+    social_media_concent = models.CharField(default=SocialMedia.YES, choices=SocialMedia.choices, max_length=5)
+    sex = models.CharField(
+        default=Sex.__empty__,
+        choices=Sex.choices,
+        max_length=10,
     )
-    sex = models.CharField(choices=SEX_CHOICES, max_length=max(len(i[1]) for i in SEX_CHOICES), default=UNKNOWN)
     description = models.TextField(blank=True, default="")
-    neutered = models.CharField(choices=NEUTERED_CHOICES, max_length=max(len(i[1]) for i in NEUTERED_CHOICES), default=UNKNOWN)
+    neutered = models.CharField(
+        default=Neutered.__empty__,
+        choices=Neutered.choices,
+        max_length=10,
+    )
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
