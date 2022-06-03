@@ -26,7 +26,7 @@ class Customer(models.Model):
     active = models.BooleanField(default=True)
 
     vet = models.ForeignKey(
-        "cerberus.Vet",
+        "crm.Vet",
         on_delete=models.CASCADE,
         related_name="customers",
         blank=True,
@@ -89,12 +89,12 @@ class Pet(models.Model):
 
     # Relationship Fields
     customer = models.ForeignKey(
-        "cerberus.Customer",
+        "crm.Customer",
         on_delete=models.CASCADE,
         related_name="pets",
     )
     vet = models.ForeignKey(
-        "cerberus.Vet",
+        "crm.Vet",
         on_delete=models.CASCADE,
         related_name="pets",
         blank=True,
@@ -141,7 +141,7 @@ class Contact(models.Model):
 
     # Relationship Fields
     customer = models.ForeignKey(
-        "cerberus.Customer",
+        "crm.Customer",
         on_delete=models.CASCADE,
         related_name="contacts",
     )
@@ -180,8 +180,8 @@ class Charge(models.Model):
 
     state = FSMField(default=STATE_UNPAID, choices=list(zip(STATES, STATES)), protected=True)
 
-    customer = models.ForeignKey("cerberus.Customer", on_delete=models.SET_NULL, null=True)
-    booking = models.ForeignKey("cerberus.Booking", on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey("crm.Customer", on_delete=models.SET_NULL, null=True)
+    booking = models.ForeignKey("crm.Booking", on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         ordering = ("-created",)
@@ -330,10 +330,10 @@ class Booking(models.Model):
     state = FSMField(default=STATE_PRELIMINARY, choices=list(zip(STATES, STATES)), protected=True)
 
     # Relationship Fields
-    pet = models.ForeignKey("cerberus.Pet", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
-    service = models.ForeignKey("cerberus.Service", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
+    pet = models.ForeignKey("crm.Pet", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
+    service = models.ForeignKey("crm.Service", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
     booking_slot = models.ForeignKey(
-        "cerberus.BookingSlot", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True
+        "crm.BookingSlot", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True
     )
 
     class Meta:
@@ -460,7 +460,7 @@ class Address(models.Model):
 
     # Relationship Fields
     customer = models.ForeignKey(
-        "cerberus.Customer",
+        "crm.Customer",
         on_delete=models.CASCADE,
         related_name="addresss",
     )
