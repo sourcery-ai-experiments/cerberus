@@ -112,7 +112,7 @@ class Pet(models.Model):
 class Vet(models.Model):
     # Fields
     name = models.CharField(max_length=255)
-    phone = models.CharField(blank=True, null=True)
+    phone = models.CharField(blank=True, null=True, max_length=128)
     details = models.TextField(blank=True, default="")
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
