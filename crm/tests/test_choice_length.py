@@ -12,5 +12,6 @@ class test_choice_length(TestCase):
             ONE = "one", "One"
             TWO = "two", "Two"
             THREE = "three", "Three"
+            __empty__ = "empty", "Empty"
 
         self.assertEqual(choice_length(testLength), 5)

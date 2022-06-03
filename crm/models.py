@@ -15,6 +15,7 @@ from django_fsm import FSMField, transition
 
 # Locals
 from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from .utils import choice_length
 
 
 @reversion.register()
@@ -64,18 +65,12 @@ class Pet(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
-    social_media_concent = models.CharField(default=SocialMedia.YES, choices=SocialMedia.choices, max_length=5)
-    sex = models.CharField(
-        default=Sex.__empty__,
-        choices=Sex.choices,
-        max_length=10,
+    social_media_concent = models.CharField(
+        default=SocialMedia.YES, choices=SocialMedia.choices, max_length=choice_length(SocialMedia)
     )
+    sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))
     description = models.TextField(blank=True, default="")
-    neutered = models.CharField(
-        default=Neutered.__empty__,
-        choices=Neutered.choices,
-        max_length=10,
-    )
+    neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
