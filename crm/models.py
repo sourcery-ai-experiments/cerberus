@@ -285,16 +285,16 @@ class BookingSlot(models.Model):
             return None
 
     @property
-    def pets(self) -> list[Pet]:
-        return [b.pet for b in self.bookings.all()]
+    def pets(self) -> set[Pet]:
+        return {b.pet for b in self.bookings.all()}
 
     @property
     def pet_count(self) -> int:
         return len(self.pets)
 
     @property
-    def customers(self) -> list[Customer]:
-        return [b.pet.customer for b in self.bookings.all()]
+    def customers(self) -> set[Customer]:
+        return {b.pet.customer for b in self.bookings.all()}
 
     @property
     def customer_count(self) -> int:
