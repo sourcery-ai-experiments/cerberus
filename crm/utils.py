@@ -12,4 +12,4 @@ def choice_length(choices: type[models.TextChoices]) -> int:
 class ChoicesEnum(Enum):
     @classmethod
     def choices(cls) -> list[tuple[str, str]]:
-        return [(e.value, e.value) for e in list(cls)]
+        return [(str(e.value), str(e.value)) for e in list(cls)]

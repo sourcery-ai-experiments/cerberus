@@ -1,12 +1,13 @@
 # Standard Library
 import re
 from datetime import datetime, timedelta
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Optional
 
 # Django
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
@@ -39,7 +40,7 @@ class Customer(models.Model):
     class Meta:
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -99,7 +100,7 @@ class Pet(models.Model):
     class Meta:
         ordering = ("name",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -115,7 +116,7 @@ class Vet(models.Model):
     class Meta:
         ordering = ("name",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -144,10 +145,7 @@ class Contact(models.Model):
     class Meta:
         ordering = ("-created",)
 
-    class graphql:
-        extra_fields = ["contactType"]
-
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -187,15 +185,15 @@ class Charge(models.Model):
         return f"£{self.cost / 100:.2f}"
 
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
-    def pay(self):
+    def pay(self) -> None:
         pass
 
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
-    def void(self):
+    def void(self) -> None:
         pass
 
     @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
-    def refund(self):
+    def refund(self) -> None:
         pass
 
 
@@ -232,7 +230,7 @@ class BookingSlot(models.Model):
     def _valid_dates(self) -> bool:
         return self.end > self.start
 
-    def get_overlapping(self):
+    def get_overlapping(self) -> "QuerySet[BookingSlot]":
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
@@ -244,7 +242,7 @@ class BookingSlot(models.Model):
 
         return any(o.bookings.all().count() > 0 for o in others)
 
-    def clean(self):
+    def clean(self) -> None:
         if not self._valid_dates():
             raise ValidationError("end can not be before start")
 
@@ -252,15 +250,12 @@ class BookingSlot(models.Model):
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
 
-    def move_slot(self, start, end=None):
+    def move_slot(self, start: datetime, end: datetime | None = None) -> bool:
         if not all(b.can_move for b in self.bookings.all()):
-            return
-
-        if end is None:
-            end = start + (self.end - self.start)
+            return False
 
         self.start = start
-        self.end = end
+        self.end = start + (self.end - self.start) if end is None else end
 
         if self.overlaps():
             raise ValidationError("Slot overlaps another slot")
@@ -272,7 +267,9 @@ class BookingSlot(models.Model):
                 booking.end = self.end
                 booking.save()
 
-    def contains_all(self, bookingIDs):
+        return True
+
+    def contains_all(self, bookingIDs: list[int]) -> bool:
         ids = [b.id for b in self.bookings.all()]
         return all(id in ids for id in bookingIDs)
 
@@ -281,26 +278,26 @@ class BookingSlot(models.Model):
         cls.objects.filter(bookings__isnull=True).delete()
 
     @property
-    def service(self):
+    def service(self) -> Optional["Service"]:
         try:
             return self.bookings.all()[0].service
         except IndexError:
             return None
 
     @property
-    def pets(self):
-        return {b.pet for b in self.bookings.all()}
+    def pets(self) -> list[Pet]:
+        return [b.pet for b in self.bookings.all()]
 
     @property
-    def pet_count(self):
+    def pet_count(self) -> int:
         return len(self.pets)
 
     @property
-    def customers(self):
-        return {b.pet.customer for b in self.bookings.all()}
+    def customers(self) -> list[Customer]:
+        return [b.pet.customer for b in self.bookings.all()]
 
     @property
-    def customer_count(self):
+    def customer_count(self) -> int:
         return len(self.customers)
 
 
@@ -338,10 +335,10 @@ class Booking(models.Model):
     class Meta:
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.start} - {self.end}"
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         self.name = f"{self.pet.name} {self.service.name}"
 
         if self.pk is None:
@@ -351,9 +348,9 @@ class Booking(models.Model):
             if self.booking_slot is not None:
                 self.booking_slot.save()
 
-            return super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
-    def create_charge(self):
+    def create_charge(self) -> Charge:
         charge = Charge(
             name=f"Charge for {self.name}",
             cost=self.cost,
@@ -364,7 +361,7 @@ class Booking(models.Model):
 
         return charge
 
-    def _get_new_booking_slot(self):
+    def _get_new_booking_slot(self) -> BookingSlot:
         slot = BookingSlot.get_slot(self.start, self.end)
 
         if slot.service != self.service and slot.service is not None:
@@ -385,15 +382,15 @@ class Booking(models.Model):
         return slot
 
     @property
-    def can_move(self):
+    def can_move(self) -> bool:
         return self.state in self.STATES_MOVEABLE
 
-    def can_complete(self):
+    def can_complete(self) -> bool:
         return self.end < make_aware(datetime.now())
 
-    def move_booking(self, to):
+    def move_booking(self, to: datetime) -> bool:
         if not self.can_move:
-            return
+            return False
 
         delta = self.start - to
         self.start -= delta
@@ -401,27 +398,28 @@ class Booking(models.Model):
 
         self.booking_slot = self._get_new_booking_slot()
 
-        return self.save()
+        self.save()
+        return True
 
     @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
-    def process(self):
+    def process(self) -> None:
         pass
 
     @transition(field=state, source=States.PRELIMINARY.value, target=States.CONFIRMED.value)
-    def confirm(self):
+    def confirm(self) -> None:
         pass
 
-    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)  # type: ignore
-    def cancel(self):
+    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)
+    def cancel(self) -> None:
         self.booking_slot = None
 
     @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
-    def reopen(self):
+    def reopen(self) -> None:
         pass
 
     @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])
-    def complete(self):
-        self.create_charge()
+    def complete(self) -> Charge:
+        return self.create_charge()
 
     @property
     def available_state_transitions(self) -> list[str]:
@@ -445,7 +443,7 @@ class Service(models.Model):
     class Meta:
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -472,5 +470,5 @@ class Address(models.Model):
     class Meta:
         ordering = ("-created",)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
