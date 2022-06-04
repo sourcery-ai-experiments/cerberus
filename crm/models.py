@@ -1,6 +1,7 @@
 # Standard Library
 import re
 from datetime import datetime, timedelta
+from enum import Enum
 
 # Django
 from django.core.exceptions import ValidationError
@@ -20,6 +21,7 @@ from .utils import choice_length
 
 @reversion.register()
 class Customer(models.Model):
+    id: int
     # Fields
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -66,7 +68,9 @@ class Pet(models.Model):
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
     social_media_concent = models.CharField(
-        default=SocialMedia.YES, choices=SocialMedia.choices, max_length=choice_length(SocialMedia)
+        default=SocialMedia.YES,
+        choices=SocialMedia.choices,
+        max_length=choice_length(SocialMedia),
     )
     sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))
     description = models.TextField(blank=True, default="")
@@ -157,13 +161,11 @@ def get_default_due_date():
 
 @reversion.register()
 class Charge(models.Model):
-    STATE_UNCONFIRMED = "unconfirmed"
-    STATE_UNPAID = "unpaid"
-    STATE_OVERDUE = "overdue"
-    STATE_PAID = "paid"
-    STATE_VOID = "void"
-
-    STATES = [STATE_UNCONFIRMED, STATE_UNPAID, STATE_OVERDUE, STATE_PAID, STATE_VOID]
+    class States(Enum):
+        UNPAID = "unpaid"
+        PAID = "paid"
+        VOID = "void"
+        REFUNDED = "refunded"
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -173,7 +175,7 @@ class Charge(models.Model):
     cost = models.IntegerField()
     due = models.DateTimeField(default=get_default_due_date)
 
-    state = FSMField(default=STATE_UNPAID, choices=list(zip(STATES, STATES)), protected=True)
+    state = FSMField(default=States.UNPAID.value, choices=States, protected=True)
 
     customer = models.ForeignKey("crm.Customer", on_delete=models.SET_NULL, null=True)
     booking = models.ForeignKey("crm.Booking", on_delete=models.SET_NULL, blank=True, null=True)
@@ -184,24 +186,23 @@ class Charge(models.Model):
     def __str__(self) -> str:
         return f"£{self.cost / 100:.2f}"
 
-    @transition(field=state, source=STATE_UNCONFIRMED, target=STATE_UNPAID)
-    def confirm(self):
+    @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
+    def pay(self):
         pass
 
-    @transition(field=state, source=[STATE_UNPAID, STATE_OVERDUE], target=STATE_PAID)
-    def paid(self):
-        pass
-
-    @transition(field=state, source=STATE_UNPAID, target=STATE_OVERDUE)
-    def overdue(self):
-        pass
-
-    @transition(field=state, source=[STATE_UNPAID, STATE_OVERDUE], target=STATE_VOID)
+    @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
     def void(self):
+        pass
+
+    @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
+    def refund(self):
         pass
 
 
 class BookingSlot(models.Model):
+    id: int
+    bookings: models.QuerySet["Booking"]
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     start = models.DateTimeField()
@@ -305,14 +306,17 @@ class BookingSlot(models.Model):
 
 @reversion.register()
 class Booking(models.Model):
-    STATE_ENQUIRY = "enquiry"
-    STATE_PRELIMINARY = "preliminary"
-    STATE_CONFIRMED = "confirmed"
-    STATE_CANCELED = "canceled"
-    STATE_COMPLETED = "completed"
+    class States(Enum):
+        ENQUIRY = "enquiry"
+        PRELIMINARY = "preliminary"
+        CONFIRMED = "confirmed"
+        CANCELED = "canceled"
+        COMPLETED = "completed"
 
-    STATES = [STATE_ENQUIRY, STATE_PRELIMINARY, STATE_CONFIRMED, STATE_CANCELED, STATE_COMPLETED]
-    STATES_MOVEABLE = [STATE_ENQUIRY, STATE_PRELIMINARY, STATE_CONFIRMED]
+    STATES_MOVEABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_CANCELABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+
+    id: int
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -322,7 +326,7 @@ class Booking(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    state = FSMField(default=STATE_PRELIMINARY, choices=list(zip(STATES, STATES)), protected=True)
+    state = FSMField(default=States.PRELIMINARY, protected=True)
 
     # Relationship Fields
     pet = models.ForeignKey("crm.Pet", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
@@ -394,23 +398,23 @@ class Booking(models.Model):
 
         return self.save()
 
-    @transition(field=state, source=STATE_ENQUIRY, target=STATE_PRELIMINARY)
+    @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
     def process(self):
         pass
 
-    @transition(field=state, source=STATE_PRELIMINARY, target=STATE_CONFIRMED)
+    @transition(field=state, source=States.PRELIMINARY.value, target=States.CONFIRMED.value)
     def confirm(self):
         pass
 
-    @transition(field=state, source=[STATE_ENQUIRY, STATE_PRELIMINARY, STATE_CONFIRMED], target=STATE_CANCELED)
+    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)
     def cancel(self):
         self.booking_slot = None
 
-    @transition(field=state, source=STATE_CANCELED, target=STATE_ENQUIRY)
+    @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
     def reopen(self):
         pass
 
-    @transition(field=state, source=STATE_CONFIRMED, target=STATE_COMPLETED, conditions=[canComplete])
+    @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[canComplete])
     def complete(self):
         self.createCharge()
 

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "reversion",
+    "django_fsm",
     "django_fsm_log",
     "crm",
 ]
