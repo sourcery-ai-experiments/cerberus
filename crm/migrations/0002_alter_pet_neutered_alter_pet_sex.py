@@ -6,18 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0001_initial'),
+        ("crm", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pet',
-            name='neutered',
-            field=models.CharField(choices=[(None, '(Unknown)'), ('yes', 'Yes'), ('no', 'No'), ('implant', 'Implant')], default=None, max_length=7, null=True),
+            model_name="pet",
+            name="neutered",
+            field=models.CharField(
+                choices=[(None, "(Unknown)"), ("yes", "Yes"), ("no", "No"), ("implant", "Implant")],
+                default=None,
+                max_length=7,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='pet',
-            name='sex',
-            field=models.CharField(choices=[(None, '(Unknown)'), ('male', 'Male'), ('female', 'Female')], default=None, max_length=6, null=True),
+            model_name="pet",
+            name="sex",
+            field=models.CharField(
+                choices=[(None, "(Unknown)"), ("male", "Male"), ("female", "Female")], default=None, max_length=6, null=True
+            ),
         ),
     ]

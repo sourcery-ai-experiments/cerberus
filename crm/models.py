@@ -45,7 +45,7 @@ class Customer(models.Model):
 
 @reversion.register()
 class Pet(models.Model):
-    class SocialMedia(models.TextChoices):
+    class Social(models.TextChoices):
         YES = "yes", _("Yes")
         NO = "no", _("No")
         ANNON = "annon", _("Anonymous")
@@ -67,11 +67,7 @@ class Pet(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
-    social_media_concent = models.CharField(
-        default=SocialMedia.YES,
-        choices=SocialMedia.choices,
-        max_length=choice_length(SocialMedia),
-    )
+    social_media_concent = models.CharField(default=Social.YES, choices=Social.choices, max_length=choice_length(Social))
     sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))
     description = models.TextField(blank=True, default="")
     neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))
@@ -328,7 +324,7 @@ class Booking(models.Model):
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     name = models.CharField(max_length=255)
-    cost = models.IntegerField()
+    cost = models.PositiveIntegerField()
     start = models.DateTimeField()
     end = models.DateTimeField()
 
@@ -358,7 +354,12 @@ class Booking(models.Model):
             return super().save(*args, **kwargs)
 
     def create_charge(self):
-        charge = Charge(name=f"Charge for {self.name}", cost=self.cost, booking=self, customer=self.pet.customer)
+        charge = Charge(
+            name=f"Charge for {self.name}",
+            cost=self.cost,
+            booking=self,
+            customer=self.pet.customer,
+        )
         charge.save()
 
         return charge
@@ -410,7 +411,7 @@ class Booking(models.Model):
     def confirm(self):
         pass
 
-    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)
+    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)  # type: ignore
     def cancel(self):
         self.booking_slot = None
 
@@ -433,12 +434,12 @@ class Service(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    length = models.DurationField(blank=True, null=True)
-    booked_length = models.DurationField(blank=True, null=True)
-    cost = models.IntegerField(blank=True, null=True)
-    cost_per_additional = models.IntegerField(blank=True, null=True)
-    max_pet = models.IntegerField(blank=True, null=True)
-    max_customer = models.IntegerField(blank=True, null=True)
+    length = models.DurationField(default=timedelta(minutes=60))
+    booked_length = models.DurationField(default=timedelta(minutes=120))
+    cost = models.IntegerField(default=0)
+    cost_per_additional = models.IntegerField(default=0)
+    max_pet = models.IntegerField(default=1)
+    max_customer = models.IntegerField(default=1)
     display_colour = models.CharField(max_length=255)  # ColorField(default="#000000")
 
     class Meta:

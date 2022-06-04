@@ -8,36 +8,47 @@ import django_fsm
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0002_alter_pet_neutered_alter_pet_sex'),
+        ("crm", "0002_alter_pet_neutered_alter_pet_sex"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='booking',
-            name='booking_slot',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, related_name='bookings', to='crm.bookingslot'),
+            model_name="booking",
+            name="booking_slot",
+            field=models.ForeignKey(
+                default=0, on_delete=django.db.models.deletion.PROTECT, related_name="bookings", to="crm.bookingslot"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='booking',
-            name='pet',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, related_name='bookings', to='crm.pet'),
+            model_name="booking",
+            name="pet",
+            field=models.ForeignKey(
+                default=0, on_delete=django.db.models.deletion.PROTECT, related_name="bookings", to="crm.pet"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='booking',
-            name='service',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.PROTECT, related_name='bookings', to='crm.service'),
+            model_name="booking",
+            name="service",
+            field=models.ForeignKey(
+                default=0, on_delete=django.db.models.deletion.PROTECT, related_name="bookings", to="crm.service"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='booking',
-            name='state',
-            field=django_fsm.FSMField(default='preliminary', max_length=50, protected=True),
+            model_name="booking",
+            name="state",
+            field=django_fsm.FSMField(default="preliminary", max_length=50, protected=True),
         ),
         migrations.AlterField(
-            model_name='charge',
-            name='state',
-            field=django_fsm.FSMField(choices=[('unpaid', 'unpaid'), ('paid', 'paid'), ('void', 'void'), ('refunded', 'refunded')], default='unpaid', max_length=50, protected=True),
+            model_name="charge",
+            name="state",
+            field=django_fsm.FSMField(
+                choices=[("unpaid", "unpaid"), ("paid", "paid"), ("void", "void"), ("refunded", "refunded")],
+                default="unpaid",
+                max_length=50,
+                protected=True,
+            ),
         ),
     ]

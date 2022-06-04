@@ -244,12 +244,18 @@ class test_booking_states(TestCase):
         self.assertEqual(len(valid_transitions), len(transitions))
 
     def test_complete(self):
-        booking = baker.make(Booking)
+        booking: Booking = baker.make(Booking)
         booking.save()
+        booking.confirm()
 
         before_count = len(Charge.objects.all())
         booking.complete()
-        after_count = len(Charge.objects.all())
 
-        self.assertEqual(after_count, before_count + 1)
-        self.assertFalse(True)
+        charges = Charge.objects.all().reverse()
+        self.assertEqual(len(charges), before_count + 1)
+
+        charge = charges[0]
+
+        self.assertEqual(booking, charge.booking)
+        self.assertEqual(booking.pet.customer, charge.customer)
+        self.assertEqual(booking.cost, charge.cost)
