@@ -30,7 +30,7 @@ class Customer(models.Model):
 
     vet = models.ForeignKey(
         "crm.Vet",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="customers",
         blank=True,
         null=True,
@@ -85,12 +85,12 @@ class Pet(models.Model):
     # Relationship Fields
     customer = models.ForeignKey(
         "crm.Customer",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="pets",
     )
     vet = models.ForeignKey(
         "crm.Vet",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="pets",
         blank=True,
         null=True,
@@ -151,7 +151,7 @@ class Contact(models.Model):
         return f"{self.name}"
 
 
-def get_default_due_date():
+def get_default_due_date() -> datetime:
     return datetime.now() + timedelta(weeks=1)
 
 
@@ -212,7 +212,7 @@ class BookingSlot(models.Model):
         unique_together = [["start", "end"]]
 
     @classmethod
-    def get_slot(cls, start, end):
+    def get_slot(cls, start: datetime, end: datetime) -> "BookingSlot":
         try:
             slot = cls.objects.get(start=start, end=end)
         except cls.DoesNotExist:
@@ -221,7 +221,7 @@ class BookingSlot(models.Model):
         return slot
 
     @staticmethod
-    def round_date_time(dt):
+    def round_date_time(dt: datetime) -> datetime:
         dt = dt - timedelta(minutes=dt.minute % 10, seconds=dt.second, microseconds=dt.microsecond)
 
         return make_aware(dt)
