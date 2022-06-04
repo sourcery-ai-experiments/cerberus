@@ -1,7 +1,7 @@
 # Standard Library
 import re
 from datetime import datetime, timedelta
-from enum import Enum
+from typing import Callable, Iterable
 
 # Django
 from django.core.exceptions import ValidationError
@@ -12,11 +12,11 @@ from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
-from django_fsm import FSMField, transition
+from django_fsm import FSMField, Transition, transition
 
 # Locals
 from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from .utils import choice_length
+from .utils import ChoicesEnum, choice_length
 
 
 @reversion.register()
@@ -161,11 +161,15 @@ def get_default_due_date():
 
 @reversion.register()
 class Charge(models.Model):
-    class States(Enum):
+    class States(ChoicesEnum):
         UNPAID = "unpaid"
         PAID = "paid"
         VOID = "void"
         REFUNDED = "refunded"
+
+    id: int
+    get_all_state_transitions: Callable[[], Iterable[Transition]]
+    get_available_state_transitions: Callable[[], Iterable[Transition]]
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -175,7 +179,7 @@ class Charge(models.Model):
     cost = models.IntegerField()
     due = models.DateTimeField(default=get_default_due_date)
 
-    state = FSMField(default=States.UNPAID.value, choices=States, protected=True)
+    state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
 
     customer = models.ForeignKey("crm.Customer", on_delete=models.SET_NULL, null=True)
     booking = models.ForeignKey("crm.Booking", on_delete=models.SET_NULL, blank=True, null=True)
@@ -212,7 +216,7 @@ class BookingSlot(models.Model):
         unique_together = [["start", "end"]]
 
     @classmethod
-    def getSlot(cls, start, end):
+    def get_slot(cls, start, end):
         try:
             slot = cls.objects.get(start=start, end=end)
         except cls.DoesNotExist:
@@ -221,7 +225,7 @@ class BookingSlot(models.Model):
         return slot
 
     @staticmethod
-    def roundDateTime(dt):
+    def round_date_time(dt):
         dt = dt - timedelta(minutes=dt.minute % 10, seconds=dt.second, microseconds=dt.microsecond)
 
         return make_aware(dt)
@@ -229,10 +233,10 @@ class BookingSlot(models.Model):
     def __str__(self) -> str:
         return f"{self.id}: {self.start} - {self.end}"
 
-    def _validDates(self) -> bool:
+    def _valid_dates(self) -> bool:
         return self.end > self.start
 
-    def getOverlapping(self):
+    def get_overlapping(self):
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
@@ -240,20 +244,20 @@ class BookingSlot(models.Model):
         return self.__class__.objects.filter(start | end | equal).exclude(pk=self.pk)
 
     def overlaps(self) -> bool:
-        others = self.getOverlapping()
+        others = self.get_overlapping()
 
         return any(o.bookings.all().count() > 0 for o in others)
 
     def clean(self):
-        if not self._validDates():
+        if not self._valid_dates():
             raise ValidationError("end can not be before start")
 
         print(f"Checking for other slots between {self.start} and {self.end}")
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
 
-    def moveSlot(self, start, end=None):
-        if not all(b.canMove for b in self.bookings.all()):
+    def move_slot(self, start, end=None):
+        if not all(b.can_move for b in self.bookings.all()):
             return
 
         if end is None:
@@ -272,12 +276,12 @@ class BookingSlot(models.Model):
                 booking.end = self.end
                 booking.save()
 
-    def containsAll(self, bookingIDs):
+    def contains_all(self, bookingIDs):
         ids = [b.id for b in self.bookings.all()]
         return all(id in ids for id in bookingIDs)
 
     @classmethod
-    def cleanEmptySlots(cls):
+    def clean_empty_slots(cls):
         cls.objects.filter(bookings__isnull=True).delete()
 
     @property
@@ -306,7 +310,7 @@ class BookingSlot(models.Model):
 
 @reversion.register()
 class Booking(models.Model):
-    class States(Enum):
+    class States(ChoicesEnum):
         ENQUIRY = "enquiry"
         PRELIMINARY = "preliminary"
         CONFIRMED = "confirmed"
@@ -317,6 +321,8 @@ class Booking(models.Model):
     STATES_CANCELABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
 
     id: int
+    get_all_state_transitions: Callable[[], Iterable[Transition]]
+    get_available_state_transitions: Callable[[], Iterable[Transition]]
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -326,14 +332,12 @@ class Booking(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    state = FSMField(default=States.PRELIMINARY, protected=True)
+    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices(), protected=True)
 
     # Relationship Fields
-    pet = models.ForeignKey("crm.Pet", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
-    service = models.ForeignKey("crm.Service", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True)
-    booking_slot = models.ForeignKey(
-        "crm.BookingSlot", on_delete=models.SET_NULL, related_name="bookings", blank=True, null=True
-    )
+    pet = models.ForeignKey("crm.Pet", on_delete=models.PROTECT, related_name="bookings")
+    service = models.ForeignKey("crm.Service", on_delete=models.PROTECT, related_name="bookings")
+    booking_slot = models.ForeignKey("crm.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
 
     class Meta:
         ordering = ("-created",)
@@ -345,7 +349,7 @@ class Booking(models.Model):
         self.name = f"{self.pet.name} {self.service.name}"
 
         if self.pk is None:
-            self.booking_slot = self._getNewBookingSlot()
+            self.booking_slot = self._get_new_booking_slot()
 
         with transaction.atomic():
             if self.booking_slot is not None:
@@ -353,14 +357,14 @@ class Booking(models.Model):
 
             return super().save(*args, **kwargs)
 
-    def createCharge(self):
+    def create_charge(self):
         charge = Charge(name=f"Charge for {self.name}", cost=self.cost, booking=self, customer=self.pet.customer)
         charge.save()
 
         return charge
 
-    def _getNewBookingSlot(self):
-        slot = BookingSlot.getSlot(self.start, self.end)
+    def _get_new_booking_slot(self):
+        slot = BookingSlot.get_slot(self.start, self.end)
 
         if slot.service != self.service and slot.service is not None:
             raise BookingSlotIncorectService("Incorect Service")
@@ -372,7 +376,7 @@ class Booking(models.Model):
             raise BookingSlotMaxPets("Max pets")
 
         if slot.overlaps():
-            overlaps = slot.getOverlapping()
+            overlaps = slot.get_overlapping()
 
             if not all(all(b.id == self.id for b in o.bookings.all()) for o in overlaps):
                 raise BookingSlotOverlaps("Overlaps another slot")
@@ -380,21 +384,21 @@ class Booking(models.Model):
         return slot
 
     @property
-    def canMove(self):
+    def can_move(self):
         return self.state in self.STATES_MOVEABLE
 
-    def canComplete(self):
+    def can_complete(self):
         return self.end < make_aware(datetime.now())
 
-    def moveBooking(self, to):
-        if not self.canMove:
+    def move_booking(self, to):
+        if not self.can_move:
             return
 
         delta = self.start - to
         self.start -= delta
         self.end -= delta
 
-        self.booking_slot = self._getNewBookingSlot()
+        self.booking_slot = self._get_new_booking_slot()
 
         return self.save()
 
@@ -414,9 +418,9 @@ class Booking(models.Model):
     def reopen(self):
         pass
 
-    @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[canComplete])
+    @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])
     def complete(self):
-        self.createCharge()
+        self.create_charge()
 
     @property
     def available_state_transitions(self) -> list[str]:
