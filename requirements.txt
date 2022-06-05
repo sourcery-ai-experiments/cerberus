@@ -13,13 +13,19 @@ django==4.0.5 \
     --hash=sha256:f7431a5de7277966f3785557c3928433347d998c1e6459324501378a291e5aab
     # via
     #   -r requirements.in
+    #   django-filter
     #   django-fsm-log
     #   django-htmx
     #   django-reversion
+    #   djangorestframework
 django-appconf==1.0.5 \
     --hash=sha256:ae9f864ee1958c815a965ed63b3fba4874eec13de10236ba063a788f9a17389d \
     --hash=sha256:be3db0be6c81fa84742000b89a81c016d70ae66a7ccb620cdef592b1f1a6aaa4
     # via django-fsm-log
+django-filter==21.1 \
+    --hash=sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e \
+    --hash=sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063
+    # via -r requirements.in
 django-fsm==2.8.0 \
     --hash=sha256:4649167bf5bd4b2990dd682644d71b52650f120005a98755cfffc1a047a555d2 \
     --hash=sha256:cb7230d84fd25d3db9f9473e0a1b9140a61aa46ea88042f73e3cb2760637e92a
@@ -38,6 +44,18 @@ django-reversion==5.0.0 \
     --hash=sha256:0bade3c399387451087f0c67835e0d3d186d767de6a5c5ba53a88eafc3f271c8 \
     --hash=sha256:7bea725de7f56769d89a5a712cf7b7f1b02abc27655432f2eb1a703264986d99
     # via -r requirements.in
+djangorestframework==3.13.1 \
+    --hash=sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee \
+    --hash=sha256:24c4bf58ed7e85d1fe4ba250ab2da926d263cd57d64b03e8dcef0ac683f8b1aa
+    # via -r requirements.in
+markdown==3.3.7 \
+    --hash=sha256:cbb516f16218e643d8e0a95b309f77eb118cb138d39a4f27851e6a63581db874 \
+    --hash=sha256:f5da449a6e1c989a4cea2631aa8ee67caa5a2ef855d551c88f9e309f4634c621
+    # via -r requirements.in
+pytz==2022.1 \
+    --hash=sha256:1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7 \
+    --hash=sha256:e68985985296d9a66a881eb3193b0906246245294a881e7c8afe623866ac6a5c
+    # via djangorestframework
 sqlparse==0.4.2 \
     --hash=sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae \
     --hash=sha256:48719e356bb8b42991bdbb1e8b83223757b93789c00910a616a071910ca4a64d

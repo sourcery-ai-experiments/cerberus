@@ -7,23 +7,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crm', '0005_alter_booking_cost'),
+        ("crm", "0005_alter_booking_cost"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customer',
-            name='vet',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='customers', to='crm.vet'),
+            model_name="customer",
+            name="vet",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name="customers", to="crm.vet"
+            ),
         ),
         migrations.AlterField(
-            model_name='pet',
-            name='customer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='pets', to='crm.customer'),
+            model_name="pet",
+            name="customer",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name="pets", to="crm.customer"),
         ),
         migrations.AlterField(
-            model_name='pet',
-            name='vet',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='pets', to='crm.vet'),
+            model_name="pet",
+            name="vet",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name="pets", to="crm.vet"
+            ),
         ),
     ]

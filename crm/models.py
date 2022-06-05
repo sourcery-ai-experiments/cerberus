@@ -23,6 +23,7 @@ from .utils import ChoicesEnum, choice_length
 @reversion.register()
 class Customer(models.Model):
     id: int
+    pets: "QuerySet[Pet]"
     # Fields
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -43,9 +44,20 @@ class Customer(models.Model):
     def __str__(self) -> str:
         return f"{self.name}"
 
+    @property
+    def bookings(self):
+        bookings = []
+
+        for pet in self.pets.all():
+            bookings.extend(pet.bookings.all())
+
+        return bookings
+
 
 @reversion.register()
 class Pet(models.Model):
+    bookings: "QuerySet[Booking]"
+
     class Social(models.TextChoices):
         YES = "yes", _("Yes")
         NO = "no", _("No")
@@ -175,8 +187,19 @@ class Charge(models.Model):
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
 
-    customer = models.ForeignKey("crm.Customer", on_delete=models.SET_NULL, null=True)
-    booking = models.ForeignKey("crm.Booking", on_delete=models.SET_NULL, blank=True, null=True)
+    customer = models.ForeignKey(
+        "crm.Customer",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="charges",
+    )
+    booking = models.ForeignKey(
+        "crm.Booking",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="charges",
+    )
 
     class Meta:
         ordering = ("-created",)
@@ -415,7 +438,7 @@ class Booking(models.Model):
 
     @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
     def reopen(self) -> None:
-        pass
+        self.booking_slot = self._get_new_booking_slot()
 
     @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])
     def complete(self) -> Charge:
@@ -464,7 +487,7 @@ class Address(models.Model):
     customer = models.ForeignKey(
         "crm.Customer",
         on_delete=models.CASCADE,
-        related_name="addresss",
+        related_name="addresses",
     )
 
     class Meta:
