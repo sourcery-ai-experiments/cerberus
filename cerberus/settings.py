@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "reversion",
+    "django_filters",
     "django_fsm",
     "django_fsm_log",
     "django_htmx",
@@ -135,5 +136,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-    ]
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+        "rest_framework.renderers.TemplateHTMLRenderer",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
+    "PAGE_SIZE": 1,
 }

@@ -123,6 +123,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_fields = ["name", "active"]
 
 
 class PetViewSet(viewsets.ModelViewSet):
