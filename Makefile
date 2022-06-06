@@ -17,7 +17,7 @@ help: ## Display this help
 
 .pre-commit-config.yaml:
 	curl https://gist.githubusercontent.com/bengosney/4b1f1ab7012380f7e9b9d1d668626143/raw/060fd68f4c7dec75e8481e5f5a4232296282779d/.pre-commit-config.yaml > $@
-	pip install pre-commit
+	python -m pip install pre-commit
 	pre-commit autoupdate
 
 requirements.%.in:
@@ -28,18 +28,19 @@ requirements.in:
 
 requirements.%.txt: requirements.%.in requirements.txt
 	@echo "Builing $@"
-	@pip-compile --generate-hashes -q -o $@ $^
+	@python -m piptools compile --generate-hashes -q -o $@ $^
 
 requirements.txt: requirements.in
 	@echo "Builing $@"
-	@pip-compile --generate-hashes -q $^
+	@python -m piptools compile --generate-hashes -q $^
 
 .direnv: .envrc
-	pip install --upgrade pip
-	pip install wheel pip-tools
+	python -m pip install --upgrade pip
+	python -m pip install wheel pip-tools
 	@touch $@ $^
 
 .git/hooks/pre-commit: .pre-commit-config.yaml
+	python -m pip install pre-commit
 	pre-commit install
 
 .envrc:
