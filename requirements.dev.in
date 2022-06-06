@@ -3,6 +3,7 @@ black
 django-debug-toolbar
 django-debugtools
 django-stubs
+faker
 freezegun
 hypothesis
 icecream
