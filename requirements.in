@@ -5,4 +5,5 @@ django-fsm-log
 django-htmx
 django-reversion
 djangorestframework
+djangorestframework-simplejwt[crypto]
 markdown
