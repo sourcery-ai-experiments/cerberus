@@ -120,6 +120,7 @@ django==4.0.5 \
     #   -c requirements.txt
     #   -r requirements.txt
     #   django-appconf
+    #   django-cors-headers
     #   django-debug-toolbar
     #   django-filter
     #   django-fsm-log
@@ -136,6 +137,12 @@ django-appconf==1.0.5 \
     #   -c requirements.txt
     #   -r requirements.txt
     #   django-fsm-log
+django-cors-headers==3.13.0 \
+    --hash=sha256:37e42883b5f1f2295df6b4bba96eb2417a14a03270cb24b2a07f021cd4487cf4 \
+    --hash=sha256:f9dc6b4e3f611c3199700b3e5f3398c28757dcd559c2f82932687f3d0443cfdf
+    # via
+    #   -c requirements.txt
+    #   -r requirements.txt
 django-debug-toolbar==3.4.0 \
     --hash=sha256:42c1c2e9dc05bb57b53d641e3a6d131fc031b92377b34ae32e604a1fe439bb83 \
     --hash=sha256:ae6bec2c1ce0e6900b0ab0443e1427eb233d8e6f57a84a0b2705eeecb8874e22
