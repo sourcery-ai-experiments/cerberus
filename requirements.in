@@ -1,9 +1,9 @@
-django
 django-cors-headers
 django-filter
 django-fsm
 django-fsm-log
 django-htmx
 django-reversion
+django>=4
 djangorestframework
 markdown
