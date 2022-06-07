@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "reversion",
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -150,5 +152,7 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.TemplateHTMLRenderer",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
-    "PAGE_SIZE": 1,
+    "PAGE_SIZE": 10,
 }
+
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]

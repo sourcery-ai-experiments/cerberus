@@ -12,6 +12,8 @@ default_read_only = [
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Contact
         fields = "__all__"
@@ -19,6 +21,8 @@ class ContactSerializer(serializers.ModelSerializer):
 
 
 class ChargeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Charge
         fields = "__all__"
@@ -26,6 +30,8 @@ class ChargeSerializer(serializers.ModelSerializer):
 
 
 class BookingSlotSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = BookingSlot
         fields = "__all__"
@@ -33,6 +39,8 @@ class BookingSlotSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Booking
         fields = [
@@ -55,6 +63,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Address
         fields = "__all__"
@@ -62,6 +72,8 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class ServiceSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Service
         fields = "__all__"
@@ -69,6 +81,8 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class PetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Pet
         fields = "__all__"
@@ -76,6 +90,7 @@ class PetSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class VetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
 
     class Meta:
@@ -85,6 +100,7 @@ class VetSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
     contacts = ContactSerializer(many=True, read_only=True)
