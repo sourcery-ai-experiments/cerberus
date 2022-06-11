@@ -1,6 +1,7 @@
 # Standard Library
 import re
 from datetime import datetime, timedelta
+from enum import Enum
 from typing import Callable, Iterable, Optional
 
 # Django
@@ -134,12 +135,15 @@ class Vet(models.Model):
 
 @reversion.register()
 class Contact(models.Model):
-    PHONE = "phone"
-    MOBILE = "mobile"
-    EMAIL = "email"
-    UNKNOWN = "unknown"
+    class Type(Enum):
+        PHONE = _("phone")
+        MOBILE = _("mobile")
+        EMAIL = _("email")
+        UNKNOWN = _("unknown")
 
     EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+    MOBILE_REGEX = re.compile(r"^(\+447|\(?07)[0-9\(\)\s]+$")
+    PHONE_REGEX = re.compile(r"^\+?[0-9\(\)\s]+$")
 
     # Fields
     name = models.CharField(max_length=255)
@@ -153,6 +157,19 @@ class Contact(models.Model):
         on_delete=models.CASCADE,
         related_name="contacts",
     )
+
+    @property
+    def type(self) -> Type:
+        if self.EMAIL_REGEX.match(self.details):
+            return self.Type.EMAIL
+
+        if self.MOBILE_REGEX.match(self.details):
+            return self.Type.MOBILE
+
+        if self.PHONE_REGEX.match(self.details):
+            return self.Type.PHONE
+
+        return self.Type.UNKNOWN
 
     class Meta:
         ordering = ("-created",)

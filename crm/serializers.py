@@ -1,3 +1,6 @@
+# Standard Library
+from enum import Enum
+
 # Third Party
 from rest_framework import serializers
 
@@ -11,8 +14,14 @@ default_read_only = [
 ]
 
 
+class EnumSerializer(serializers.Serializer):
+    def to_representation(self, obj: Enum) -> str:
+        return obj.value
+
+
 class ContactSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
+    type = EnumSerializer(read_only=True)
 
     class Meta:
         model = Contact
@@ -80,7 +89,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class PetSerializer(serializers.HyperlinkedModelSerializer):
+class PetSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
@@ -89,7 +98,7 @@ class PetSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = default_read_only
 
 
-class VetSerializer(serializers.HyperlinkedModelSerializer):
+class VetSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
 
@@ -99,7 +108,16 @@ class VetSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = default_read_only
 
 
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+class VetListSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Vet
+        fields = "__all__"
+        read_only_fields = default_read_only
+
+
+class CustomerSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
