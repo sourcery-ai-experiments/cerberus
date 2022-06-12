@@ -108,15 +108,6 @@ class VetSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class VetListSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Vet
-        fields = "__all__"
-        read_only_fields = default_read_only
-
-
 class CustomerSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
