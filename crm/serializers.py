@@ -4,6 +4,9 @@ from enum import Enum
 # Third Party
 from rest_framework import serializers
 
+# First Party
+from crm.utils import id_to_object
+
 # Locals
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
 
@@ -115,9 +118,18 @@ class CustomerSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(many=True, read_only=True)
     charges = ChargeSerializer(many=True, read_only=True)
     bookings = BookingSerializer(many=True, read_only=True)
+    vet_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Customer
         fields = "__all__"
         read_only_fields = default_read_only
         depth = 1
+
+    @id_to_object("vet_id", Vet)
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    @id_to_object("vet_id", Vet)
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
