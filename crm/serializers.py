@@ -120,3 +120,4 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = "__all__"
         read_only_fields = default_read_only
+        depth = 1
