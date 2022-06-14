@@ -94,11 +94,24 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class PetSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
+    customer_id = serializers.IntegerField(write_only=True)
+    vet_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Pet
         fields = "__all__"
         read_only_fields = default_read_only
+        depth = 1
+
+    @id_to_object("vet_id", Vet)
+    @id_to_object("customer_id", Customer)
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    @id_to_object("vet_id", Vet)
+    @id_to_object("customer_id", Customer)
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
 
 
 class VetSerializer(serializers.ModelSerializer):
