@@ -59,7 +59,7 @@ clean: ## Remove all build files
 
 install: requirements.txt $(REQS) ## Install development requirements (default)
 	@echo "Installing $^"
-	@pip-sync $^
+	@python -m piptools sync $^
 
 dev: init install ## Start work
 	code .
