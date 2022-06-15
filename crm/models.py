@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from taggit.managers import TaggableManager
 
 # Locals
 from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
@@ -38,6 +39,8 @@ class Customer(models.Model):
         blank=True,
         null=True,
     )
+
+    tags = TaggableManager()
 
     class Meta:
         ordering = ("-created",)
@@ -95,6 +98,8 @@ class Pet(models.Model):
     insured = models.BooleanField(default=False)
     leucillin = models.BooleanField(default=True)
     noise_sensitive = models.BooleanField(default=False)
+
+    tags = TaggableManager()
 
     # Relationship Fields
     customer = models.ForeignKey(

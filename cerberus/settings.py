@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django_filters",
     "django_fsm",
     "django_fsm_log",
-    "django_htmx",
+    "taggit",
     "crm",
 ]
 
@@ -57,7 +57,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "cerberus.urls"
@@ -156,3 +155,5 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+
+TAGGIT_CASE_INSENSITIVE = True

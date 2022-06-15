@@ -3,6 +3,7 @@ from enum import Enum
 
 # Third Party
 from rest_framework import serializers
+from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 # First Party
 from crm.utils import id_to_object
@@ -92,8 +93,9 @@ class ServiceSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class PetSerializer(serializers.ModelSerializer):
+class PetSerializer(TaggitSerializer, serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
+    tags = TagListSerializerField()
     customer_id = serializers.IntegerField(write_only=True)
     vet_id = serializers.IntegerField(write_only=True)
 
@@ -124,7 +126,7 @@ class VetSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class CustomerSerializer(serializers.ModelSerializer):
+class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
@@ -132,6 +134,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     charges = ChargeSerializer(many=True, read_only=True)
     bookings = BookingSerializer(many=True, read_only=True)
     vet_id = serializers.IntegerField(write_only=True)
+    tags = TagListSerializerField()
 
     class Meta:
         model = Customer

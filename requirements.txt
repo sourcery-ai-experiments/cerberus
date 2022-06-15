@@ -16,8 +16,8 @@ django==4.0.5 \
     #   django-cors-headers
     #   django-filter
     #   django-fsm-log
-    #   django-htmx
     #   django-reversion
+    #   django-taggit
     #   djangorestframework
     #   djangorestframework-simplejwt
 django-appconf==1.0.5 \
@@ -42,13 +42,13 @@ django-fsm-log==3.0.0 \
     --hash=sha256:8d7b7f5b29cca5567473eba1016af8cd607b8abae1405df70c61f57ed54cd9ab \
     --hash=sha256:e7f4df38a7c1913a588ae446387017da9687f895b111347a3127781cdd7ce7a7
     # via -r requirements.in
-django-htmx==1.11.0 \
-    --hash=sha256:9e6403869f41d3a86d356a01aee852e0de03ccfe64c8dab836324d473fb3caf8 \
-    --hash=sha256:aab226778ba409d0cf019c549b9fc6881b8a7b10555cd535fba6499c2cef707c
-    # via -r requirements.in
 django-reversion==5.0.0 \
     --hash=sha256:0bade3c399387451087f0c67835e0d3d186d767de6a5c5ba53a88eafc3f271c8 \
     --hash=sha256:7bea725de7f56769d89a5a712cf7b7f1b02abc27655432f2eb1a703264986d99
+    # via -r requirements.in
+django-taggit==3.0.0 \
+    --hash=sha256:ca2df20399a11321db75988404afb640a08eff61e52bde35f6c16f307004ec9e \
+    --hash=sha256:e645b8e3dd4f85989d5ef5c5a3d5ebbe5badf5d1e51b53e42d0af726240b00b9
     # via -r requirements.in
 djangorestframework==3.13.1 \
     --hash=sha256:0c33407ce23acc68eca2a6e46424b008c9c02eceb8cf18581921d0092bc1f2ee \
