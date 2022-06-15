@@ -6,9 +6,10 @@ from django.db import transaction
 
 # Third Party
 from django_fsm import TransitionNotAllowed
-from rest_framework import routers, viewsets
+from rest_framework import filters, mixins, routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from taggit.models import Tag
 
 # Locals
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
@@ -21,6 +22,7 @@ from .serializers import (
     CustomerSerializer,
     PetSerializer,
     ServiceSerializer,
+    TagSerializer,
     VetSerializer,
 )
 
@@ -138,6 +140,14 @@ class VetViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
 
 
+class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name"]
+    pagination_class = None
+
+
 router = routers.DefaultRouter()
 router.register(r"Address", AddressViewSet)
 router.register(r"Service", ServiceViewSet)
@@ -148,3 +158,4 @@ router.register(r"Contact", ContactViewSet)
 router.register(r"Customer", CustomerViewSet)
 router.register(r"Pet", PetViewSet)
 router.register(r"Vet", VetViewSet)
+router.register(r"Tag", TagViewSet)

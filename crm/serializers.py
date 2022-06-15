@@ -3,6 +3,7 @@ from enum import Enum
 
 # Third Party
 from rest_framework import serializers
+from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 # First Party
@@ -149,3 +150,8 @@ class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer):
     @id_to_object("vet_id", Vet)
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
+
+
+class TagSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj: Tag) -> str:
+        return obj.name
