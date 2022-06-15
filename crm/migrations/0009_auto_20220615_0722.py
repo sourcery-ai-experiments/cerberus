@@ -23,7 +23,7 @@ def convert_to_tags(apps, schema_editor):
     for pet in Pet.objects.all():
         for field in taggableFields:
             if getattr(pet, field, False):
-                t, _ = Tag.objects.get_or_create(name=field.replace("_", " "), slug=field)
+                t, _ = Tag.objects.get_or_create(name=field.replace("_", " "), defaults={"slug": field})
                 TaggedItem.objects.get_or_create(content_type_id=ct.id, object_id=pet.id, tag=t)
 
 
