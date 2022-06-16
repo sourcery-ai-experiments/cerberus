@@ -91,13 +91,6 @@ class Pet(models.Model):
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
-    microchipped = models.BooleanField(default=True)
-    off_lead_consent = models.BooleanField(default=False)
-    vaccinated = models.BooleanField(default=True)
-    flead_wormed = models.BooleanField(default=False)
-    insured = models.BooleanField(default=False)
-    leucillin = models.BooleanField(default=True)
-    noise_sensitive = models.BooleanField(default=False)
 
     tags = TaggableManager()
 

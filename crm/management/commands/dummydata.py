@@ -59,12 +59,5 @@ class Command(BaseCommand):
                 treatment_limit=fake.pyint(min_value=0, max_value=1000) * 10,
                 medical_conditions=fake.text(max_nb_chars=200) if fake.pybool() else "",
                 allergies=fake.text(max_nb_chars=200) if fake.pybool() else "",
-                microchipped=fake.pybool(),
-                off_lead_consent=fake.pybool(),
-                vaccinated=fake.pybool(),
-                flead_wormed=fake.pybool(),
-                insured=fake.pybool(),
-                leucillin=fake.pybool(),
-                noise_sensitive=fake.pybool(),
             )
             self.stdout.write(f"Created pet {pet.name}")
