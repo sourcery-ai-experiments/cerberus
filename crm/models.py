@@ -171,6 +171,7 @@ class Contact(models.Model):
 
     class Meta:
         ordering = ("-created",)
+        unique_together = ("name", "customer", "details")
 
     def __str__(self) -> str:
         return f"{self.name}"
