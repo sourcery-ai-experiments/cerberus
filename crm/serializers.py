@@ -27,11 +27,20 @@ class EnumSerializer(serializers.Serializer):
 class ContactSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     type = EnumSerializer(read_only=True)
+    customer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Contact
-        fields = "__all__"
+        fields = ["id", "type", "name", "details", "customer_id"]
         read_only_fields = default_read_only
+
+    @id_to_object("customer_id", Customer)
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    @id_to_object("customer_id", Customer)
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
 
 
 class ChargeSerializer(serializers.ModelSerializer):
