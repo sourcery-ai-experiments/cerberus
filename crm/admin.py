@@ -5,6 +5,11 @@ from django.contrib import admin
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
 
 
+@admin.action(description="Mark selected inactive")
+def make_inactive(modeladmin, request, queryset):
+    queryset.update(active=False)
+
+
 class AddressAdmin(admin.ModelAdmin):
     pass
 
@@ -30,11 +35,13 @@ class ContactAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("active", "name", "created")
+    actions = (make_inactive,)
 
 
 class PetAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("active", "name", "created")
+    actions = (make_inactive,)
 
 
 class VetAdmin(admin.ModelAdmin):
