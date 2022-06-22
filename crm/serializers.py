@@ -1,13 +1,13 @@
 # Standard Library
 from enum import Enum
 
+# Django
+from django.core.exceptions import ObjectDoesNotExist
+
 # Third Party
 from rest_framework import serializers
 from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
-
-# First Party
-from crm.utils import id_to_object
 
 # Locals
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
@@ -24,7 +24,27 @@ class EnumSerializer(serializers.Serializer):
         return obj.value
 
 
-class ContactSerializer(serializers.ModelSerializer):
+class NestedObjectSerializer:
+    def fixNestedObject(self, attrs, name, model, required=True, id_name=None):
+        id_name = id_name if id_name is not None else f"{name}_id"
+
+        if not required:
+            attrs[name] = None
+
+        try:
+            if attrs[id_name] > 0:
+                attrs[name] = model.objects.get(id=attrs[id_name])
+        except AttributeError:
+            pass
+        except ObjectDoesNotExist as e:
+            raise serializers.ValidationError({id_name: [str(e)]})
+
+        del attrs[id_name]
+
+        return attrs
+
+
+class ContactSerializer(serializers.ModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     type = EnumSerializer(read_only=True)
     customer_id = serializers.IntegerField(write_only=True)
@@ -34,13 +54,10 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = ["id", "type", "name", "details", "customer_id"]
         read_only_fields = default_read_only
 
-    @id_to_object("customer_id", Customer)
-    def create(self, validated_data):
-        return super().create(validated_data)
+    def validate(self, attrs):
+        attrs = self.fixNestedObject(attrs, "customer", Customer)
 
-    @id_to_object("customer_id", Customer)
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        return super().validate(attrs)
 
 
 class ChargeSerializer(serializers.ModelSerializer):
@@ -104,7 +121,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class PetSerializer(TaggitSerializer, serializers.ModelSerializer):
+class PetSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     tags = TagListSerializerField()
     customer_id = serializers.IntegerField(write_only=True)
@@ -116,15 +133,11 @@ class PetSerializer(TaggitSerializer, serializers.ModelSerializer):
         read_only_fields = default_read_only
         depth = 1
 
-    @id_to_object("vet_id", Vet)
-    @id_to_object("customer_id", Customer)
-    def create(self, validated_data):
-        return super().create(validated_data)
+    def validate(self, attrs):
+        attrs = self.fixNestedObject(attrs, "customer", Customer)
+        attrs = self.fixNestedObject(attrs, "vet", Vet, False)
 
-    @id_to_object("vet_id", Vet)
-    @id_to_object("customer_id", Customer)
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        return super().validate(attrs)
 
 
 class VetSerializer(serializers.ModelSerializer):
@@ -137,7 +150,7 @@ class VetSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer):
+class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True)
     addresses = AddressSerializer(many=True, read_only=True)
@@ -153,13 +166,10 @@ class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer):
         read_only_fields = default_read_only
         depth = 1
 
-    @id_to_object("vet_id", Vet)
-    def create(self, validated_data):
-        return super().create(validated_data)
+    def validate(self, attrs):
+        attrs = self.fixNestedObject(attrs, "vet", Vet, False)
 
-    @id_to_object("vet_id", Vet)
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        return super().validate(attrs)
 
 
 class TagSerializer(serializers.BaseSerializer):
