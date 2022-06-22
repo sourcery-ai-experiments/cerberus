@@ -38,6 +38,7 @@ class Customer(models.Model):
         related_name="customers",
         blank=True,
         null=True,
+        default=None,
     )
 
     tags = TaggableManager()
@@ -106,6 +107,7 @@ class Pet(models.Model):
         related_name="pets",
         blank=True,
         null=True,
+        default=None,
     )
 
     class Meta:
