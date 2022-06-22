@@ -152,7 +152,7 @@ class VetSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
-    pets = PetSerializer(many=True, read_only=True)
+    pets = PetSerializer(many=True, read_only=True, source="active_pets")
     addresses = AddressSerializer(many=True, read_only=True)
     contacts = ContactSerializer(many=True, read_only=True)
     charges = ChargeSerializer(many=True, read_only=True)
