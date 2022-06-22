@@ -8,3 +8,4 @@ django>=4
 djangorestframework
 djangorestframework-simplejwt[crypto]
 markdown
+uritemplate
