@@ -5,8 +5,10 @@ import contextlib
 from django.db import transaction
 
 # Third Party
+from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
-from rest_framework import filters, mixins, permissions, routers, viewsets
+from rest_framework import filters as drf_filters
+from rest_framework import mixins, permissions, routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from taggit.models import Tag
@@ -25,6 +27,27 @@ from .serializers import (
     TagSerializer,
     VetSerializer,
 )
+
+
+class ActiveFilter(filters.FilterSet):
+    def __init__(self, data=None, *args, **kwargs):
+        if data is not None and "active" not in data:
+            data = data.copy()
+            data["active"] = True
+
+        super().__init__(data, *args, **kwargs)
+
+
+class PetFilter(ActiveFilter):
+    class Meta:
+        model = Pet
+        fields = ["active"]
+
+
+class CustomerFilter(ActiveFilter):
+    class Meta:
+        model = Customer
+        fields = ["active"]
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -125,13 +148,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_fields = ["name", "active"]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CustomerFilter
 
 
 class PetViewSet(viewsets.ModelViewSet):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = PetFilter
 
 
 class VetViewSet(viewsets.ModelViewSet):
@@ -143,7 +169,7 @@ class VetViewSet(viewsets.ModelViewSet):
 class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [drf_filters.SearchFilter]
     search_fields = ["name"]
     pagination_class = None
 
