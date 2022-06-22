@@ -43,6 +43,10 @@ class Customer(models.Model):
 
     tags = TaggableManager()
 
+    @property
+    def active_pets(self):
+        return self.pets.filter(active=True)
+
     class Meta:
         ordering = ("-created",)
 
