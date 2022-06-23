@@ -29,22 +29,34 @@ from .serializers import (
 )
 
 
-class ActiveFilter(filters.FilterSet):
+class FilterDefaults(filters.FilterSet):
+    default_filters = {}
+
     def __init__(self, data=None, *args, **kwargs):
-        if data is not None and "active" not in data:
+        if data is not None:
             data = data.copy()
-            data["active"] = True
+            for key, value in self.default_filters.items():
+                if key not in data:
+                    data[key] = value
 
         super().__init__(data, *args, **kwargs)
 
 
-class PetFilter(ActiveFilter):
+class PetFilter(FilterDefaults):
+    default_filters = {
+        "active": True,
+    }
+
     class Meta:
         model = Pet
         fields = ["active"]
 
 
-class CustomerFilter(ActiveFilter):
+class CustomerFilter(FilterDefaults):
+    default_filters = {
+        "active": True,
+    }
+
     class Meta:
         model = Customer
         fields = ["active"]
