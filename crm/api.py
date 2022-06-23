@@ -1,5 +1,6 @@
 # Standard Library
 import contextlib
+from typing import Protocol
 
 # Django
 from django.db import transaction
@@ -60,6 +61,36 @@ class CustomerFilter(FilterDefaults):
     class Meta:
         model = Customer
         fields = ["active"]
+
+
+class Model(Protocol):
+    active: bool
+
+    def save(self) -> bool:
+        ...
+
+
+class ModelViewSet(Protocol):
+    def get_object(self) -> Model:
+        ...
+
+
+class ActiveMixin:
+    @action(detail=True, methods=["put"])
+    def deactivate(self: ModelViewSet, request, pk=None):
+        object = self.get_object()
+        object.active = False
+        object.save()
+
+        return Response({"status": "ok"})
+
+    @action(detail=True, methods=["put"])
+    def activate(self: ModelViewSet, request, pk=None):
+        object = self.get_object()
+        object.active = True
+        object.save()
+
+        return Response({"status": "ok"})
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -156,7 +187,7 @@ class ContactViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -164,7 +195,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     filterset_class = CustomerFilter
 
 
-class PetViewSet(viewsets.ModelViewSet):
+class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = [permissions.IsAuthenticated]
