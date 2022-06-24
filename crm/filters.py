@@ -43,8 +43,8 @@ class CustomerFilter(FilterDefaults):
 
 
 class BookingFilter(filters.FilterSet):
-    start_date = filters.DateFilter(field_name="start", lookup_expr="gte")
-    end_date = filters.DateFilter(field_name="start", lookup_expr="lte")
+    from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
+    to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
 
     class Meta:
         model = Booking
