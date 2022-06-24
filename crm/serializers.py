@@ -78,8 +78,18 @@ class BookingSlotSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
+class ServiceSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Service
+        fields = "__all__"
+        read_only_fields = default_read_only
+
+
 class BookingSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
+    service = ServiceSerializer()
 
     class Meta:
         model = Booking
@@ -108,15 +118,6 @@ class AddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Address
-        fields = "__all__"
-        read_only_fields = default_read_only
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-
-    class Meta:
-        model = Service
         fields = "__all__"
         read_only_fields = default_read_only
 
