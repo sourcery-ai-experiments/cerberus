@@ -10,7 +10,7 @@ from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 # Locals
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
 
 default_read_only = [
     "id",
@@ -176,3 +176,10 @@ class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer, NestedOb
 class TagSerializer(serializers.BaseSerializer):
     def to_representation(self, obj: Tag) -> str:
         return obj.name
+
+
+class InvoiceSerializer(serializers.BaseSerializer):
+    class Meta:
+        model = Invoice
+        field = "__all__"
+        read_only_fields = default_read_only

@@ -5,6 +5,8 @@ from enum import Enum
 from typing import Callable, Iterable, Optional
 
 # Django
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
@@ -205,7 +207,6 @@ class Charge(models.Model):
 
     name = models.CharField(max_length=255)
     cost = models.IntegerField()
-    due = models.DateTimeField(default=get_default_due_date)
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
 
@@ -215,8 +216,13 @@ class Charge(models.Model):
         null=True,
         related_name="charges",
     )
-    booking = models.ForeignKey(
-        "crm.Booking",
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    object_id = models.PositiveIntegerField(blank=True, null=True, default=None)
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    invoice = models.ForeignKey(
+        "crm.Invoice",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -231,15 +237,58 @@ class Charge(models.Model):
 
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
     def pay(self) -> None:
-        pass
+        self.save()
 
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
     def void(self) -> None:
-        pass
+        self.save()
 
     @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
     def refund(self) -> None:
-        pass
+        self.save()
+
+
+class Invoice(models.Model):
+    charges: models.QuerySet["Charge"]
+
+    class States(ChoicesEnum):
+        DRAFT = "draft"
+        UNPAID = "unpaid"
+        PAID = "paid"
+        VOID = "void"
+
+    name = models.CharField(max_length=255)
+    details = models.TextField(blank=True, default="")
+    due = models.DateField(default=get_default_due_date)
+
+    state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
+
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    last_updated = models.DateTimeField(auto_now=True, editable=False)
+
+    customer = models.ForeignKey(
+        "crm.Customer",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="invoice",
+    )
+
+    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.UNPAID.value)
+    def send(self):
+        with transaction.atomic():
+            self.save()
+            # TODO: actually send the invoice
+
+    @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
+    def pay(self):
+        with transaction.atomic():
+            self.save()
+            for charge in self.charges.all():
+                charge.pay()
+
+    @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
+    def void(self):
+        self.save()
 
 
 class BookingSlot(models.Model):
@@ -376,6 +425,8 @@ class Booking(models.Model):
     pet = models.ForeignKey("crm.Pet", on_delete=models.PROTECT, related_name="bookings")
     service = models.ForeignKey("crm.Service", on_delete=models.PROTECT, related_name="bookings")
     booking_slot = models.ForeignKey("crm.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
+
+    charges = GenericRelation(Charge)
 
     class Meta:
         ordering = ("-created",)
