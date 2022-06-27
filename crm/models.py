@@ -443,7 +443,7 @@ class Booking(models.Model):
             super().save(*args, **kwargs)
 
     def create_charge(self) -> Charge:
-        charge = Charge(
+        charge = BookingCharge(
             name=f"Charge for {self.name}",
             cost=self.cost,
             booking=self,
@@ -516,6 +516,10 @@ class Booking(models.Model):
     @property
     def available_state_transitions(self) -> list[str]:
         return [i.name for i in self.get_available_state_transitions()]
+
+
+class BookingCharge(Charge):
+    booking = models.ForeignKey(Booking, on_delete=models.PROTECT)
 
 
 @reversion.register()
