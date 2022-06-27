@@ -5,8 +5,7 @@ from enum import Enum
 from typing import Callable, Iterable, Optional
 
 # Django
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
@@ -17,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 # Locals
@@ -190,7 +190,7 @@ def get_default_due_date() -> datetime:
 
 
 @reversion.register()
-class Charge(models.Model):
+class Charge(PolymorphicModel):
     class States(ChoicesEnum):
         UNPAID = "unpaid"
         PAID = "paid"
@@ -216,10 +216,6 @@ class Charge(models.Model):
         null=True,
         related_name="charges",
     )
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, blank=True, null=True, default=None)
-    object_id = models.PositiveIntegerField(blank=True, null=True, default=None)
-    content_object = GenericForeignKey("content_type", "object_id")
 
     invoice = models.ForeignKey(
         "crm.Invoice",

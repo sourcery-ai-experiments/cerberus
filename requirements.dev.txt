@@ -124,6 +124,7 @@ django==4.0.5 \
     #   django-debug-toolbar
     #   django-filter
     #   django-fsm-log
+    #   django-polymorphic
     #   django-reversion
     #   django-stubs
     #   django-stubs-ext
@@ -168,6 +169,12 @@ django-fsm==2.8.0 \
 django-fsm-log==3.0.0 \
     --hash=sha256:8d7b7f5b29cca5567473eba1016af8cd607b8abae1405df70c61f57ed54cd9ab \
     --hash=sha256:e7f4df38a7c1913a588ae446387017da9687f895b111347a3127781cdd7ce7a7
+    # via
+    #   -c requirements.txt
+    #   -r requirements.txt
+django-polymorphic==3.1.0 \
+    --hash=sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e \
+    --hash=sha256:d6955b5308bf6e41dcb22ba7c96f00b51dfa497a8a5ab1e9c06c7951bf417bf8
     # via
     #   -c requirements.txt
     #   -r requirements.txt
