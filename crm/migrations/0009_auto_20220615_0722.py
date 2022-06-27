@@ -17,7 +17,11 @@ def convert_to_tags(apps, schema_editor):
     Tag = apps.get_model("taggit", "Tag")
     TaggedItem = apps.get_model("taggit", "TaggedItem")
     ContentType = apps.get_model("contenttypes", "ContentType")
-    ct = ContentType.objects.get(app_label="crm", model="pet")
+
+    try:
+        ct = ContentType.objects.get(app_label="crm", model="pet")
+    except ContentType.DoesNotExist:
+        return
 
     Pet = apps.get_model("crm", "Pet")
     for pet in Pet.objects.all():
