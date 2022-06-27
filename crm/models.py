@@ -20,6 +20,7 @@ from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 # Locals
+from .decorators import save_after
 from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
 from .utils import ChoicesEnum, choice_length
 
@@ -231,17 +232,20 @@ class Charge(PolymorphicModel):
     def __str__(self) -> str:
         return f"£{self.cost / 100:.2f}"
 
+    @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
-    def pay(self) -> None:
-        self.save()
+    def pay(self):
+        pass
 
+    @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
     def void(self) -> None:
-        self.save()
+        pass
 
+    @save_after
     @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
     def refund(self) -> None:
-        self.save()
+        pass
 
 
 class Invoice(models.Model):
@@ -269,22 +273,25 @@ class Invoice(models.Model):
         related_name="invoice",
     )
 
+    @save_after
     @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.UNPAID.value)
     def send(self):
-        with transaction.atomic():
-            self.save()
-            # TODO: actually send the invoice
+        # TODO: actually send the invoice
+        pass
 
+    def bob(self):
+        pass
+
+    @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
     def pay(self):
-        with transaction.atomic():
-            self.save()
-            for charge in self.charges.all():
-                charge.pay()
+        for charge in self.charges.all():
+            charge.pay()
 
+    @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
     def void(self):
-        self.save()
+        pass
 
 
 class BookingSlot(models.Model):
@@ -493,22 +500,27 @@ class Booking(models.Model):
         self.save()
         return True
 
+    @save_after
     @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
     def process(self) -> None:
         pass
 
+    @save_after
     @transition(field=state, source=States.PRELIMINARY.value, target=States.CONFIRMED.value)
     def confirm(self) -> None:
         pass
 
+    @save_after
     @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)
     def cancel(self) -> None:
         self.booking_slot = None
 
+    @save_after
     @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
     def reopen(self) -> None:
         self.booking_slot = self._get_new_booking_slot()
 
+    @save_after
     @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])
     def complete(self) -> Charge:
         return self.create_charge()
