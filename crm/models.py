@@ -247,6 +247,9 @@ class Charge(PolymorphicModel):
     def refund(self) -> None:
         pass
 
+    def delete(self) -> None:
+        return self.void()
+
 
 class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
@@ -287,8 +290,11 @@ class Invoice(models.Model):
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
-    def void(self):
+    def void(self) -> None:
         pass
+
+    def delete(self) -> None:
+        return self.void()
 
 
 class BookingSlot(models.Model):
