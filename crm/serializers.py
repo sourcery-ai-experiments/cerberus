@@ -19,6 +19,29 @@ default_read_only = [
 ]
 
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed."""
+
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop("fields", None)
+        exclude = kwargs.pop("exclude", None)
+
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+        if exclude is not None:
+            exclude = set(exclude)
+            existing = set(self.fields)
+            for field_name in existing.intersection(exclude):
+                self.fields.pop(field_name)
+
+
 class EnumSerializer(serializers.Serializer):
     def to_representation(self, obj: Enum) -> str:
         return obj.value
@@ -44,7 +67,7 @@ class NestedObjectSerializer:
         return attrs
 
 
-class ContactSerializer(serializers.ModelSerializer, NestedObjectSerializer):
+class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     type = EnumSerializer(read_only=True)
     customer_id = serializers.IntegerField(write_only=True)
@@ -60,16 +83,16 @@ class ContactSerializer(serializers.ModelSerializer, NestedObjectSerializer):
         return super().validate(attrs)
 
 
-class ChargeSerializer(serializers.ModelSerializer):
+class ChargeSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
         model = Charge
-        fields = "__all__"
+        exclude = ("polymorphic_ctype",)
         read_only_fields = default_read_only
 
 
-class BookingSlotSerializer(serializers.ModelSerializer):
+class BookingSlotSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
@@ -78,7 +101,7 @@ class BookingSlotSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class ServiceSerializer(serializers.ModelSerializer):
+class ServiceSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
@@ -87,7 +110,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class BookingSerializer(serializers.ModelSerializer):
+class BookingSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
     service = ServiceSerializer()
 
@@ -113,7 +136,7 @@ class BookingSerializer(serializers.ModelSerializer):
         ]
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class AddressSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
@@ -122,7 +145,7 @@ class AddressSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class PetSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectSerializer):
+class PetSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     tags = TagListSerializerField()
     customer_id = serializers.IntegerField(write_only=True)
@@ -141,9 +164,9 @@ class PetSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectS
         return super().validate(attrs)
 
 
-class VetSerializer(serializers.ModelSerializer):
+class VetSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
-    pets = PetSerializer(many=True, read_only=True)
+    pets = PetSerializer(many=True, read_only=True, exclude=("vet",))
 
     class Meta:
         model = Vet
@@ -151,12 +174,12 @@ class VetSerializer(serializers.ModelSerializer):
         read_only_fields = default_read_only
 
 
-class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer, NestedObjectSerializer):
+class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
-    pets = PetSerializer(many=True, read_only=True, source="active_pets")
-    addresses = AddressSerializer(many=True, read_only=True)
-    contacts = ContactSerializer(many=True, read_only=True)
-    charges = ChargeSerializer(many=True, read_only=True)
+    pets = PetSerializer(many=True, read_only=True, source="active_pets", exclude=("customer",))
+    addresses = AddressSerializer(many=True, read_only=True, exclude=("customer",))
+    contacts = ContactSerializer(many=True, read_only=True, exclude=("customer",))
+    charges = ChargeSerializer(many=True, read_only=True, exclude=("customer",))
     bookings = BookingSerializer(many=True, read_only=True)
     vet_id = serializers.IntegerField(write_only=True)
     tags = TagListSerializerField()
@@ -165,7 +188,7 @@ class CustomerSerializer(TaggitSerializer, serializers.ModelSerializer, NestedOb
         model = Customer
         fields = "__all__"
         read_only_fields = default_read_only
-        depth = 1
+        depth = 0
 
     def validate(self, attrs):
         attrs = self.fixNestedObject(attrs, "vet", Vet, False)
@@ -178,8 +201,11 @@ class TagSerializer(serializers.BaseSerializer):
         return obj.name
 
 
-class InvoiceSerializer(serializers.BaseSerializer):
+class InvoiceSerializer(DynamicFieldsModelSerializer):
+    customer = CustomerSerializer(read_only=True, fields=("id", "name"), exclude=("invoice",))
+    charges = ChargeSerializer(many=True, read_only=True, exclude=("invoice",))
+
     class Meta:
         model = Invoice
-        field = "__all__"
+        fields = "__all__"
         read_only_fields = default_read_only

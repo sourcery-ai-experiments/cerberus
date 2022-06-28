@@ -260,7 +260,7 @@ class Invoice(models.Model):
         PAID = "paid"
         VOID = "void"
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     details = models.TextField(blank=True, default="")
     due = models.DateField(default=get_default_due_date)
 
@@ -275,6 +275,9 @@ class Invoice(models.Model):
         null=True,
         related_name="invoice",
     )
+
+    def __str__(self) -> str:
+        return self.name
 
     @save_after
     @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.UNPAID.value)

@@ -16,7 +16,7 @@ from taggit.models import Tag
 
 # Locals
 from .filters import BookingFilter, CustomerFilter, PetFilter
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Pet, Service, Vet
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
 from .serializers import (
     AddressSerializer,
     BookingSerializer,
@@ -24,6 +24,7 @@ from .serializers import (
     ChargeSerializer,
     ContactSerializer,
     CustomerSerializer,
+    InvoiceSerializer,
     PetSerializer,
     ServiceSerializer,
     TagSerializer,
@@ -151,6 +152,12 @@ class ChargeViewSet(viewsets.ModelViewSet):
         return self.change_state("refund")
 
 
+class InvoiceViewSet(viewsets.ModelViewSet):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
@@ -193,6 +200,7 @@ router.register(r"Service", ServiceViewSet)
 router.register(r"Booking", BookingViewSet)
 router.register(r"BookingSlot", BookingSlotViewSet)
 router.register(r"Charge", ChargeViewSet)
+router.register(r"Invoice", InvoiceViewSet)
 router.register(r"Contact", ContactViewSet)
 router.register(r"Customer", CustomerViewSet)
 router.register(r"Pet", PetViewSet)
