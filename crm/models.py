@@ -277,10 +277,7 @@ class Invoice(models.Model):
     @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.UNPAID.value)
     def send(self):
         # TODO: actually send the invoice
-        pass
-
-    def bob(self):
-        pass
+        ...
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
