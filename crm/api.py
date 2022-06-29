@@ -23,6 +23,7 @@ from .serializers import (
     BookingSlotSerializer,
     ChargeSerializer,
     ContactSerializer,
+    CustomerDropDownSerializer,
     CustomerSerializer,
     InvoiceSerializer,
     PetSerializer,
@@ -172,6 +173,15 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     filterset_class = CustomerFilter
 
 
+class CustomerDropDownViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerDropDownSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [drf_filters.SearchFilter]
+    search_fields = ["name"]
+    pagination_class = None
+
+
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
@@ -203,6 +213,7 @@ router.register(r"Charge", ChargeViewSet)
 router.register(r"Invoice", InvoiceViewSet)
 router.register(r"Contact", ContactViewSet)
 router.register(r"Customer", CustomerViewSet)
+router.register(r"customerlist", CustomerDropDownViewSet)
 router.register(r"Pet", PetViewSet)
 router.register(r"Vet", VetViewSet)
 router.register(r"Tag", TagViewSet)
