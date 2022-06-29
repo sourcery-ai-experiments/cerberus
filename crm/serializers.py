@@ -201,11 +201,17 @@ class TagSerializer(serializers.BaseSerializer):
         return obj.name
 
 
-class InvoiceSerializer(DynamicFieldsModelSerializer):
+class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     customer = CustomerSerializer(read_only=True, fields=("id", "name"), exclude=("invoice",))
     charges = ChargeSerializer(many=True, read_only=True, exclude=("invoice",))
+    customer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Invoice
         fields = "__all__"
         read_only_fields = default_read_only
+
+    def validate(self, attrs):
+        attrs = self.fixNestedObject(attrs, "customer", Customer)
+
+        return super().validate(attrs)
