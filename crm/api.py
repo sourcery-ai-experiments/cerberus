@@ -14,6 +14,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from taggit.models import Tag
 
+# First Party
+from crm.pagination import NullPagination
+
 # Locals
 from .filters import BookingFilter, CustomerFilter, PetFilter
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
@@ -179,7 +182,7 @@ class CustomerDropDownViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericVi
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [drf_filters.SearchFilter]
     search_fields = ["name"]
-    pagination_class = None
+    pagination_class = NullPagination
 
 
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
