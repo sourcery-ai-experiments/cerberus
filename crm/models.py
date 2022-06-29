@@ -264,6 +264,9 @@ class Invoice(models.Model):
     details = models.TextField(blank=True, default="")
     due = models.DateField(default=get_default_due_date)
 
+    customer_name = models.CharField(max_length=255, blank=True, null=True)
+    sent_to = models.CharField(max_length=255, blank=True, null=True)
+
     state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -279,11 +282,19 @@ class Invoice(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def can_send(self):
+        return self.customer is not None
+
     @save_after
-    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.UNPAID.value)
-    def send(self):
-        # TODO: actually send the invoice
-        ...
+    @transition(
+        field=state,
+        source=(States.DRAFT.value, States.UNPAID.value),
+        target=States.UNPAID.value,
+        conditions=(can_send),
+    )
+    def send(self, to=None):
+        self.customer_name = self.customer.name
+        self.sent_to = to
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
