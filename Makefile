@@ -49,7 +49,10 @@ requirements.txt: requirements.in
 	@touch -d '+1 minute' $@
 	@false
 
-init: .direnv .git .git/hooks/pre-commit requirements.dev.txt ## Initalise a enviroment
+piptools:
+	python -m pip install pip-tools
+
+init: .direnv .git .git/hooks/pre-commit piptools requirements.dev.txt ## Initalise a enviroment
 
 clean: ## Remove all build files
 	find . -name '*.pyc' -delete
