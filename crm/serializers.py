@@ -181,6 +181,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     contacts = ContactSerializer(many=True, read_only=True, exclude=("customer",))
     charges = ChargeSerializer(many=True, read_only=True, exclude=("customer",))
     bookings = BookingSerializer(many=True, read_only=True)
+    vet = VetSerializer(many=False, read_only=True, exclude=("customers",))
     vet_id = serializers.IntegerField(write_only=True)
     tags = TagListSerializerField()
 
