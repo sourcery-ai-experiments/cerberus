@@ -5,6 +5,7 @@ from enum import Enum
 from django.core.exceptions import ObjectDoesNotExist
 
 # Third Party
+from icecream import ic
 from rest_framework import serializers
 from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
@@ -208,6 +209,7 @@ class TagSerializer(serializers.BaseSerializer):
 
 
 class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
+    name = serializers.CharField(read_only=True)
     customer = CustomerSerializer(read_only=True, fields=("id", "name"), exclude=("invoice",))
     charges = ChargeSerializer(many=True, read_only=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
@@ -221,3 +223,12 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
         attrs = self.fixNestedObject(attrs, "customer", Customer)
 
         return super().validate(attrs)
+
+    def create(self, validated_data):
+        invoice = super().create(validated_data)
+
+        chargeSerializer = ChargeSerializer()
+        chargeSerializer.create({})
+        ic(validated_data)
+
+        return invoice

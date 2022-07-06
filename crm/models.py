@@ -260,7 +260,6 @@ class Invoice(models.Model):
         PAID = "paid"
         VOID = "void"
 
-    name = models.CharField(max_length=255, unique=True)
     details = models.TextField(blank=True, default="")
     due = models.DateField(default=get_default_due_date)
 
@@ -284,6 +283,10 @@ class Invoice(models.Model):
 
     def can_send(self):
         return self.customer is not None
+
+    @property
+    def name(self):
+        return f"INV-{self.pk}"
 
     @save_after
     @transition(
