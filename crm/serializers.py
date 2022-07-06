@@ -3,9 +3,9 @@ from enum import Enum
 
 # Django
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 
 # Third Party
-from icecream import ic
 from rest_framework import serializers
 from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
@@ -84,7 +84,7 @@ class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
         return super().validate(attrs)
 
 
-class ChargeSerializer(DynamicFieldsModelSerializer):
+class ChargeSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
@@ -211,7 +211,7 @@ class TagSerializer(serializers.BaseSerializer):
 class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     name = serializers.CharField(read_only=True)
     customer = CustomerSerializer(read_only=True, fields=("id", "name"), exclude=("invoice",))
-    charges = ChargeSerializer(many=True, read_only=True, exclude=("invoice",))
+    charges = ChargeSerializer(many=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -224,11 +224,22 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
 
         return super().validate(attrs)
 
+    @transaction.atomic
     def create(self, validated_data):
+        chargesData = validated_data["charges"] or []
+        del validated_data["charges"]
         invoice = super().create(validated_data)
 
-        chargeSerializer = ChargeSerializer()
-        chargeSerializer.create({})
-        ic(validated_data)
+        charges = []
+        for chargeData in chargesData:
+            chargeData.invoice = invoice
+            chargeData.customer = invoice.customer
+
+            chargeSerializer = ChargeSerializer(data=chargeData)
+            if chargeSerializer.is_valid():
+                charge = chargeSerializer.save()
+                charge.invoice = invoice
+                charge.save()
+                charges.append(charge)
 
         return invoice

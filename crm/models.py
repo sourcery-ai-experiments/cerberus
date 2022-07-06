@@ -230,7 +230,7 @@ class Charge(PolymorphicModel):
         ordering = ("-created",)
 
     def __str__(self) -> str:
-        return f"£{self.cost / 100:.2f}"
+        return f"{self.name} - £{self.cost / 100:.2f}"
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -249,6 +249,12 @@ class Charge(PolymorphicModel):
 
     def delete(self) -> None:
         return self.void()
+
+    def save(self, *args, **kwargs):
+        if self.customer is None and self.invoice is not None:
+            self.customer = self.invoice.customer
+
+        return super().save(*args, **kwargs)
 
 
 class Invoice(models.Model):
