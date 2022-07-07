@@ -281,7 +281,7 @@ class Invoice(models.Model):
         "crm.Customer",
         on_delete=models.SET_NULL,
         null=True,
-        related_name="invoice",
+        related_name="invoices",
     )
 
     def __str__(self) -> str:
