@@ -1,6 +1,6 @@
 # Standard Library
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import Callable, Iterable, Optional
 
@@ -287,12 +287,16 @@ class Invoice(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def can_send(self):
+    def can_send(self) -> bool:
         return self.customer is not None
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"INV-{self.pk}"
+
+    @property
+    def overdue(self) -> bool:
+        return self.due < date.today()
 
     @save_after
     @transition(

@@ -210,9 +210,10 @@ class TagSerializer(serializers.BaseSerializer):
 
 class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     name = serializers.CharField(read_only=True)
-    customer = CustomerSerializer(read_only=True, fields=("id", "name"), exclude=("invoice",))
+    customer = CustomerSerializer(read_only=True, fields=("id", "name"))
     charges = ChargeSerializer(many=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
+    overdue = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Invoice
