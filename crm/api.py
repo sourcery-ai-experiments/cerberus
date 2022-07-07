@@ -176,7 +176,7 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     def dropdown(self, request):
         serializer = CustomerDropDownSerializer(self.queryset, many=True)
 
-        return Response(serializer.data)
+        return Response({"results": serializer.data})
 
 
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
