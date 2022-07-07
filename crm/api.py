@@ -45,6 +45,10 @@ class ModelViewSet(Protocol):
         ...
 
 
+default_permissions = [permissions.IsAuthenticated]
+default_permissions = []
+
+
 class ActiveMixin:
     @action(detail=True, methods=["put"])
     def deactivate(self: ModelViewSet, request, pk=None):
@@ -66,19 +70,19 @@ class ActiveMixin:
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = BookingFilter
 
@@ -119,13 +123,13 @@ class BookingViewSet(viewsets.ModelViewSet):
 class BookingSlotViewSet(viewsets.ModelViewSet):
     queryset = BookingSlot.objects.all()
     serializer_class = BookingSlotSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class ChargeViewSet(viewsets.ModelViewSet):
     queryset = Charge.objects.all()
     serializer_class = ChargeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
     def change_state(self, action: str) -> Response:
         charge = self.get_object()
@@ -156,19 +160,19 @@ class ChargeViewSet(viewsets.ModelViewSet):
 class InvoiceViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = CustomerFilter
 
@@ -178,11 +182,19 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
 
         return Response({"results": serializer.data})
 
+    @action(detail=True, methods=["get"])
+    def accounts(self, request, pk=None):
+        customer = self.get_object()
+
+        invoices = InvoiceSerializer(customer.invoices, many=True)
+
+        return Response({"results": invoices.data})
+
 
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = PetFilter
 
@@ -190,7 +202,7 @@ class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
 class VetViewSet(viewsets.ModelViewSet):
     queryset = Vet.objects.all()
     serializer_class = VetSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = default_permissions
 
 
 class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
