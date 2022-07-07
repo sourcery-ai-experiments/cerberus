@@ -175,6 +175,11 @@ class VetSerializer(DynamicFieldsModelSerializer):
         read_only_fields = default_read_only
 
 
+class CustomerDropDownSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+
+
 class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     pets = PetSerializer(many=True, read_only=True, source="active_pets", exclude=("customer",))
@@ -196,11 +201,6 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
         attrs = self.fixNestedObject(attrs, "vet", Vet, False)
 
         return super().validate(attrs)
-
-
-class CustomerDropDownSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(read_only=True)
 
 
 class TagSerializer(serializers.BaseSerializer):

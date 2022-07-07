@@ -14,9 +14,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from taggit.models import Tag
 
-# First Party
-from crm.pagination import NullPagination
-
 # Locals
 from .filters import BookingFilter, CustomerFilter, PetFilter
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
@@ -175,14 +172,11 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = CustomerFilter
 
+    @action(detail=False, methods=["get"])
+    def dropdown(self, request):
+        serializer = CustomerDropDownSerializer(self.queryset, many=True)
 
-class CustomerDropDownViewSet(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerDropDownSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [drf_filters.SearchFilter]
-    search_fields = ["name"]
-    pagination_class = NullPagination
+        return Response(serializer.data)
 
 
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
@@ -216,7 +210,6 @@ router.register(r"Charge", ChargeViewSet)
 router.register(r"Invoice", InvoiceViewSet)
 router.register(r"Contact", ContactViewSet)
 router.register(r"Customer", CustomerViewSet)
-router.register(r"customerlist", CustomerDropDownViewSet)
 router.register(r"Pet", PetViewSet)
 router.register(r"Vet", VetViewSet)
 router.register(r"Tag", TagViewSet)
