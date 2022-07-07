@@ -232,6 +232,12 @@ class Charge(PolymorphicModel):
     def __str__(self) -> str:
         return f"{self.name} - £{self.cost / 100:.2f}"
 
+    def __int__(self) -> int:
+        return self.cost
+
+    def __add__(self, other) -> int:
+        return int(self) + int(other)
+
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
     def pay(self):
@@ -297,6 +303,14 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.due < date.today()
+
+    @property
+    def total(self) -> int:
+        return sum(int(c) for c in self.charges.all())
+
+    @property
+    def total_unpaid(self) -> int:
+        return sum(int(c) for c in self.charges.all() if c.state == c.States.UNPAID.value)
 
     @save_after
     @transition(

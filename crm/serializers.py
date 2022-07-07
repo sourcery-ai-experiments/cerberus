@@ -214,6 +214,8 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     charges = ChargeSerializer(many=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
     overdue = serializers.BooleanField(read_only=True)
+    total = serializers.IntegerField(read_only=True)
+    total_unpaid = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Invoice
