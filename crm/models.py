@@ -213,7 +213,7 @@ class Charge(PolymorphicModel):
     cost = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
-    paid_on = MonitorField(monitor="state", when=[States.PAID.value])
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
 
     customer = models.ForeignKey(
         "crm.Customer",
@@ -286,7 +286,7 @@ class Invoice(models.Model):
     sent_to = models.CharField(max_length=255, blank=True, null=True)
 
     state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
-    paid_on = MonitorField(monitor="state", when=[States.PAID.value])
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
