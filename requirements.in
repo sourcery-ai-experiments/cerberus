@@ -2,6 +2,7 @@ django-cors-headers
 django-filter
 django-fsm
 django-fsm-log
+django-money
 django-polymorphic
 django-reversion
 django-taggit

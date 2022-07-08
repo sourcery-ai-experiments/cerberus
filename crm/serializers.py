@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 # Third Party
+from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
 from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
@@ -214,8 +215,8 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     charges = ChargeSerializer(many=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
     overdue = serializers.BooleanField(read_only=True)
-    total = serializers.IntegerField(read_only=True)
-    total_unpaid = serializers.IntegerField(read_only=True)
+    total = MoneyField(max_digits=10, decimal_places=2, read_only=True)
+    total_unpaid = MoneyField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Invoice

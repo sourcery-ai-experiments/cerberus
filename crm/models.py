@@ -16,6 +16,8 @@ from django.utils.translation import gettext_lazy as _
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from djmoney.models.fields import MoneyField
+from moneyed import Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
@@ -207,7 +209,7 @@ class Charge(PolymorphicModel):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     name = models.CharField(max_length=255)
-    cost = models.IntegerField()
+    cost = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
 
@@ -230,13 +232,15 @@ class Charge(PolymorphicModel):
         ordering = ("-created",)
 
     def __str__(self) -> str:
-        return f"{self.name} - £{self.cost / 100:.2f}"
+        return f"{self.name} - {self.cost}"
 
-    def __int__(self) -> int:
-        return self.cost
+    def __float__(self) -> float:
+        return float(self.charge)
 
-    def __add__(self, other) -> int:
-        return int(self) + int(other)
+    def __add__(self, other) -> Money:
+        if not isinstance(other, Charge):
+            return NotImplemented
+        return self.cost + other.cost
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -305,12 +309,12 @@ class Invoice(models.Model):
         return self.due < date.today()
 
     @property
-    def total(self) -> int:
-        return sum(int(c) for c in self.charges.all())
+    def total(self) -> float:
+        return sum(c.cost for c in self.charges.all())
 
     @property
-    def total_unpaid(self) -> int:
-        return sum(int(c) for c in self.charges.all() if c.state == c.States.UNPAID.value)
+    def total_unpaid(self) -> float:
+        return sum(c.cost for c in self.charges.all() if c.state == c.States.UNPAID.value)
 
     @save_after
     @transition(
@@ -586,8 +590,8 @@ class Service(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     length = models.DurationField(default=timedelta(minutes=60))
     booked_length = models.DurationField(default=timedelta(minutes=120))
-    cost = models.IntegerField(default=0)
-    cost_per_additional = models.IntegerField(default=0)
+    cost = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
+    cost_per_additional = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP", default=0)
     max_pet = models.IntegerField(default=1)
     max_customer = models.IntegerField(default=1)
     display_colour = models.CharField(max_length=255)  # ColorField(default="#000000")

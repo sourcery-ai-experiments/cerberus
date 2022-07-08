@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django_fsm",
     "django_fsm_log",
     "taggit",
+    "djmoney",
     "crm",
 ]
 
@@ -158,3 +159,5 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 
 TAGGIT_CASE_INSENSITIVE = True
+
+DEFAULT_CURRENCY = "GBP"
