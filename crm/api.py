@@ -1,5 +1,6 @@
 # Standard Library
 import contextlib
+from datetime import datetime, timedelta
 from typing import Protocol
 
 # Django
@@ -185,10 +186,23 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     @action(detail=True, methods=["get"])
     def accounts(self, request, pk=None):
         customer = self.get_object()
+        invoices = Invoice.objects.filter(customer=customer)
 
-        invoices = InvoiceSerializer(customer.invoices, many=True)
+        recent = datetime.today() - timedelta(days=28)
 
-        return Response({"results": invoices.data})
+        draft = invoices.filter(state=Invoice.States.DRAFT.value)
+        unpaid = invoices.filter(state=Invoice.States.UNPAID.value)
+        void = invoices.filter(state=Invoice.States.VOID.value, last_updated__gte=recent)
+        paid = invoices.filter(state=Invoice.States.PAID.value, last_updated__gte=recent)
+
+        return Response(
+            {
+                "draft": InvoiceSerializer(draft, many=True).data,
+                "unpaid": InvoiceSerializer(unpaid, many=True).data,
+                "void": InvoiceSerializer(void, many=True).data,
+                "paid": InvoiceSerializer(paid, many=True).data,
+            }
+        )
 
 
 class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
