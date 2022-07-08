@@ -269,6 +269,7 @@ class Charge(PolymorphicModel):
 
 class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
+    get_available_state_transitions: Callable[[], Iterable[Transition]]
 
     class States(ChoicesEnum):
         DRAFT = "draft"
@@ -277,7 +278,7 @@ class Invoice(models.Model):
         VOID = "void"
 
     details = models.TextField(blank=True, default="")
-    due = models.DateField(default=get_default_due_date)
+    due = models.DateField(blank=True, default=get_default_due_date)
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
@@ -321,7 +322,7 @@ class Invoice(models.Model):
         field=state,
         source=(States.DRAFT.value, States.UNPAID.value),
         target=States.UNPAID.value,
-        conditions=(can_send),
+        conditions=[can_send],
     )
     def send(self, to=None):
         self.customer_name = self.customer.name
@@ -334,12 +335,19 @@ class Invoice(models.Model):
             charge.pay()
 
     @save_after
-    @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
+    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)
     def void(self) -> None:
         pass
 
-    def delete(self) -> None:
-        return self.void()
+    def delete(self, using=None, keep_parents=False) -> None:
+        if self.state == self.States.DRAFT.value:
+            super().delete(using=using, keep_parents=keep_parents)
+        else:
+            self.void()
+
+    @property
+    def available_state_transitions(self) -> list[str]:
+        return [i.name for i in self.get_available_state_transitions()]
 
 
 class BookingSlot(models.Model):
