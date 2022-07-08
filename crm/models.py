@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 import reversion
 from django_fsm import FSMField, Transition, transition
 from djmoney.models.fields import MoneyField
+from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
@@ -212,6 +213,7 @@ class Charge(PolymorphicModel):
     cost = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value])
 
     customer = models.ForeignKey(
         "crm.Customer",
@@ -284,6 +286,7 @@ class Invoice(models.Model):
     sent_to = models.CharField(max_length=255, blank=True, null=True)
 
     state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value])
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
