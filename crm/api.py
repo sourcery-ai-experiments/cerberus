@@ -41,13 +41,19 @@ class Model(Protocol):
         ...
 
 
+class ModelSerializer(Protocol):
+    data: object
+
+
 class ModelViewSet(Protocol):
     def get_object(self) -> Model:
         ...
 
+    def get_serializer(self, *args, **kwargs) -> ModelSerializer:
+        ...
+
 
 default_permissions = [permissions.IsAuthenticated]
-default_permissions = []
 
 
 class ActiveMixin:
@@ -68,6 +74,21 @@ class ActiveMixin:
         return Response({"status": "ok"})
 
 
+class ChangeStateMixin:
+    def change_state(self: ModelViewSet, action: str) -> Response:
+        charge = self.get_object()
+        status = 400
+
+        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
+            getattr(charge, action)()
+            charge.save()
+            status = 200
+
+        serializer = self.get_serializer(charge)
+
+        return Response({"charge": serializer.data, "status": status}, status=status)
+
+
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
@@ -80,25 +101,12 @@ class ServiceViewSet(viewsets.ModelViewSet):
     permission_classes = default_permissions
 
 
-class BookingViewSet(viewsets.ModelViewSet):
+class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = BookingFilter
-
-    def change_state(self, action: str) -> Response:
-        booking = self.get_object()
-        status = 400
-
-        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
-            getattr(booking, action)()
-            booking.save()
-            status = 200
-
-        serializer = self.get_serializer(booking)
-
-        return Response({"booking": serializer.data, "status": status}, status=status)
 
     @action(detail=True, methods=["put"])
     def process(self, request, pk=None):
@@ -158,10 +166,22 @@ class ChargeViewSet(viewsets.ModelViewSet):
         return self.change_state("refund")
 
 
-class InvoiceViewSet(viewsets.ModelViewSet):
+class InvoiceViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = default_permissions
+
+    @action(detail=True, methods=["put"])
+    def send(self, request, pk=None):
+        return self.change_state("send")
+
+    @action(detail=True, methods=["put"])
+    def pay(self, request, pk=None):
+        return self.change_state("pay")
+
+    @action(detail=True, methods=["put"])
+    def void(self, request, pk=None):
+        return self.change_state("void")
 
 
 class ContactViewSet(viewsets.ModelViewSet):
