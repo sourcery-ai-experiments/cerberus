@@ -1,0 +1,219 @@
+{% load static %}
+<html>
+  <head>
+    <style type="text/css">
+      @page {
+        size: A4 portrait;
+        margin: 1cm;
+
+        @frame header_frame {
+          -pdf-frame-content: header_content;
+          left: 50pt;
+          right: 50pt;
+          top: 50pt;
+          height: 150pt;
+        }
+        @frame content_frame {
+          left: 50pt;
+          right: 50pt;
+          top: 205pt;
+          height: 520pt;
+        }
+        @frame footer_frame {
+          -pdf-frame-content: footer_content;
+          left: 50pt;
+          right: 50pt;
+          top: 725pt;
+        }
+      }
+
+      .inv {
+        -pdf-keep-in-frame-mode: shrink;
+        font-size: 12pt;
+      }
+
+      .inv tr {
+        height: 30pt;
+        padding-left: 5pt;
+        padding-right: 5pt;
+      }
+
+      .inv td {
+        vertical-align: middle;
+        line-height: auto;
+      }
+
+      .bg {
+        background-color: #e9daf1;
+      }
+
+      .logo {
+        zoom: 35%;
+        right: 0;
+      }
+
+      .hr {
+        font-size: 0;
+        line-height: 0.05cm;
+        height: 0.05cm;
+        display: block;
+        background-color: #582a72;
+        margin-bottom: 0.5cm;
+      }
+      body {
+        color: black;
+        font-size: 10pt;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #582a72;
+        margin: 0;
+        padding: 0;
+        font-weight: normal;
+      }
+      h1 {
+        font-size: 26pt;
+      }
+      .address {
+        padding: 0;
+        margin: 0;
+      }
+      #header_content table {
+        width: 100%;
+      }
+      b {
+        color: #582a72;
+      }
+
+      .price {
+        background-colour: #aaffaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header_content">
+      <div class="hr">&nbsp;</div>
+      <table>
+        <tr>
+          <td valign="top">
+            <h1>Stretch Their Legs</h1>
+            <p class="address">
+              31 Mills Drive,<br />
+              Wellington,<br />
+              Somerset,<br />
+              TA21 9BW<br />
+              07712 613763
+            </p>
+          </td>
+          <td valign="top" align="right">
+            <img class="logo" src="img/logo.png" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="footer_content">
+      <table>
+        <tr>
+          <td colspan="2">
+            Payment must be made within 7 days of the date of this invoice - {{
+            due_date}}
+          </td>
+        </tr>
+        <tr>
+          <td>Bank</td>
+          <td>Lloyds</td>
+        </tr>
+        <tr>
+          <td>Sort Code</td>
+          <td>30-98-45</td>
+        </tr>
+        <tr>
+          <td>Account Number</td>
+          <td>01641109</td>
+        </tr>
+        <tr>
+          <td>Account Name</td>
+          <td>S L Dua</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            Please use <span>{{ invoice_ref }}</span> as a reference
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div>
+      <h1>Invoice</h1>
+      <table>
+        <tr>
+          <td valign="top">
+            <p>
+              <b>Bill To</b><br />
+              Becky Dua<br />
+              Clifford Terrace<br />
+              Wellington
+            </p>
+          </td>
+          <td valign="top" width="160pt">
+            <table width="152pt">
+              <tr>
+                <td width="70pt"><b>Invoice &#35;</b></td>
+                <td width="82pt">INV-000</td>
+              </tr>
+              <tr>
+                <td><b>Invoice Date</b></td>
+                <td>01-01-1970</td>
+              </tr>
+              <tr>
+                <td><b>Invoice Due</b></td>
+                <td>01-01-1970</td>
+              </tr>
+              <tr>
+                <td><b>Payable To</b></td>
+                <td>Stretch Their Legs</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <div class="hr">&nbsp;</div>
+      <table class="inv">
+        <tr>
+          <td width="500pt"><b>Description</b></td>
+          <td width="80pt" align="right"><b>Price</b></td>
+          <td></td>
+        </tr>
+
+        <tr class="bg">
+          <td>Walk 1 hour</td>
+          <td align="right">£ 12.00</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td>Walk 1 hour</td>
+          <td align="right">£ 12.00</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td align="right"><b>Subtotal</b></td>
+          <td align="right">£ 12.00</td>
+        </tr>
+        <tr>
+          <td align="right"><b>Adjustment</b></td>
+          <td align="right">£ 0.00</td>
+        </tr>
+        <tr>
+          <td align="right"><b>Total</b></td>
+          <td align="right"><b>£ 12.00</b></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

@@ -54,6 +54,7 @@ class ModelViewSet(Protocol):
 
 
 default_permissions = [permissions.IsAuthenticated]
+default_permissions = []
 
 
 class ActiveMixin:

@@ -12,4 +12,6 @@ djangorestframework
 djangorestframework-simplejwt[crypto]
 djangorestframework-stubs[compatible-mypy]
 markdown
+reportlab
 uritemplate
+xhtml2pdf
