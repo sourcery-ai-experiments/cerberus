@@ -10,5 +10,6 @@ django-taggit
 django>=4
 djangorestframework
 djangorestframework-simplejwt[crypto]
+djangorestframework-stubs[compatible-mypy]
 markdown
 uritemplate
