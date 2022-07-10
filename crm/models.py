@@ -323,7 +323,7 @@ class Invoice(models.Model):
     @save_after
     @transition(
         field=state,
-        source=(States.DRAFT.value, States.UNPAID.value),
+        source=States.DRAFT.value,
         target=States.UNPAID.value,
         conditions=[can_send],
     )
