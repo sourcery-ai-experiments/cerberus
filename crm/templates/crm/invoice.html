@@ -182,28 +182,32 @@
       <div class="hr">&nbsp;</div>
       <table class="inv">
         <tr>
-          <td width="500pt"><b>Description</b></td>
-          <td width="80pt" align="right"><b>Price</b></td>
+          <td width="340pt"><b>Description</b></td>
+          <td width="40pt" align="center"><b>Qty</b></td>
+          <td width="70pt" align="right"><b>Line</b></td>
+          <td width="70pt" align="right"><b>Total</b></td>
           <td></td>
         </tr>
 
         {% for charge in invoice.charges.all %}
         <tr class="{% cycle 'odd' 'even' %}">
           <td>{{ charge.name }}</td>
+          <td align="center">{{ charge.quantity }}</td>
+          <td align="right">{{ charge.line }}</td>
           <td align="right">{{ charge.cost }}</td>
         </tr>
         {% endfor %}
 
         <tr>
-          <td align="right"><b>Subtotal</b></td>
+          <td align="right" colspan="3"><b>Subtotal</b></td>
           <td align="right">{{ invoice.subtotal }}</td>
         </tr>
         <tr>
-          <td align="right"><b>Adjustment</b></td>
+          <td align="right" colspan="3"><b>Adjustment</b></td>
           <td align="right">{{ invoice.adjustment }}</td>
         </tr>
         <tr>
-          <td align="right"><b>Total</b></td>
+          <td align="right" colspan="3"><b>Total</b></td>
           <td align="right"><b>{{ invoice.total }}</b></td>
         </tr>
       </table>
