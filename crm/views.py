@@ -5,7 +5,7 @@ import os
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.http import HttpResponse
-from django.shortcuts import render  # noqa
+from django.shortcuts import get_object_or_404, render  # noqa
 from django.template.loader import get_template
 from django.views.generic import DetailView, ListView
 
@@ -13,7 +13,7 @@ from django.views.generic import DetailView, ListView
 from xhtml2pdf import pisa
 
 # Locals
-from .models import Customer, Pet, Vet
+from .models import Customer, Invoice, Pet, Vet
 
 
 def link_callback(uri, rel):
@@ -45,8 +45,12 @@ def link_callback(uri, rel):
 
 
 def InvoicePDF(request, pk):
+    invoice = get_object_or_404(Invoice, id=pk)
+
     template_path = "crm/invoice.html"
-    context = {"invoice_ref": "Bob-008"}
+    context = {
+        "invoice": invoice,
+    }
 
     response = HttpResponse(content_type="application/pdf")
     # response['Content-Disposition'] = 'attachment; filename="report.pdf"'

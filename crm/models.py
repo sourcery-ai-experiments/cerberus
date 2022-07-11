@@ -34,6 +34,8 @@ class Customer(models.Model):
     pets: "QuerySet[Pet]"
     # Fields
     name = models.CharField(max_length=255)
+    invoice_address = models.TextField(default="")
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     active = models.BooleanField(default=True)
@@ -47,7 +49,7 @@ class Customer(models.Model):
         default=None,
     )
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     @property
     def active_pets(self):
@@ -210,7 +212,8 @@ class Charge(PolymorphicModel):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     name = models.CharField(max_length=255)
-    cost = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
+    line = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
+    quantity = models.IntegerField(default=1)
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
@@ -243,6 +246,10 @@ class Charge(PolymorphicModel):
         if not isinstance(other, Charge):
             return NotImplemented
         return self.cost + other.cost
+
+    @property
+    def cost(self):
+        return self.line * self.quantity
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -280,13 +287,15 @@ class Invoice(models.Model):
         VOID = "void"
 
     details = models.TextField(blank=True, default="")
-    due = models.DateField(blank=True, default=get_default_due_date)
+    due = models.DateField(blank=True, default=None)
+    adjustment = MoneyField(default=0, max_digits=14, decimal_places=2, default_currency="GBP")
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
 
     state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
+    sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
@@ -306,19 +315,23 @@ class Invoice(models.Model):
 
     @property
     def name(self) -> str:
-        return f"INV-{self.pk}"
+        return f"INV-{self.pk:03}"
 
     @property
     def overdue(self) -> bool:
         return self.due < date.today()
 
     @property
-    def total(self) -> float:
+    def subtotal(self) -> float:
         return sum(c.cost for c in self.charges.all())
 
     @property
+    def total(self) -> float:
+        return self.subtotal + self.adjustment
+
+    @property
     def total_unpaid(self) -> float:
-        return sum(c.cost for c in self.charges.all() if c.state == c.States.UNPAID.value)
+        return sum(c.cost for c in self.charges.all() if c.state == c.States.UNPAID.value) + self.adjustment
 
     @save_after
     @transition(
@@ -330,6 +343,8 @@ class Invoice(models.Model):
     def send(self, to=None):
         self.customer_name = self.customer.name
         self.sent_to = to
+        if self.due is None:
+            self.due = datetime.now() + timedelta(weeks=1)
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -351,6 +366,10 @@ class Invoice(models.Model):
     @property
     def available_state_transitions(self) -> list[str]:
         return [i.name for i in self.get_available_state_transitions()]
+
+    @property
+    def issued(self):
+        return self.sent_on or self.created
 
 
 class BookingSlot(models.Model):

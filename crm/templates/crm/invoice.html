@@ -43,7 +43,7 @@
         line-height: auto;
       }
 
-      .bg {
+      .odd {
         background-color: #e9daf1;
       }
 
@@ -119,8 +119,7 @@
       <table>
         <tr>
           <td colspan="2">
-            Payment must be made within 7 days of the date of this invoice - {{
-            due_date}}
+            Payment must be made on or before {{ invoice.due|date:"d-M-Y" }}
           </td>
         </tr>
         <tr>
@@ -141,7 +140,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            Please use <span>{{ invoice_ref }}</span> as a reference
+            Please use <span>{{ invoice.name }}</span> as a reference
           </td>
         </tr>
       </table>
@@ -154,24 +153,23 @@
           <td valign="top">
             <p>
               <b>Bill To</b><br />
-              Becky Dua<br />
-              Clifford Terrace<br />
-              Wellington
+              {{ invoice.customer.name }}<br />
+              {{ invoice.customer.invoice_address|linebreaksbr }}
             </p>
           </td>
           <td valign="top" width="160pt">
             <table width="152pt">
               <tr>
                 <td width="70pt"><b>Invoice &#35;</b></td>
-                <td width="82pt">INV-000</td>
+                <td width="82pt">{{ invoice.name }}</td>
               </tr>
               <tr>
                 <td><b>Invoice Date</b></td>
-                <td>01-01-1970</td>
+                <td>{{ invoice.issued|date:"d-M-Y" }}</td>
               </tr>
               <tr>
                 <td><b>Invoice Due</b></td>
-                <td>01-01-1970</td>
+                <td>{{ invoice.due|date:"d-M-Y" }}</td>
               </tr>
               <tr>
                 <td><b>Payable To</b></td>
@@ -189,29 +187,24 @@
           <td></td>
         </tr>
 
-        <tr class="bg">
-          <td>Walk 1 hour</td>
-          <td align="right">£ 12.00</td>
-          <td></td>
+        {% for charge in invoice.charges.all %}
+        <tr class="{% cycle 'odd' 'even' %}">
+          <td>{{ charge.name }}</td>
+          <td align="right">{{ charge.cost }}</td>
         </tr>
-
-        <tr>
-          <td>Walk 1 hour</td>
-          <td align="right">£ 12.00</td>
-          <td></td>
-        </tr>
+        {% endfor %}
 
         <tr>
           <td align="right"><b>Subtotal</b></td>
-          <td align="right">£ 12.00</td>
+          <td align="right">{{ invoice.subtotal }}</td>
         </tr>
         <tr>
           <td align="right"><b>Adjustment</b></td>
-          <td align="right">£ 0.00</td>
+          <td align="right">{{ invoice.adjustment }}</td>
         </tr>
         <tr>
           <td align="right"><b>Total</b></td>
-          <td align="right"><b>£ 12.00</b></td>
+          <td align="right"><b>{{ invoice.total }}</b></td>
         </tr>
       </table>
     </div>
