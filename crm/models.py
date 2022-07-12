@@ -34,7 +34,7 @@ class Customer(models.Model):
     pets: "QuerySet[Pet]"
     # Fields
     name = models.CharField(max_length=255)
-    invoice_address = models.TextField(default="")
+    invoice_address = models.TextField(default="", blank=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
