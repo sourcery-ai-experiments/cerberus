@@ -297,7 +297,7 @@ class Invoice(models.Model):
         VOID = "void"
 
     details = models.TextField(blank=True, default="")
-    due = models.DateField(blank=True, default=None)
+    due = models.DateField(blank=True, null=True, default=None)
     adjustment = MoneyField(default=0, max_digits=14, decimal_places=2, default_currency="GBP")
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
@@ -329,7 +329,7 @@ class Invoice(models.Model):
 
     @property
     def overdue(self) -> bool:
-        return self.due < date.today()
+        return self.due is not None and self.due < date.today()
 
     @property
     def subtotal(self) -> float:
