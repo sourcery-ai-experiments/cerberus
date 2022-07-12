@@ -32,6 +32,8 @@ from .utils import ChoicesEnum, choice_length
 class Customer(models.Model):
     id: int
     pets: "QuerySet[Pet]"
+    contacts: "QuerySet[Contact]"
+
     # Fields
     name = models.CharField(max_length=255)
     invoice_address = models.TextField(default="", blank=True)
@@ -54,6 +56,14 @@ class Customer(models.Model):
     @property
     def active_pets(self):
         return self.pets.filter(active=True)
+
+    @property
+    def invoice_email(self):
+        for contact in self.contacts.all():
+            if contact.type == Contact.Type.EMAIL:
+                return contact.details
+
+        return None
 
     class Meta:
         ordering = ("-created",)
@@ -311,7 +321,7 @@ class Invoice(models.Model):
         return self.name
 
     def can_send(self) -> bool:
-        return self.customer is not None
+        return self.customer is not None and self.customer.invoice_email is not None
 
     @property
     def name(self) -> str:
