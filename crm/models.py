@@ -354,7 +354,7 @@ class Invoice(models.Model):
         self.customer_name = self.customer.name
         self.sent_to = to
         if self.due is None:
-            self.due = datetime.now() + timedelta(weeks=1)
+            self.due = date.today() + timedelta(weeks=1)
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
