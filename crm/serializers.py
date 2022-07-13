@@ -86,12 +86,12 @@ class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
 
 
 class ChargeSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
-    id = serializers.ReadOnlyField()
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = Charge
         exclude = ("polymorphic_ctype",)
-        read_only_fields = default_read_only
+        read_only_fields = ["created", "last_updated"]
 
 
 class BookingSlotSerializer(DynamicFieldsModelSerializer):
@@ -231,6 +231,30 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
 
         attrs = self.fixNestedObject(attrs, "customer", Customer)
         return super().validate(attrs)
+
+    @transaction.atomic
+    def update(self, invoice: Invoice, validated_data):
+        chargesData = validated_data.pop("charges") or []
+
+        charges = []
+        for chargeData in chargesData:
+            chargeData.invoice = invoice
+            chargeData.customer = invoice.customer
+
+            try:
+                chargeID = chargeData.pop("id")
+                charge = Charge.objects.get(id=chargeID)
+            except KeyError:
+                charge = None
+
+            chargeSerializer = ChargeSerializer(data=chargeData, instance=charge)
+            if chargeSerializer.is_valid():
+                charge = chargeSerializer.save()
+                charge.invoice = invoice
+                charge.save()
+                charges.append(charge)
+
+        return super().update(invoice, validated_data)
 
     @transaction.atomic
     def create(self, validated_data):
