@@ -324,6 +324,10 @@ class Invoice(models.Model):
         return self.customer is not None and self.customer.invoice_email is not None
 
     @property
+    def can_edit(self) -> bool:
+        return self.state == self.States.DRAFT.value
+
+    @property
     def name(self) -> str:
         return f"INV-{self.pk:03}"
 

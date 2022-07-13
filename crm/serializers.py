@@ -225,8 +225,10 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
         read_only_fields = default_read_only
 
     def validate(self, attrs):
-        attrs = self.fixNestedObject(attrs, "customer", Customer)
+        if self.instance and not getattr(self.instance, "can_edit", True):
+            raise serializers.ValidationError("Only draft invoices can be edited")
 
+        attrs = self.fixNestedObject(attrs, "customer", Customer)
         return super().validate(attrs)
 
     @transaction.atomic
