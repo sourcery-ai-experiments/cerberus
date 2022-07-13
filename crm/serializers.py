@@ -218,6 +218,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     total = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     total_unpaid = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     available_state_transitions = serializers.ListField(read_only=True, child=serializers.CharField(read_only=True))
+    can_edit = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Invoice
