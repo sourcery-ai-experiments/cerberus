@@ -1,7 +1,6 @@
 # Standard Library
 import contextlib
 from datetime import datetime, timedelta
-from typing import Protocol
 
 # Django
 from django.db import transaction
@@ -33,33 +32,13 @@ from .serializers import (
     VetSerializer,
 )
 
-
-class Model(Protocol):
-    active: bool
-
-    def save(self) -> bool:
-        ...
-
-
-class ModelSerializer(Protocol):
-    data: object
-
-
-class ModelViewSet(Protocol):
-    def get_object(self) -> Model:
-        ...
-
-    def get_serializer(self, *args, **kwargs) -> ModelSerializer:
-        ...
-
-
 default_permissions = [permissions.IsAuthenticated]
-default_permissions = []
 
 
 class ActiveMixin:
     @action(detail=True, methods=["put"])
-    def deactivate(self: ModelViewSet, request, pk=None):
+    def deactivate(self, request, pk=None):
+        assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
         object = self.get_object()
         object.active = False
         object.save()
@@ -67,7 +46,8 @@ class ActiveMixin:
         return Response({"status": "ok"})
 
     @action(detail=True, methods=["put"])
-    def activate(self: ModelViewSet, request, pk=None):
+    def activate(self, request, pk=None):
+        assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
         object = self.get_object()
         object.active = True
         object.save()
@@ -76,18 +56,19 @@ class ActiveMixin:
 
 
 class ChangeStateMixin:
-    def change_state(self: ModelViewSet, action: str) -> Response:
-        charge = self.get_object()
+    def change_state(self, action: str) -> Response:
+        assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
+        item = self.get_object()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
-            getattr(charge, action)()
-            charge.save()
+            getattr(item, action)()
+            item.save()
             status = 200
 
-        serializer = self.get_serializer(charge)
+        serializer = self.get_serializer(item)
 
-        return Response({"charge": serializer.data, "status": status}, status=status)
+        return Response({"item": serializer.data, "status": status}, status=status)
 
 
 class AddressViewSet(viewsets.ModelViewSet):
@@ -167,7 +148,7 @@ class ChargeViewSet(viewsets.ModelViewSet):
         return self.change_state("refund")
 
 
-class InvoiceViewSet(viewsets.ModelViewSet, ChangeStateMixin):
+class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = default_permissions
