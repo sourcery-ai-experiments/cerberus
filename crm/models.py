@@ -7,7 +7,7 @@ from typing import Callable, Iterable, Optional
 # Django
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -372,15 +372,18 @@ class Invoice(models.Model):
             "invoice": self,
             "customer": self.customer,
         }
-        html = template.render(context)
 
-        send_mail(
+        email = EmailMultiAlternatives(
             f"Invoice {self.name} - Stretch there legs",
             "Message",
             "admin@stretchtheirlegs.co.uk",
-            ["bengosney@googlemail.com"],
-            html_message=html,
+            [self.customer.invoice_email],
         )
+
+        email.attach_alternative(template.render(context), "text/html")
+        # email.attach()
+
+        return email.send()
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
