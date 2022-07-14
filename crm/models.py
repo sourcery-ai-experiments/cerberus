@@ -7,9 +7,11 @@ from typing import Callable, Iterable, Optional
 # Django
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.template import loader
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
@@ -359,6 +361,26 @@ class Invoice(models.Model):
         self.sent_to = to
         if self.due is None:
             self.due = date.today() + timedelta(weeks=1)
+
+        self.send_email()
+
+    def send_email(self):
+        assert self.can_send(), "Unable to send email"
+
+        template = loader.get_template("emails/invoice.html")
+        context = {
+            "invoice": self,
+            "customer": self.customer,
+        }
+        html = template.render(context)
+
+        send_mail(
+            f"Invoice {self.name} - Stretch there legs",
+            "Message",
+            "admin@stretchtheirlegs.co.uk",
+            ["bengosney@googlemail.com"],
+            html_message=html,
+        )
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)

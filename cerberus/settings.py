@@ -66,7 +66,7 @@ ROOT_URLCONF = "cerberus.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [Path(__file__).resolve().parent / "templates"],
+        "DIRS": [Path(__file__).resolve().parent / "templates", BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -165,3 +165,6 @@ CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 TAGGIT_CASE_INSENSITIVE = True
 
 DEFAULT_CURRENCY = "GBP"
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "tmp"

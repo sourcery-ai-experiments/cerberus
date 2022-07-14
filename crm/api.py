@@ -166,6 +166,12 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def void(self, request, pk=None):
         return self.change_state("void")
 
+    @action(detail=True, methods=["get"])
+    def resend(self, request, pk=None):
+        item = self.get_object()
+        item.send_email()
+        return Response({"status": "ok"}, status=200)
+
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
