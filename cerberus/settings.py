@@ -10,11 +10,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 # Standard Library
+import contextlib
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = os.environ.copy()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -168,3 +171,12 @@ DEFAULT_CURRENCY = "GBP"
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "tmp"
+
+
+with contextlib.suppress(KeyError):
+    EMAIL_HOST = env["SMTP_HOST"]
+    EMAIL_HOST_USER = env["SMTP_USER"]
+    EMAIL_HOST_PASSWORD = env["SMTP_PASS"]
+    EMAIL_PORT = env["SMTP_PORT"]
+    EMAIL_USE_TLS = True
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

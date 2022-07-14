@@ -1,17 +1,22 @@
 # Standard Library
+import os
 import re
 from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import Callable, Iterable, Optional
 
 # Django
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
+from django.template.loader import get_template
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
@@ -23,6 +28,7 @@ from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
+from xhtml2pdf import pisa
 
 # Locals
 from .decorators import save_after
@@ -377,12 +383,18 @@ class Invoice(models.Model):
             f"Invoice {self.name} - Stretch there legs",
             "Message",
             "admin@stretchtheirlegs.co.uk",
-            [self.customer.invoice_email],
+            reply_to=["stef@stretchtheirlegs.co.uk"],
         )
 
-        email.attach_alternative(template.render(context), "text/html")
-        # email.attach()
+        results = self.render_pdf()
 
+        if results.err:
+            raise Exception(results.err)
+
+        email.attach_alternative(template.render(context), "text/html")
+        email.attach(f"{self.name}.pdf", results.dest.getvalue(), "application/pdf")
+
+        print("Sending email")
         return email.send()
 
     @save_after
@@ -409,6 +421,44 @@ class Invoice(models.Model):
     @property
     def issued(self):
         return self.sent_on or self.created
+
+    def link_callback(self, uri, rel):
+        """Convert HTML URIs to absolute system paths so xhtml2pdf can access
+        those resources."""
+        result = finders.find(uri)
+        if result:
+            if not isinstance(result, (list, tuple)):
+                result = [result]
+            result = list(os.path.realpath(path) for path in result)
+            path = result[0]
+        else:
+            sUrl = settings.STATIC_URL  # Typically /static/
+            sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
+            mUrl = settings.MEDIA_URL  # Typically /media/
+            mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
+
+            if uri.startswith(mUrl):
+                path = os.path.join(mRoot, uri.replace(mUrl, ""))
+            elif uri.startswith(sUrl):
+                path = os.path.join(sRoot, uri.replace(sUrl, ""))
+            else:
+                return uri
+
+        # make sure that file exists
+        if not os.path.isfile(path):
+            raise Exception(f"media URI must start with {sUrl} or {mUrl}")
+        return path
+
+    def render_pdf(self, renderTo=None):
+        template_path = "crm/invoice.html"
+        context = {
+            "invoice": self,
+        }
+
+        template = get_template(template_path)
+        html = template.render(context)
+
+        return pisa.CreatePDF(html, dest=renderTo, link_callback=self.link_callback)
 
 
 class BookingSlot(models.Model):
