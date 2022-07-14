@@ -1,6 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-exclude: 'migrations/.*\.py|Procfile|[aw]sgi\.py|node_modules|.git|\.polar'
+exclude: 'migrations/.*\.py|Procfile|[aw]sgi\.py|node_modules|.git|\.polar|templates/emails/.*\.html'
 repos:
   - repo: https://github.com/adamchainz/django-upgrade
     rev: 1.7.0

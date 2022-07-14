@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mjml": "^4.13.0"
+  },
+  "scripts": {
+    "compile-emails": "mjml templates/emails/invoice.mjml --config.minify -o templates/emails/invoice.html"
+  }
+}
