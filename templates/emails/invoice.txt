@@ -1,0 +1,14 @@
+Hi {{ customer.name }},
+
+Please find attached your latest invoice {{ invoice.name }}.
+Payment of {{ invoice.total }} is due {{ invoice.due }}.
+
+Kind regards,
+Stef Dua
+
+Owner
+Stretch Their Legs
+
+07712 613 763
+stef@stretchtheirlegs.co.uk
+www.stretchtheirlegs.co.uk

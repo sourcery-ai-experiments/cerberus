@@ -1,39 +1,32 @@
 <mjml>
   <mj-head>
-    <mj-font
-      name="Fontdiner Swanky"
-      href="https://fonts.googleapis.com/css?family=Fontdiner+Swanky"
-    />
-    <mj-style> a { color: #582a72; } </mj-style>
+    <mj-style> .fg { color: #582a72 !important; } </mj-style>
+    <mj-attributes>
+      <mj-all
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
+      />
+    </mj-attributes>
   </mj-head>
   <mj-body background-color="white">
     <mj-section>
       <mj-column>
         <mj-image
-          width="100px"
-          src="https://www.stretchtheirlegs.co.uk/static/fav-logo.4db4cd72cf57.svg"
+          width="190px"
+          src="https://cdn.stretchtheirlegs.co.uk/email/logo.png"
         ></mj-image>
-        <mj-text
-          font-size="24px"
-          align="center"
-          color="#582a72"
-          font-family="Fontdiner Swanky"
-        >
-          Stretch Their Legs
-        </mj-text>
         <mj-divider border-color="#582a72"></mj-divider>
       </mj-column>
     </mj-section>
     <mj-section>
       <mj-column>
         <mj-text>Hi {{ customer.name }},</mj-text>
-        <mj-text line-height="1.5">
+        <mj-text line-height="150%">
           Please find attached your latest invoice {{ invoice.name }}.<br />
           Payment of {{ invoice.total }} is due {{ invoice.due }}.
         </mj-text>
         <mj-text>Kind regards,</mj-text>
         <mj-text font-style="italic" font-size="14px"> Stef Dua </mj-text>
-        <mj-text line-height="1.5">
+        <mj-text line-height="150%">
           Owner<br />
           Stretch Their Legs
         </mj-text>
@@ -42,14 +35,14 @@
     <mj-section>
       <mj-column>
         <mj-divider border-color="#582a72"></mj-divider>
-        <mj-text line-height="1.5">
-          <a href="tel:07712613763">07712 613 763</a>
+        <mj-text line-height="150%">
+          <a class="fg" href="tel:07712613763">07712 613 763</a>
           <br />
-          <a href="mailto:stef@stretchtheirlegs.co.uk">
+          <a class="fg" href="mailto:stef@stretchtheirlegs.co.uk">
             stef@stretchtheirlegs.co.uk
           </a>
           <br />
-          <a href="https://www.stretchtheirlegs.co.uk">
+          <a class="fg" href="https://www.stretchtheirlegs.co.uk">
             www.stretchtheirlegs.co.uk
           </a>
         </mj-text>

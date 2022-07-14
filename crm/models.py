@@ -373,28 +373,29 @@ class Invoice(models.Model):
     def send_email(self):
         assert self.can_send(), "Unable to send email"
 
-        template = loader.get_template("emails/invoice.html")
+        html = loader.get_template("emails/invoice.html")
+        txt = loader.get_template("emails/invoice.txt")
+
         context = {
             "invoice": self,
             "customer": self.customer,
         }
 
         email = EmailMultiAlternatives(
-            f"Invoice {self.name} - Stretch there legs",
-            "Message",
-            "admin@stretchtheirlegs.co.uk",
-            reply_to=["stef@stretchtheirlegs.co.uk"],
+            subject=f"Invoice {self.name} - Stretch there legs",
+            body=txt.render(context),
+            from_email="Stretch there legs - Accounts<admin@stretchtheirlegs.co.uk>",
+            reply_to=["Stef <stef@stretchtheirlegs.co.uk>"],
+            to=[f"{self.customer.name} <{self.customer.invoice_email}>"],
         )
 
         results = self.render_pdf()
-
         if results.err:
             raise Exception(results.err)
 
-        email.attach_alternative(template.render(context), "text/html")
         email.attach(f"{self.name}.pdf", results.dest.getvalue(), "application/pdf")
+        email.attach_alternative(html.render(context), "text/html")
 
-        print("Sending email")
         return email.send()
 
     @save_after
