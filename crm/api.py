@@ -177,7 +177,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def pdf(self, request, pk=None):
-        invoice = self.get_object()
+        invoice: Invoice = self.get_object()
 
         results = invoice.get_pdf()
         if results.err:
