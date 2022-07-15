@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 # Django
 from django.db import transaction
+from django.http import HttpResponse
 
 # Third Party
 from django_filters import rest_framework as filters
@@ -171,6 +172,20 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
         item = self.get_object()
         item.send_email()
         return Response({"status": "ok"}, status=200)
+
+    @action(detail=True, methods=["get"])
+    def pdf(self, request, pk=None):
+        invoice = self.get_object()
+
+        results = invoice.render_pdf()
+        if results.err:
+            raise Exception(results.err)
+
+        return HttpResponse(
+            content=results.dest.getvalue(),
+            content_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
+        )
 
 
 class ContactViewSet(viewsets.ModelViewSet):
