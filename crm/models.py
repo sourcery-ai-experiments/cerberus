@@ -389,7 +389,7 @@ class Invoice(models.Model):
             to=[f"{self.customer.name} <{self.customer.invoice_email}>"],
         )
 
-        results = self.render_pdf()
+        results = self.get_pdf()
         if results.err:
             raise Exception(results.err)
 
@@ -450,7 +450,7 @@ class Invoice(models.Model):
             raise Exception(f"media URI must start with {sUrl} or {mUrl}")
         return path
 
-    def render_pdf(self, renderTo=None):
+    def get_pdf(self, renderTo=None):
         template_path = "crm/invoice.html"
         context = {
             "invoice": self,
@@ -460,6 +460,15 @@ class Invoice(models.Model):
         html = template.render(context)
 
         return pisa.CreatePDF(html, dest=renderTo, link_callback=self.link_callback)
+
+    def add_open(self):
+        o = InvoiceOpen(invoice=self)
+        return o.save()
+
+
+class InvoiceOpen(models.Model):
+    opened = models.DateTimeField(auto_now_add=True, editable=False)
+    invoice = models.ForeignKey("crm.Invoice", on_delete=models.CASCADE, related_name="opens")
 
 
 class BookingSlot(models.Model):

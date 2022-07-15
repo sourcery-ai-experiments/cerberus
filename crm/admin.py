@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 # Locals
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, InvoiceOpen, Pet, Service, Vet
 
 
 @admin.action(description="Mark selected inactive")
@@ -52,6 +52,10 @@ class InvoiceAdmin(admin.ModelAdmin):
     readonly_fields = ["state"]
 
 
+class InvoiceOpenAdmin(admin.ModelAdmin):
+    list_display = ("invoice", "opened")
+
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Pet, PetAdmin)
 admin.site.register(Vet, VetAdmin)
@@ -62,3 +66,4 @@ admin.site.register(BookingSlot, BookingSlotAdmin)
 admin.site.register(Charge, ChargeAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
+admin.site.register(InvoiceOpen, InvoiceOpenAdmin)

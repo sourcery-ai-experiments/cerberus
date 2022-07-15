@@ -1,8 +1,10 @@
 # Standard Library
 import contextlib
 from datetime import datetime, timedelta
+from wsgiref.util import FileWrapper
 
 # Django
+from django.contrib.staticfiles import finders
 from django.db import transaction
 from django.http import HttpResponse
 
@@ -186,6 +188,16 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
             content_type="application/pdf",
             headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
         )
+
+    @action(detail=True, methods=["get"])
+    def logo(self, request, pk=None):
+        invoice = self.get_object()
+        invoice.add_open()
+
+        result = finders.find("img/logo-name.png")
+
+        with open(f"{result}", "rb") as f:
+            return HttpResponse(FileWrapper(f), content_type="image/png")
 
 
 class ContactViewSet(viewsets.ModelViewSet):
