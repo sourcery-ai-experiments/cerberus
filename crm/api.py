@@ -179,7 +179,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def pdf(self, request, pk=None):
         invoice = self.get_object()
 
-        results = invoice.render_pdf()
+        results = invoice.get_pdf()
         if results.err:
             raise Exception(results.err)
 
