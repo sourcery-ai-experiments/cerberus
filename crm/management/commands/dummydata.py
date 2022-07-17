@@ -3,6 +3,7 @@ import random
 
 # Django
 from django.core.management.base import BaseCommand
+from django.db import IntegrityError
 
 # Third Party
 from faker import Faker
@@ -19,7 +20,7 @@ class Command(BaseCommand):
         fake = Faker("en_GB")
 
         vet_count = 10
-        customer_count = 50
+        customer_count = 200
         pet_count = int(customer_count * 1.25)
         contact_count = int(customer_count * 1.25)
 
@@ -30,16 +31,19 @@ class Command(BaseCommand):
         vets = Vet.objects.all()
         for _ in range(customer_count - Customer.objects.count()):
             customer = Customer.objects.create(name=fake.name(), vet=random.choice(vets))
-            self.stdout.write(f"Created vet {customer.name}")
+            self.stdout.write(f"Created customer {customer.name}")
 
         customers = Customer.objects.all()
 
         for _ in range(contact_count - Contact.objects.count()):
-            Contact.objects.create(
-                customer=random.choice(customers),
-                name=random.choice(["Home", "Work", "Mobile", fake.name()]),
-                details=fake.phone_number() if fake.pybool() else fake.ascii_email(),
-            )
+            try:
+                Contact.objects.create(
+                    customer=random.choice(customers),
+                    name=random.choice(["Home", "Work", "Mobile", fake.name()]),
+                    details=fake.phone_number() if fake.pybool() else fake.ascii_email(),
+                )
+            except IntegrityError:
+                pass
 
         for _ in range(pet_count - Pet.objects.count()):
             if fake.pybool():
