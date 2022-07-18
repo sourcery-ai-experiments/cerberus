@@ -199,6 +199,26 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
         with open(f"{result}", "rb") as f:
             return HttpResponse(FileWrapper(f), content_type="image/png")
 
+    @action(detail=False, methods=["get"])
+    def overview(self, request):
+        invoices = Invoice.objects
+
+        recent = datetime.today() - timedelta(days=28)
+
+        draft = invoices.filter(state=Invoice.States.DRAFT.value)
+        unpaid = invoices.filter(state=Invoice.States.UNPAID.value)
+        void = invoices.filter(state=Invoice.States.VOID.value, last_updated__gte=recent)
+        paid = invoices.filter(state=Invoice.States.PAID.value, last_updated__gte=recent)
+
+        return Response(
+            {
+                "draft": InvoiceSerializer(draft, many=True).data,
+                "unpaid": InvoiceSerializer(unpaid, many=True).data,
+                "void": InvoiceSerializer(void, many=True).data,
+                "paid": InvoiceSerializer(paid, many=True).data,
+            }
+        )
+
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
