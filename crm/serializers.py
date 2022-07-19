@@ -190,7 +190,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     bookings = BookingSerializer(many=True, read_only=True)
     vet = VetSerializer(many=False, read_only=True, exclude=("customers",))
     vet_id = serializers.IntegerField(write_only=True)
-    tags = TagListSerializerField()
+    tags = TagListSerializerField(required=False)
 
     class Meta:
         model = Customer
