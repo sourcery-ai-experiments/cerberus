@@ -33,6 +33,8 @@ class PetFilter(FilterDefaults):
 
 
 class CustomerFilter(FilterDefaults):
+    name = filters.CharFilter(lookup_expr="icontains")
+
     default_filters = {
         "active": True,
     }
