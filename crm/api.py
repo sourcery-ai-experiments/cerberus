@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from taggit.models import Tag
 
 # Locals
-from .filters import BookingFilter, CustomerFilter, PetFilter
+from .filters import BookingFilter, CustomerFilter, InvoiceFilter, PetFilter
 from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
 from .serializers import (
     AddressSerializer,
@@ -156,6 +156,8 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = default_permissions
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = InvoiceFilter
 
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):

@@ -6,7 +6,7 @@
 from django_filters import rest_framework as filters
 
 # Locals
-from .models import Booking, Customer, Pet
+from .models import Booking, Customer, Invoice, Pet
 
 
 class FilterDefaults(filters.FilterSet):
@@ -52,3 +52,9 @@ class BookingFilter(filters.FilterSet):
     class Meta:
         model = Booking
         fields = []
+
+
+class InvoiceFilter(filters.FilterSet):
+    class Meta:
+        model = Invoice
+        fields = ["state"]
