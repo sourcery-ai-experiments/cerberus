@@ -12,7 +12,7 @@ from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import F, Q, Sum
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
@@ -294,6 +294,18 @@ class Charge(PolymorphicModel):
         return super().save(*args, **kwargs)
 
 
+class InvoiceManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                subtotal=Sum(F("charges__line") * F("charges__quantity")),
+                total=F("adjustment") + F("subtotal"),
+            )
+        )
+
+
 class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
     get_available_state_transitions: Callable[[], Iterable[Transition]]
@@ -325,6 +337,8 @@ class Invoice(models.Model):
         related_name="invoices",
     )
 
+    objects = InvoiceManager()
+
     def __str__(self) -> str:
         return self.name
 
@@ -342,14 +356,6 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.due is not None and self.due < date.today()
-
-    @property
-    def subtotal(self) -> float:
-        return sum(c.cost for c in self.charges.all())
-
-    @property
-    def total(self) -> float:
-        return self.subtotal + self.adjustment
 
     @property
     def total_unpaid(self) -> float:
