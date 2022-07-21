@@ -160,6 +160,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     filterset_class = InvoiceFilter
 
     ordering = "-created"
+    ordering_fields = ("customer__name", "state", "due", "created", "total")
 
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):
