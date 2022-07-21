@@ -156,8 +156,10 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = default_permissions
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter)
     filterset_class = InvoiceFilter
+
+    ordering = "-created"
 
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):
