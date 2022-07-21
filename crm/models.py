@@ -357,10 +357,6 @@ class Invoice(models.Model):
     def overdue(self) -> bool:
         return self.due is not None and self.due < date.today()
 
-    @property
-    def total_unpaid(self) -> float:
-        return sum(c.cost for c in self.charges.all() if c.state == c.States.UNPAID.value) + self.adjustment
-
     @save_after
     @transition(
         field=state,
