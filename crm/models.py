@@ -36,6 +36,21 @@ from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, Boo
 from .utils import ChoicesEnum, choice_length
 
 
+class CustomerManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                invoiced_unpaid=F("invoices__adjustment")
+                + Sum(
+                    F("invoices__charges__line") * F("invoices__charges__quantity"),
+                    filter=Q(invoices__state=Invoice.States.UNPAID.value),
+                ),
+            )
+        )
+
+
 @reversion.register()
 class Customer(models.Model):
     id: int
@@ -60,6 +75,8 @@ class Customer(models.Model):
     )
 
     tags = TaggableManager(blank=True)
+
+    objects = CustomerManager()
 
     @property
     def active_pets(self):

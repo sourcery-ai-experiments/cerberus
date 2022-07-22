@@ -186,11 +186,11 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     pets = PetSerializer(many=True, read_only=True, source="active_pets", exclude=("customer",))
     addresses = AddressSerializer(many=True, read_only=True, exclude=("customer",))
     contacts = ContactSerializer(many=True, read_only=True, exclude=("customer",))
-    charges = ChargeSerializer(many=True, read_only=True, exclude=("customer",))
     bookings = BookingSerializer(many=True, read_only=True)
-    vet = VetSerializer(many=False, read_only=True, exclude=("customers",))
+    vet = VetSerializer(many=False, read_only=True, exclude=("customers", "pets"))
     vet_id = serializers.IntegerField(write_only=True)
     tags = TagListSerializerField(required=False)
+    invoiced_unpaid = MoneyField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Customer
