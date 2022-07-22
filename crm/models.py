@@ -42,10 +42,11 @@ class CustomerManager(models.Manager):
             super()
             .get_queryset()
             .annotate(
-                invoiced_unpaid=F("invoices__adjustment")
+                invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
                 + Sum(
-                    F("invoices__charges__line") * F("invoices__charges__quantity"),
+                    (F("invoices__charges__line") * F("invoices__charges__quantity")),
                     filter=Q(invoices__state=Invoice.States.UNPAID.value),
+                    default=0,
                 ),
             )
         )
