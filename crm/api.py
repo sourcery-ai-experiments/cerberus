@@ -235,8 +235,11 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = default_permissions
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter)
     filterset_class = CustomerFilter
+
+    ordering = "-name"
+    ordering_fields = ("name", "invoiced_unpaid", "created")
 
     @action(detail=False, methods=["get"])
     def dropdown(self, request):
