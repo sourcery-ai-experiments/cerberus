@@ -242,7 +242,14 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     def dropdown(self, request):
         serializer = CustomerDropDownSerializer(self.queryset, many=True)
 
-        return Response({"results": serializer.data})
+        return Response(
+            {
+                "results": serializer.data,
+                "next": None,
+                "previous": None,
+                "count": len(serializer.data),
+            }
+        )
 
     @action(detail=True, methods=["get"])
     def accounts(self, request, pk=None):
