@@ -235,8 +235,9 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = default_permissions
-    filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter)
+    filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter, drf_filters.SearchFilter)
     filterset_class = CustomerFilter
+    search_fields = ["name", "email"]
 
     ordering = "-name"
     ordering_fields = ("name", "invoiced_unpaid", "created")
