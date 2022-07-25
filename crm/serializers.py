@@ -168,7 +168,7 @@ class PetSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObject
 
 class VetSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
-    pets = PetSerializer(many=True, read_only=True, exclude=("vet",))
+    pets = PetSerializer(many=True, read_only=True, exclude=("vet", "customer"))
 
     class Meta:
         model = Vet
