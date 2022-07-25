@@ -8,7 +8,7 @@ repos:
       - id: django-upgrade
         args: [--target-version, "4.0"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -23,7 +23,7 @@ repos:
       - id: mixed-line-ending
         args: [--fix, lf]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+    rev: v2.37.2
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
@@ -37,12 +37,12 @@ repos:
       - id: docformatter
         args: [--in-place]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v1.3.3
+    rev: v2.0.4
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
@@ -58,7 +58,7 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v2.6.2"
+    rev: "v2.7.1"
     hooks:
       - id: prettier
         language_version: 16.0.0

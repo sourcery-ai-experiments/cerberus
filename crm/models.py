@@ -1,9 +1,10 @@
 # Standard Library
 import os
 import re
+from collections.abc import Callable, Iterable
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Callable, Iterable, Optional
+from typing import Optional
 
 # Django
 from django.conf import settings
