@@ -3,6 +3,7 @@ import os
 import re
 from collections.abc import Callable, Iterable
 from datetime import date, datetime, timedelta
+from decimal import InvalidOperation
 from enum import Enum
 from typing import Optional
 
@@ -476,7 +477,10 @@ class Invoice(models.Model):
 
     @property
     def subtotal(self):
-        return Money(self._subtotal, GBP)
+        try:
+            return Money(self._subtotal, GBP)
+        except InvalidOperation:
+            return None
 
     @subtotal.setter
     def subtotal(self, value):
@@ -484,7 +488,10 @@ class Invoice(models.Model):
 
     @property
     def total(self):
-        return Money(self._total, GBP)
+        try:
+            return Money(self._total, GBP)
+        except InvalidOperation:
+            return None
 
     _total = None
 
