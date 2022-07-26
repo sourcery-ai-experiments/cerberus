@@ -215,6 +215,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     charges = ChargeSerializer(many=True, exclude=("invoice",))
     customer_id = serializers.IntegerField(write_only=True)
     overdue = serializers.BooleanField(read_only=True)
+    subtotal = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     total = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     available_state_transitions = serializers.ListField(read_only=True, child=serializers.CharField(read_only=True))
     can_edit = serializers.BooleanField(read_only=True)
