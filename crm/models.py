@@ -25,8 +25,9 @@ from django.utils.translation import gettext_lazy as _
 import reversion
 from django_fsm import FSMField, Transition, transition
 from djmoney.models.fields import MoneyField
+from djmoney.models.managers import money_manager
 from model_utils.fields import MonitorField
-from moneyed import Money
+from moneyed import GBP, Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 from xhtml2pdf import pisa
@@ -78,7 +79,7 @@ class Customer(models.Model):
 
     tags = TaggableManager(blank=True)
 
-    objects = CustomerManager()
+    objects = money_manager(CustomerManager())
 
     @property
     def active_pets(self):
@@ -356,7 +357,7 @@ class Invoice(models.Model):
         related_name="invoices",
     )
 
-    objects = InvoiceManager()
+    objects = money_manager(InvoiceManager())
 
     def __str__(self) -> str:
         return self.name
@@ -470,6 +471,26 @@ class Invoice(models.Model):
         if not os.path.isfile(path):
             raise Exception(f"media URI must start with {sUrl} or {mUrl}")
         return path
+
+    _subtotal = None
+
+    @property
+    def subtotal(self):
+        return Money(self._subtotal, GBP)
+
+    @subtotal.setter
+    def subtotal(self, value):
+        self._subtotal = value
+
+    @property
+    def total(self):
+        return Money(self._total, GBP)
+
+    _total = None
+
+    @total.setter
+    def total(self, value):
+        self._total = value
 
     def get_pdf(self, renderTo=None):
         template_path = "crm/invoice.html"
