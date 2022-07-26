@@ -343,6 +343,7 @@ class Invoice(models.Model):
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
+    invoice_address = models.TextField(default="", blank=True)
 
     state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
@@ -387,6 +388,7 @@ class Invoice(models.Model):
     )
     def send(self, to=None):
         self.customer_name = self.customer.name
+        self.invoice_address = self.customer.invoice_address
         self.sent_to = to
         if self.due is None:
             self.due = date.today() + timedelta(weeks=1)
