@@ -39,7 +39,7 @@ from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, Boo
 from .utils import ChoicesEnum, choice_length
 
 
-class CustomerManager(models.Manager):
+class CustomerManager(models.Manager["Customer"]):
     def get_queryset(self):
         return (
             super()
@@ -60,6 +60,8 @@ class Customer(models.Model):
     id: int
     pets: "QuerySet[Pet]"
     contacts: "QuerySet[Contact]"
+    charges: "QuerySet[Charge]"
+    invoices: "QuerySet[Invoice]"
 
     # Fields
     name = models.CharField(max_length=255)
@@ -102,7 +104,7 @@ class Customer(models.Model):
 
     @property
     def bookings(self):
-        bookings = []
+        bookings: list["Booking"] = []
 
         for pet in self.pets.all():
             bookings.extend(pet.bookings.all())
@@ -211,13 +213,15 @@ class Contact(models.Model):
 
     @property
     def type(self) -> Type:
-        if self.EMAIL_REGEX.match(self.details):
+        details: str = self.details or ""
+
+        if self.EMAIL_REGEX.match(details):
             return self.Type.EMAIL
 
-        if self.MOBILE_REGEX.match(self.details):
+        if self.MOBILE_REGEX.match(details):
             return self.Type.MOBILE
 
-        if self.PHONE_REGEX.match(self.details):
+        if self.PHONE_REGEX.match(details):
             return self.Type.PHONE
 
         return self.Type.UNKNOWN
@@ -315,7 +319,7 @@ class Charge(PolymorphicModel):
         return super().save(*args, **kwargs)
 
 
-class InvoiceManager(models.Manager):
+class InvoiceManager(models.Manager["Invoice"]):
     def get_queryset(self):
         return (
             super()
