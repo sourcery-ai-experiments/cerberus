@@ -20,6 +20,9 @@
     <mj-section>
       <mj-column>
         <mj-text>Hi {{ customer.name }},</mj-text>
+        {% if send_notes %}
+        <mj-text line-height="150%">{{ send_notes }}</mj-text>
+        {% endif %}
         <mj-text line-height="150%">
           Please find attached your latest invoice {{ invoice.name }}.<br />
           Payment of {{ invoice.total }} is due {{ invoice.due }}.

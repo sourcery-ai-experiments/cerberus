@@ -1,5 +1,7 @@
 Hi {{ customer.name }},
-
+{% if send_notes %}
+{{ send_notes }}
+{% endif %}
 Please find attached your latest invoice {{ invoice.name }}.
 Payment of {{ invoice.total }} is due {{ invoice.due }}.
 

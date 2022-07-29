@@ -6,6 +6,8 @@ HOOKS=$(.git/hooks/pre-commit)
 INS=$(wildcard requirements.*.in)
 REQS=$(subst in,txt,$(INS))
 
+EMAIL_TEMPLATES=$(subst .mjml,.html,$(wildcard templates/emails/*.mjml))
+
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -63,6 +65,11 @@ clean: ## Remove all build files
 install: requirements.txt $(REQS) ## Install development requirements (default)
 	@echo "Installing $^"
 	@python -m piptools sync $^
+
+templates/emails/%.html: templates/emails/%.mjml
+	npx mjml $< --config.minify -o $@
+
+emails: $(EMAIL_TEMPLATES) ## Compile the email templates to django templates
 
 dev: init install ## Start work
 	code .

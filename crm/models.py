@@ -353,6 +353,8 @@ class Invoice(models.Model):
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
     sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)
 
+    send_notes = models.TextField(blank=True, default="")
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
@@ -408,6 +410,7 @@ class Invoice(models.Model):
         context = {
             "invoice": self,
             "customer": self.customer,
+            "send_notes": self.send_notes,
         }
 
         email = EmailMultiAlternatives(
