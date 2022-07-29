@@ -198,7 +198,7 @@
           <td></td>
         </tr>
 
-        {% for charge in invoice.charges.all %}
+        {% for charge in invoice.charges.all|dictsort:"created" %}
         <tr class="{% cycle 'odd' 'even' %}">
           <td>{{ charge.name }}</td>
           <td align="center">{{ charge.quantity }}</td>
