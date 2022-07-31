@@ -392,7 +392,7 @@ class Invoice(models.Model):
         target=States.UNPAID.value,
         conditions=[can_send],
     )
-    def send(self, to=None):
+    def send(self, to=None, send_email=True):
         self.customer_name = self.customer.name
         self.invoice_address = self.customer.invoice_address
         self.sent_to = to

@@ -275,3 +275,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
                 charges.append(charge)
 
         return invoice
+
+
+class InvoiceSendSerializer(serializers.Serializer):
+    send_notes = serializers.CharField(default="")

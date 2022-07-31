@@ -6,6 +6,7 @@ from wsgiref.util import FileWrapper
 # Django
 from django.contrib.staticfiles import finders
 from django.db import transaction
+from django.db.models.query import QuerySet
 from django.http import HttpResponse
 
 # Third Party
@@ -28,6 +29,7 @@ from .serializers import (
     ContactSerializer,
     CustomerDropDownSerializer,
     CustomerSerializer,
+    InvoiceSendSerializer,
     InvoiceSerializer,
     PetSerializer,
     ServiceSerializer,
@@ -60,13 +62,13 @@ class ActiveMixin:
 
 
 class ChangeStateMixin:
-    def change_state(self, action: str) -> Response:
+    def change_state(self, action: str, **kwargs) -> Response:
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
         item = self.get_object()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
-            getattr(item, action)()
+            getattr(item, action)(**kwargs)
             item.save()
             status = 200
 
@@ -164,7 +166,8 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):
-        return self.change_state("send")
+        serializer = InvoiceSendSerializer(request.data)
+        return self.change_state("send", **serializer.data)
 
     @action(detail=True, methods=["put"])
     def pay(self, request, pk=None):
@@ -224,6 +227,11 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
             }
         )
 
+    @action(detail=True, methods=["get"])
+    def test(self, request, pk=None):
+        serializer = InvoiceSendSerializer(request.data)
+        return self.change_state("send", **serializer.data)
+
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
@@ -232,7 +240,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 
 class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
-    queryset = Customer.objects.all()
+    queryset: "QuerySet[Contact]" = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter, drf_filters.SearchFilter)
@@ -244,7 +252,7 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
 
     @action(detail=False, methods=["get"])
     def dropdown(self, request):
-        serializer = CustomerDropDownSerializer(self.queryset, many=True)
+        serializer = CustomerDropDownSerializer(self.queryset.filter(active=True), many=True)
 
         return Response(
             {
