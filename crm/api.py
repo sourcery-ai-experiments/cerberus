@@ -166,8 +166,9 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
 
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):
-        serializer = InvoiceSendSerializer(request.data)
-        return self.change_state("send", **serializer.data)
+        serializer = InvoiceSendSerializer(data=request.data)
+        serializer.is_valid()
+        return self.change_state("send", **serializer.validated_data)
 
     @action(detail=True, methods=["put"])
     def pay(self, request, pk=None):
@@ -226,11 +227,6 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
                 "paid": InvoiceSerializer(paid, many=True).data,
             }
         )
-
-    @action(detail=True, methods=["get"])
-    def test(self, request, pk=None):
-        serializer = InvoiceSendSerializer(request.data)
-        return self.change_state("send", **serializer.data)
 
 
 class ContactViewSet(viewsets.ModelViewSet):

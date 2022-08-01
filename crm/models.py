@@ -392,12 +392,14 @@ class Invoice(models.Model):
         target=States.UNPAID.value,
         conditions=[can_send],
     )
-    def send(self, to=None, send_email=True):
+    def send(self, to=None, send_email=True, send_notes=None):
         self.customer_name = self.customer.name
         self.invoice_address = self.customer.invoice_address
         self.sent_to = to
         if self.due is None:
             self.due = date.today() + timedelta(weeks=1)
+
+        self.send_notes = send_notes
 
         self.send_email()
 
