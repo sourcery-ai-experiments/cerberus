@@ -66,6 +66,7 @@ class Customer(models.Model):
     # Fields
     name = models.CharField(max_length=255)
     invoice_address = models.TextField(default="", blank=True)
+    invoice_email = models.EmailField(default="", blank=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
@@ -87,14 +88,6 @@ class Customer(models.Model):
     @property
     def active_pets(self):
         return self.pets.filter(active=True)
-
-    @property
-    def invoice_email(self):
-        for contact in self.contacts.all():
-            if contact.type == Contact.Type.EMAIL:
-                return contact.details
-
-        return None
 
     class Meta:
         ordering = ("-created",)
