@@ -346,7 +346,7 @@ class Invoice(models.Model):
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
     sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)
 
-    send_notes = models.TextField(blank=True, default="")
+    send_notes = models.TextField(blank=True, default="", null=True)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
