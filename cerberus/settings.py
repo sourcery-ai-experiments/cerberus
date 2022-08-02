@@ -178,5 +178,5 @@ with contextlib.suppress(KeyError):
     EMAIL_HOST_USER = env["SMTP_USER"]
     EMAIL_HOST_PASSWORD = env["SMTP_PASS"]
     EMAIL_PORT = env["SMTP_PORT"]
-    EMAIL_USE_TLS = True
+    EMAIL_USE_TLS = (env["SMTP_TLS"] or "True") != "False"
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
