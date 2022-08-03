@@ -779,7 +779,7 @@ class Service(models.Model):
     display_colour = models.CharField(max_length=255)  # ColorField(default="#000000")
 
     class Meta:
-        ordering = ("-created",)
+        ordering = ("name",)
 
     def __str__(self) -> str:
         return f"{self.name}"
