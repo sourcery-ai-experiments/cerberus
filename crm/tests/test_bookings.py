@@ -1,5 +1,7 @@
 # Standard Library
 from datetime import datetime, timedelta
+from decimal import Decimal
+from random import random
 
 # Django
 from django.db.utils import IntegrityError
@@ -11,6 +13,8 @@ from model_bakery import baker
 # Locals
 from ..exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
 from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
+
+baker.generators.add("djmoney.models.fields.MoneyField", lambda: Decimal((random() * 10) + 5))
 
 
 class BookingSlotsTests(TestCase):

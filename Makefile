@@ -73,3 +73,6 @@ emails: $(EMAIL_TEMPLATES) ## Compile the email templates to django templates
 
 dev: init install ## Start work
 	code .
+
+pytest:
+	pytest
