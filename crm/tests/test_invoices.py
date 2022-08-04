@@ -13,13 +13,14 @@ class InvoiceTests(TestCase):
         self.customer: Customer = baker.make(Customer)
 
     def test_change_charges(self):
-        invoice = Invoice.objects.create(name="INV-001", customer=self.customer)
-        invoice.save()
+        base_invoice = Invoice.objects.create(customer=self.customer)
+        base_invoice.save()
+        invoice_pk = base_invoice.pk
 
-        charge = Charge.objects.create(name="test charge 1", customer=self.customer, cost=12.00, invoice=invoice)
+        charge = Charge.objects.create(name="test charge 1", customer=self.customer, line=12.00, invoice=base_invoice)
         charge.save()
 
-        invoice: Invoice = Invoice.objects.get(name="INV-001")
+        invoice: Invoice = Invoice.objects.get(pk=invoice_pk)
         self.assertIn(charge, invoice.charges.all())
 
         invoice.send()

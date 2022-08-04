@@ -273,7 +273,7 @@ class Charge(PolymorphicModel):
         ordering = ("-created",)
 
     def __str__(self) -> str:
-        return f"{self.name} - {self.cost}"
+        return f"{self.name} - {self.total_money}"
 
     def __float__(self) -> float:
         return float(self.cost)
@@ -284,8 +284,16 @@ class Charge(PolymorphicModel):
         return self.cost + other.cost
 
     @property
+    def total_money(self):
+        return self.line * self.quantity
+
+    @property
     def cost(self):
         return self.line.amount * self.quantity
+
+    @cost.setter
+    def set_cost(self, value):
+        self.line = value / self.quantity
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)

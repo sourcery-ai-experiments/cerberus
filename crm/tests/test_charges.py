@@ -7,12 +7,12 @@ from ..models import Charge
 
 class ChargeTests(TestCase):
     def test_str(self):
-        charge = Charge(name="Test Charge", cost=1000)
+        charge = Charge(name="Test Charge", line=10)
 
-        self.assertEqual(f"{charge}", "£10.00")
+        self.assertEqual(f"{charge}", "Test Charge - £10.00")
 
     def test_transitions(self):
-        charge = Charge(name="Test Charge", cost=1000)
+        charge = Charge(name="Test Charge", line=1000)
         transitions = list(charge.get_all_state_transitions())
 
         valid_transitions = [
@@ -27,7 +27,7 @@ class ChargeTests(TestCase):
         self.assertEqual(len(valid_transitions), len(transitions))
 
     def test_paid(self):
-        charge = Charge(name="Test Charge", cost=1000)
+        charge = Charge(name="Test Charge", line=1000)
         charge.save()
 
         charge.pay()
