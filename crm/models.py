@@ -276,7 +276,7 @@ class Charge(PolymorphicModel):
         return f"{self.name} - {self.cost}"
 
     def __float__(self) -> float:
-        return float(self.charge)
+        return float(self.cost)
 
     def __add__(self, other) -> Money:
         if not isinstance(other, Charge):
@@ -285,7 +285,7 @@ class Charge(PolymorphicModel):
 
     @property
     def cost(self):
-        return self.line * self.quantity
+        return self.line.amount * self.quantity
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -682,7 +682,7 @@ class Booking(models.Model):
     def create_charge(self) -> Charge:
         charge = BookingCharge(
             name=f"Charge for {self.name}",
-            cost=self.cost,
+            line=self.cost,
             booking=self,
             customer=self.pet.customer,
         )
