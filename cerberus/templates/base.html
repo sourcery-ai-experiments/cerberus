@@ -4,11 +4,6 @@
   </head>
 
   <body>
-    <nav>
-      {% for link in crm_nav_links %}
-      <a href="{{ link.url }}">{{ link.title }}</a>
-      {% endfor %}
-    </nav>
     <div class="ui container">
       <div>{% block body %}{% endblock body %}</div>
     </div>
