@@ -384,7 +384,7 @@ class Invoice(models.Model):
 
     @property
     def overdue(self) -> bool:
-        return self.due is not None and self.due < date.today()
+        return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 
     @save_after
     @transition(
