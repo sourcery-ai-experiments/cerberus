@@ -14,7 +14,8 @@ from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
-from django.db.models import F, Q, Sum
+from django.db.models import F, Q, Sum, Value
+from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
@@ -44,6 +45,7 @@ class CustomerManager(models.Manager["Customer"]):
         return (
             super()
             .get_queryset()
+            .annotate(name=Concat("first_name", Value(" "), "last_name"))
             .annotate(
                 invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
                 + Sum(
@@ -64,7 +66,9 @@ class Customer(models.Model):
     invoices: "QuerySet[Invoice]"
 
     # Fields
-    name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    other_names = models.CharField(max_length=255, default="", blank=True)
     invoice_address = models.TextField(default="", blank=True)
     invoice_email = models.EmailField(default="", blank=True)
 

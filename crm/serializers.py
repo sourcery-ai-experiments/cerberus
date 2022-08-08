@@ -183,6 +183,7 @@ class CustomerDropDownSerializer(serializers.Serializer):
 
 class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
+    name = serializers.CharField(read_only=True)
     pets = PetSerializer(many=True, read_only=True, source="active_pets", exclude=("customer",))
     addresses = AddressSerializer(many=True, read_only=True, exclude=("customer",))
     contacts = ContactSerializer(many=True, read_only=True, exclude=("customer",))

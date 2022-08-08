@@ -35,7 +35,7 @@ class ContactAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("active", "name", "created")
+    list_display = ("active", "created")
     actions = (make_inactive,)
 
 
