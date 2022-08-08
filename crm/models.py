@@ -413,7 +413,7 @@ class Invoice(models.Model):
         context = {
             "invoice": self,
             "customer": self.customer,
-            "send_notes": self.send_notes,
+            "send_notes": self.send_notes or "",
         }
 
         email = EmailMultiAlternatives(
