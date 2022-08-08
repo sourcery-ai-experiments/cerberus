@@ -100,6 +100,13 @@ class Customer(models.Model):
     def name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
+    @name.setter
+    def name(self, value: str) -> None:
+        # this is annotate for searching and sorting
+        # but has a getter for nested serialization
+        # so it needs a setter to stop attribution error
+        pass
+
     def __str__(self) -> str:
         return f"{self.name}"
 
