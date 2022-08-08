@@ -96,6 +96,10 @@ class Customer(models.Model):
     class Meta:
         ordering = ("-created",)
 
+    @property
+    def name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
     def __str__(self) -> str:
         return f"{self.name}"
 
