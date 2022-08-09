@@ -147,11 +147,20 @@ class AddressSerializer(DynamicFieldsModelSerializer):
         read_only_fields = default_read_only
 
 
+class CustomerDetailsOnlySerializer(DynamicFieldsModelSerializer):
+    name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Customer
+        fields = "__all__"
+
+
 class PetSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
     tags = TagListSerializerField()
     customer_id = serializers.IntegerField(write_only=True)
     vet_id = serializers.IntegerField(write_only=True)
+    customer = CustomerDetailsOnlySerializer(read_only=True)
 
     class Meta:
         model = Pet
