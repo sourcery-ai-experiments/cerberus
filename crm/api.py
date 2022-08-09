@@ -216,14 +216,14 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
 
         draft = invoices.filter(state=Invoice.States.DRAFT.value)
         unpaid = invoices.filter(state=Invoice.States.UNPAID.value)
-        void = invoices.filter(state=Invoice.States.VOID.value, last_updated__gte=recent)
+        overdue = invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today())
         paid = invoices.filter(state=Invoice.States.PAID.value, last_updated__gte=recent)
 
         return Response(
             {
                 "draft": InvoiceSerializer(draft, many=True).data,
                 "unpaid": InvoiceSerializer(unpaid, many=True).data,
-                "void": InvoiceSerializer(void, many=True).data,
+                "overdue": InvoiceSerializer(overdue, many=True).data,
                 "paid": InvoiceSerializer(paid, many=True).data,
             }
         )
@@ -268,14 +268,14 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
 
         draft = invoices.filter(state=Invoice.States.DRAFT.value)
         unpaid = invoices.filter(state=Invoice.States.UNPAID.value)
-        void = invoices.filter(state=Invoice.States.VOID.value, last_updated__gte=recent)
+        overdue = invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today())
         paid = invoices.filter(state=Invoice.States.PAID.value, last_updated__gte=recent)
 
         return Response(
             {
                 "draft": InvoiceSerializer(draft, many=True).data,
                 "unpaid": InvoiceSerializer(unpaid, many=True).data,
-                "void": InvoiceSerializer(void, many=True).data,
+                "overdue": InvoiceSerializer(overdue, many=True).data,
                 "paid": InvoiceSerializer(paid, many=True).data,
             }
         )
