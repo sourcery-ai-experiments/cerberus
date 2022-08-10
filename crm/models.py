@@ -102,7 +102,7 @@ class Customer(models.Model):
 
     @name.setter
     def name(self, value: str) -> None:
-        # this is annotate for searching and sorting
+        # this is annotated for searching and sorting
         # but has a getter for nested serialization
         # so it needs a setter to stop attribution error
         pass
@@ -329,6 +329,11 @@ class Charge(PolymorphicModel):
         return self.void()
 
     def save(self, *args, **kwargs):
+        if self.invoice and not self.invoice.can_edit:
+            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
+            excluded = ("name", "line", "quantity", "customer")
+            kwargs["update_fields"] = allFields.difference(excluded)
+
         if self.customer is None and self.invoice is not None:
             self.customer = self.invoice.customer
 
@@ -374,6 +379,8 @@ class Invoice(models.Model):
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
+    _can_edit = False
+
     customer = models.ForeignKey(
         "crm.Customer",
         on_delete=models.SET_NULL,
@@ -391,7 +398,7 @@ class Invoice(models.Model):
 
     @property
     def can_edit(self) -> bool:
-        return self.state == self.States.DRAFT.value
+        return self.state == self.States.DRAFT.value or self._can_edit
 
     @property
     def name(self) -> str:
@@ -409,6 +416,7 @@ class Invoice(models.Model):
         conditions=[can_send],
     )
     def send(self, to=None, send_email=True, send_notes=None):
+        self._can_edit = True
         self.customer_name = self.customer.name
         self.invoice_address = self.customer.invoice_address
         self.sent_to = to
@@ -417,7 +425,8 @@ class Invoice(models.Model):
 
         self.send_notes = send_notes
 
-        self.send_email()
+        if send_email:
+            self.send_email()
 
     def send_email(self):
         assert self.can_send(), "Unable to send email"
@@ -540,6 +549,24 @@ class Invoice(models.Model):
     def add_open(self):
         o = InvoiceOpen(invoice=self)
         return o.save()
+
+    def save(self, *args, **kwargs) -> None:
+        if not self.can_edit:
+            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
+            excluded = (
+                "invoice",
+                "details",
+                "sent_to",
+                "adjustment",
+                "adjustment_currency",
+                "customer_name",
+                "due",
+                "adjustment",
+            )
+            kwargs["update_fields"] = allFields.difference(excluded)
+        self._can_edit = False
+
+        super().save(*args, **kwargs)
 
 
 class InvoiceOpen(models.Model):
