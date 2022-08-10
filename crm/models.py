@@ -401,6 +401,23 @@ class Invoice(models.Model):
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 
+    @property
+    def due_human(self) -> str | None:
+        if self.due is None:
+            return None
+
+        delta = self.due - date.today()
+        if delta.days == 0:
+            return "today"
+        elif delta.days == 1:
+            return "tomorrow"
+        elif delta.days == -1:
+            return "yesterday"
+        elif delta.days > 1:
+            return f"in {delta.days} days"
+        else:
+            return f"{abs(delta.days)} days ago"
+
     @save_after
     @transition(
         field=state,
