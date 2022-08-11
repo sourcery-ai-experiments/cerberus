@@ -14,7 +14,7 @@ from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
-from django.db.models import F, Q, Sum, Value
+from django.db.models import Count, F, Q, Sum, Value
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render  # noqa
@@ -53,6 +53,14 @@ class CustomerManager(models.Manager["Customer"]):
                     filter=Q(invoices__state=Invoice.States.UNPAID.value),
                     default=0,
                 ),
+            )
+            .annotate(unpaid_count=Count("invoices", distinct=True, filter=Q(invoices__state=Invoice.States.UNPAID.value)))
+            .annotate(
+                overdue_count=Count(
+                    "invoices",
+                    distinct=True,
+                    filter=Q(invoices__state=Invoice.States.UNPAID.value, invoices__due__lt=datetime.today()),
+                )
             )
         )
 
