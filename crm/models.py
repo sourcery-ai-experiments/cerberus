@@ -402,7 +402,7 @@ class Invoice(models.Model):
         return self.name
 
     def can_send(self) -> bool:
-        return self.customer is not None and self.customer.invoice_email is not None
+        return self.customer is not None and self.customer.invoice_email
 
     @property
     def can_edit(self) -> bool:
