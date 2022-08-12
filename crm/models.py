@@ -293,7 +293,7 @@ class Charge(PolymorphicModel):
     )
 
     class Meta:
-        ordering = ("-created",)
+        ordering = ("created",)
 
     def __str__(self) -> str:
         return f"{self.name} - {self.total_money}"
