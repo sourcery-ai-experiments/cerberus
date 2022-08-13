@@ -372,7 +372,7 @@ class Invoice(models.Model):
 
     details = models.TextField(blank=True, default="")
     due = models.DateField(blank=True, null=True, default=None)
-    adjustment = MoneyField(default=0, max_digits=14, decimal_places=2, default_currency="GBP")
+    adjustment = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
@@ -427,16 +427,16 @@ class Invoice(models.Model):
         self._can_edit = True
         self.customer_name = self.customer.name
         self.invoice_address = self.customer.invoice_address
-        self.sent_to = to
         if self.due is None:
             self.due = date.today() + timedelta(weeks=1)
 
         self.send_notes = send_notes
 
         if send_email:
-            self.send_email()
+            self.sent_to = to or self.customer.invoice_email
+            self.send_email([f"{self.customer.name} <{self.customer.invoice_email}>"])
 
-    def send_email(self):
+    def send_email(self, to: list[str]):
         assert self.can_send(), "Unable to send email"
 
         html = loader.get_template("emails/invoice.html")
@@ -453,7 +453,7 @@ class Invoice(models.Model):
             body=txt.render(context),
             from_email="Stretch there legs - Accounts<admin@stretchtheirlegs.co.uk>",
             reply_to=["Stef <stef@stretchtheirlegs.co.uk>"],
-            to=[f"{self.customer.name} <{self.customer.invoice_email}>"],
+            to=to,
         )
 
         results = self.get_pdf()
