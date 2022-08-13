@@ -3,7 +3,6 @@ from django.test import TestCase
 
 # Third Party
 from django_fsm import TransitionNotAllowed
-from icecream import ic
 from model_bakery import baker
 from xhtml2pdf.context import pisaContext
 
@@ -61,7 +60,6 @@ class InvoiceTests(TestCase):
         base_invoice = Invoice.objects.create(customer=self.customer)
         base_invoice.save()
         invoice_pk = base_invoice.pk
-        ic(self.customer.invoice_email)
 
         charge = Charge.objects.create(name="test charge 1", customer=self.customer, line=12.00, invoice=base_invoice)
         charge.save()
