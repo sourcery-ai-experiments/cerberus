@@ -30,13 +30,9 @@ SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@
 
 DEBUG = True if "DEBUG" in env else False
 
-ALLOWED_HOSTS: list[str] = (
-    []
-    if DEBUG
-    else [
-        "stl-cerberus.herokuapp.com",
-    ]
-)
+ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com"]
+if DEBUG:
+    ALLOWED_HOSTS.append("localhost")
 
 
 # Application definition
@@ -64,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -148,6 +145,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

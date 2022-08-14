@@ -1174,6 +1174,12 @@ wheel==0.37.1 \
     #   -c requirements.txt
     #   -r requirements.txt
     #   pip-tools
+whitenoise==6.2.0 \
+    --hash=sha256:8e9c600a5c18bd17655ef668ad55b5edf6c24ce9bdca5bf607649ca4b1e8e2c2 \
+    --hash=sha256:8fa943c6d4cd9e27673b70c21a07b0aa120873901e099cd46cab40f7cc96d567
+    # via
+    #   -c requirements.txt
+    #   -r requirements.txt
 xhtml2pdf==0.2.8 \
     --hash=sha256:330bf335d1bc436eb0fe7efc64d82aa09c7a728df6a57f07a8b062e478c7aa36 \
     --hash=sha256:d8e1db3d8acc9ff8071718b89b8967abb561a15d74d2cbd1606539c6d17660c4
