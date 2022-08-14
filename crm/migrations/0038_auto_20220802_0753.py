@@ -2,7 +2,6 @@
 
 import re
 from django.db import migrations
-from icecream import ic
 
 def assign_invoice_emails(apps, schema_editor):
     email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
