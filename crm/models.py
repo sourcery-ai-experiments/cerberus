@@ -739,7 +739,7 @@ class Booking(models.Model):
 
     def create_charge(self) -> Charge:
         charge = BookingCharge(
-            name=f"Charge for {self.name}",
+            name=f"Charge for {self.name}"[:255],
             line=self.cost,
             booking=self,
             customer=self.pet.customer,
