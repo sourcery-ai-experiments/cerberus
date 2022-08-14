@@ -74,8 +74,8 @@ class Customer(models.Model):
     invoices: "QuerySet[Invoice]"
 
     # Fields
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=125)
+    last_name = models.CharField(max_length=125)
     other_names = models.CharField(max_length=255, default="", blank=True)
     invoice_address = models.TextField(default="", blank=True)
     invoice_email = models.EmailField(default="", blank=True)
