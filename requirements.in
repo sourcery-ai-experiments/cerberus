@@ -1,3 +1,4 @@
+dj-database-url
 django-cors-headers
 django-filter
 django-fsm
@@ -11,7 +12,9 @@ django>=4
 djangorestframework
 djangorestframework-simplejwt[crypto]
 djangorestframework-stubs[compatible-mypy]
+gunicorn
 markdown
 reportlab
 uritemplate
+wheel
 xhtml2pdf

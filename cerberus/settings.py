@@ -14,6 +14,9 @@ import contextlib
 import os
 from pathlib import Path
 
+# Third Party
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -96,6 +99,8 @@ DATABASES = {
     }
 }
 
+if os.environ.get("DATABASE_URL"):
+    DATABASES["default"] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -119,9 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "GMT"
 
 USE_I18N = True
 
@@ -162,8 +167,6 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
-
 TAGGIT_CASE_INSENSITIVE = True
 
 DEFAULT_CURRENCY = "GBP"
@@ -179,3 +182,7 @@ with contextlib.suppress(KeyError):
     EMAIL_PORT = env["SMTP_PORT"]
     EMAIL_USE_TLS = (env["SMTP_TLS"] or "True") != "False"
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+
+CSRF_TRUSTED_ORIGINS = ["https://cerberus.stretchtheirlegs.co.uk/"]
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000", "https://cerberus.stretchtheirlegs.co.uk/"]

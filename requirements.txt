@@ -140,11 +140,16 @@ cssselect2==0.6.0 \
     --hash=sha256:3a83b2a68370c69c9cd3fcb88bbfaebe9d22edeef2c22d1ff3e1ed9c7fa45ed8 \
     --hash=sha256:5b5d6dea81a5eb0c9ca39f116c8578dd413778060c94c1f51196371618909325
     # via svglib
+dj-database-url==1.0.0 \
+    --hash=sha256:ccf3e8718f75ddd147a1e212fca88eecdaa721759ee48e38b485481c77bca3dc \
+    --hash=sha256:cd354a3b7a9136d78d64c17b2aec369e2ae5616fbca6bfbe435ef15bb372ce39
+    # via -r requirements.in
 django==4.0.5 \
     --hash=sha256:502ae42b6ab1b612c933fb50d5ff850facf858a4c212f76946ecd8ea5b3bf2d9 \
     --hash=sha256:f7431a5de7277966f3785557c3928433347d998c1e6459324501378a291e5aab
     # via
     #   -r requirements.in
+    #   dj-database-url
     #   django-appconf
     #   django-cors-headers
     #   django-filter
@@ -225,6 +230,10 @@ djangorestframework-stubs[compatible-mypy]==1.7.0 \
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via arabic-reshaper
+gunicorn==20.1.0 \
+    --hash=sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e \
+    --hash=sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8
+    # via -r requirements.in
 html5lib==1.1 \
     --hash=sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d \
     --hash=sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f
@@ -672,6 +681,10 @@ webencodings==0.5.1 \
     #   cssselect2
     #   html5lib
     #   tinycss2
+wheel==0.37.1 \
+    --hash=sha256:4bdcd7d840138086126cd09254dc6195fb4fc6f01c050a1d7236f2630db1d22a \
+    --hash=sha256:e9a504e793efbca1b8e0e9cb979a249cf4a0a7b5b8c9e8b65a5e39d49529c1c4
+    # via -r requirements.in
 xhtml2pdf==0.2.8 \
     --hash=sha256:330bf335d1bc436eb0fe7efc64d82aa09c7a728df6a57f07a8b062e478c7aa36 \
     --hash=sha256:d8e1db3d8acc9ff8071718b89b8967abb561a15d74d2cbd1606539c6d17660c4
