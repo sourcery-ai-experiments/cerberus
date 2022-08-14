@@ -705,7 +705,7 @@ class Booking(models.Model):
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=520)
     cost = models.PositiveIntegerField()
     start = models.DateTimeField()
     end = models.DateTimeField()
