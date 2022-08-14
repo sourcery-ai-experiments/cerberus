@@ -28,10 +28,15 @@ env = os.environ.copy()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if "DEBUG" in env else False
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS: list[str] = (
+    []
+    if DEBUG
+    else [
+        "stl-cerberus.herokuapp.com",
+    ]
+)
 
 
 # Application definition
