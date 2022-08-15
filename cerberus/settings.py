@@ -31,7 +31,7 @@ DEBUG = True if "DEBUG" in env else False
 SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@" if DEBUG else env["SECRET_KEY"]
 
 
-ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com"]
+ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com", "api.cerberus.co.in"]
 if DEBUG:
     ALLOWED_HOSTS.append("localhost")
 
