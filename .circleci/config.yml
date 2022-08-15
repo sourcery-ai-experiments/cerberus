@@ -34,6 +34,8 @@ jobs:
             - ./Pipfile
       - run:
           name: Run tests
+          environment:
+            SECRET_KEY: "django-insecure-circleci-testing"
           command: |
             mkdir test-results
             pipenv run pytest --junitxml=test-results/junit.xml

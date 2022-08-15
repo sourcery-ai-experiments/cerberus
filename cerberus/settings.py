@@ -25,10 +25,11 @@ env = os.environ.copy()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@"
-
 DEBUG = True if "DEBUG" in env else False
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@" if DEBUG else env["SECRET_KEY"]
+
 
 ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com"]
 if DEBUG:
