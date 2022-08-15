@@ -24,9 +24,12 @@ class BookingSlotsTests(TestCase):
         )
 
         self.customer = Customer.objects.create(name="Test Customer")
-
         self.pet1 = Pet.objects.create(name="Test Pet 1", customer=self.customer)
         self.pet2 = Pet.objects.create(name="Test Pet 2", customer=self.customer)
+
+        self.customer.save()
+        self.pet1.save()
+        self.pet2.save()
 
     def test_start_before_end(self):
         slot = BookingSlot(
@@ -123,6 +126,7 @@ class BookingSlotsTests(TestCase):
             service=self.walk_service,
             pet=self.pet1,
         )
+        booking1.save()
 
         Booking.objects.create(
             cost=0,
@@ -130,7 +134,7 @@ class BookingSlotsTests(TestCase):
             end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
             service=self.walk_service,
             pet=self.pet2,
-        )
+        ).save()
 
         self.assertEqual(booking1.booking_slot.customer_count, 1)
 

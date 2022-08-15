@@ -597,6 +597,7 @@ class BookingSlot(models.Model):
             slot = cls.objects.get(start=start, end=end)
         except cls.DoesNotExist:
             slot = cls(start=start, end=end)
+            slot.save()
 
         return slot
 
@@ -725,10 +726,10 @@ class Booking(models.Model):
     def save(self, *args, **kwargs) -> None:
         self.name = f"{self.pet.name} {self.service.name}"
 
-        if self.pk is None:
-            self.booking_slot = self._get_new_booking_slot()
-
         with transaction.atomic():
+            if self.pk is None:
+                self.booking_slot = self._get_new_booking_slot()
+
             if self.booking_slot is not None:
                 self.booking_slot.save()
 
