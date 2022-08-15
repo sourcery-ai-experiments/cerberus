@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+
 # Standard Library
 import contextlib
 import os
@@ -25,13 +26,13 @@ env = os.environ.copy()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-DEBUG = True if "DEBUG" in env else False
+DEBUG = "DEBUG" in env
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@" if DEBUG else env["SECRET_KEY"]
 
 
-ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com"]
+ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com", "api.cerberus.co.in"]
 if DEBUG:
     ALLOWED_HOSTS.append("localhost")
 
