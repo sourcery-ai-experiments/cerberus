@@ -26,7 +26,7 @@ env = os.environ.copy()
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@"
+SECRET_KEY = env["SECRET_KEY"] if "SECRET_KEY" in env else "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@"
 
 DEBUG = True if "DEBUG" in env else False
 
