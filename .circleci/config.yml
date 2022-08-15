@@ -36,6 +36,8 @@ jobs:
             pipenv run pytest --junitxml=test-results/junit.xml
       - run:
           name: Collect Statics
+          environment:
+            SECRET_KEY: "django-insecure-circleci-testing"
           command: ./manage.py collectstatic --noinput
       - store_test_results:
           path: test-results
