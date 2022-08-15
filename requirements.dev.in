@@ -1,9 +1,9 @@
+# djangorestframework-stubs[compatible-mypy]
 -c requirements.txt
 black
 django-debug-toolbar
 django-debugtools
 django-stubs
-djangorestframework-stubs[compatible-mypy]
 faker
 freezegun
 hypothesis
