@@ -211,7 +211,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def overview(self, request):
         invoices = Invoice.objects
 
-        recent = datetime.today() - timedelta(days=28)
+        recent = datetime.now() - timedelta(days=28)
 
         draft = invoices.filter(state=Invoice.States.DRAFT.value)
         unpaid = invoices.filter(state=Invoice.States.UNPAID.value)
@@ -263,7 +263,7 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
         customer = self.get_object()
         invoices = Invoice.objects.filter(customer=customer)
 
-        recent = datetime.today() - timedelta(days=28)
+        recent = datetime.now() - timedelta(days=28)
 
         draft = invoices.filter(state=Invoice.States.DRAFT.value)
         unpaid = invoices.filter(state=Invoice.States.UNPAID.value)

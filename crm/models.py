@@ -302,9 +302,7 @@ class Charge(PolymorphicModel):
         return float(self.cost)
 
     def __add__(self, other) -> Money:
-        if not isinstance(other, Charge):
-            return NotImplemented
-        return self.cost + other.cost
+        return self.cost + other.cost if isinstance(other, Charge) else NotImplemented
 
     @property
     def total_money(self):
@@ -493,11 +491,10 @@ class Invoice(models.Model):
     def link_callback(self, uri, rel):
         """Convert HTML URIs to absolute system paths so xhtml2pdf can access
         those resources."""
-        result = finders.find(uri)
-        if result:
+        if result := finders.find(uri):
             if not isinstance(result, (list, tuple)):
                 result = [result]
-            result = list(os.path.realpath(path) for path in result)
+            result = [os.path.realpath(path) for path in result]
             path = result[0]
         else:
             sUrl = settings.STATIC_URL  # Typically /static/
