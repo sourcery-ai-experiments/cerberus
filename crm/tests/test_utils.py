@@ -3,7 +3,7 @@ from django.db import models
 from django.test import TestCase
 
 # Locals
-from ..utils import ChoicesEnum, choice_length
+from ..utils import choice_length
 
 
 class test_choice_length(TestCase):
@@ -15,20 +15,3 @@ class test_choice_length(TestCase):
             __empty__ = "empty", "Empty"
 
         self.assertEqual(choice_length(testLength), 5)
-
-
-class test_choices_enum(TestCase):
-    def test_list(self):
-        class choicesList(ChoicesEnum):
-            ONE = "one"
-            TWO = "two"
-            THREE = "three"
-
-        self.assertEqual(
-            choicesList.choices(),
-            [
-                ("one", "one"),
-                ("two", "two"),
-                ("three", "three"),
-            ],
-        )

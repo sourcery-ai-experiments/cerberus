@@ -37,7 +37,7 @@ from xhtml2pdf import pisa
 # Locals
 from .decorators import save_after
 from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from .utils import ChoicesEnum, choice_length
+from .utils import choice_length
 
 
 class CustomerManager(models.Manager["Customer"]):
@@ -256,7 +256,7 @@ def get_default_due_date() -> datetime:
 
 @reversion.register()
 class Charge(PolymorphicModel):
-    class States(ChoicesEnum):
+    class States(models.TextChoices):
         UNPAID = "unpaid"
         PAID = "paid"
         VOID = "void"
@@ -274,7 +274,7 @@ class Charge(PolymorphicModel):
     line = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
     quantity = models.IntegerField(default=1)
 
-    state = FSMField(default=States.UNPAID.value, choices=States.choices(), protected=True)
+    state = FSMField(default=States.UNPAID.value, choices=States.choices, protected=True)
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
 
     customer = models.ForeignKey(
@@ -362,7 +362,7 @@ class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
     get_available_state_transitions: Callable[[], Iterable[Transition]]
 
-    class States(ChoicesEnum):
+    class States(models.TextChoices):
         DRAFT = "draft"
         UNPAID = "unpaid"
         PAID = "paid"
@@ -376,7 +376,7 @@ class Invoice(models.Model):
     sent_to = models.CharField(max_length=255, blank=True, null=True)
     invoice_address = models.TextField(default="", blank=True)
 
-    state = FSMField(default=States.DRAFT.value, choices=States.choices(), protected=True)
+    state = FSMField(default=States.DRAFT.value, choices=States.choices, protected=True)
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
     sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)
 
@@ -686,7 +686,7 @@ class BookingSlot(models.Model):
 
 @reversion.register()
 class Booking(models.Model):
-    class States(ChoicesEnum):
+    class States(models.TextChoices):
         ENQUIRY = "enquiry"
         PRELIMINARY = "preliminary"
         CONFIRMED = "confirmed"
@@ -708,7 +708,7 @@ class Booking(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices(), protected=True)
+    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices, protected=True)
 
     # Relationship Fields
     pet = models.ForeignKey("crm.Pet", on_delete=models.PROTECT, related_name="bookings")
