@@ -73,4 +73,6 @@ class InvoiceTests(TestCase):
         invoice.pay()
         self.assertEqual(invoice.state, Invoice.States.PAID.value)
 
-        self.assertTrue(all([c.state == Charge.States.PAID.value for c in invoice.charges.all()]))
+        self.assertTrue(
+            all(c.state == Charge.States.PAID.value for c in invoice.charges.all())
+        )
