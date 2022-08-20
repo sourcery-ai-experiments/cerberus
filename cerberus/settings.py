@@ -200,5 +200,14 @@ with contextlib.suppress(KeyError):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 
-CSRF_TRUSTED_ORIGINS = ["https://cerberus.stretchtheirlegs.co.uk/", "https://api.cerberus.co.in/"]
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000", "https://cerberus.stretchtheirlegs.co.uk"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.stretchtheirlegs.co.uk/",
+    "https://*.cerberus.co.in/",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "https://cerberus.stretchtheirlegs.co.uk",
+    "https://api.cerberus.co.in/",
+]
