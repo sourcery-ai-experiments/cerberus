@@ -115,6 +115,18 @@ class Customer(models.Model):
         # so it needs a setter to stop attribution error
         pass
 
+    @property
+    def issues(self):
+        issues = []
+
+        if self.invoice_email == "":
+            issues.append("no invoice email set")
+
+        if "&" in self.last_name:
+            issues.append("last name doesn't look right")
+
+        return issues
+
     def __str__(self) -> str:
         return f"{self.name}"
 

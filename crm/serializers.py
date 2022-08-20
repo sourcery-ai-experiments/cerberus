@@ -203,6 +203,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     invoiced_unpaid = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     unpaid_count = serializers.IntegerField(read_only=True)
     overdue_count = serializers.IntegerField(read_only=True)
+    issues = serializers.ListSerializer(child=serializers.CharField(read_only=True), read_only=True)
 
     class Meta:
         model = Customer
