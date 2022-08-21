@@ -245,6 +245,11 @@ class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
     ordering = "-name"
     ordering_fields = ("name", "invoiced_unpaid", "created")
 
+    @action(detail=True, methods=["put"])
+    def partial(self, request, *args, **kwargs):
+        kwargs["partial"] = True
+        return super().update(request, *args, **kwargs)
+
     @action(detail=False, methods=["get"])
     def dropdown(self, request):
         serializer = CustomerDropDownSerializer(self.queryset.filter(active=True), many=True)
