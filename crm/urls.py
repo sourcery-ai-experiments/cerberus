@@ -3,9 +3,11 @@ from django.conf import settings
 from django.urls import include, path
 
 # Locals
+from . import reports
 from .api import router
 
 urlpatterns = [
+    path("api/reports/", include(reports.urls)),
     path("api/", include(router.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework_auth")),
 ]
