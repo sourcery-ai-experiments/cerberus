@@ -59,12 +59,15 @@ class NestedObjectSerializer:
         try:
             if attrs[id_name] > 0:
                 attrs[name] = model.objects.get(id=attrs[id_name])
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
         except ObjectDoesNotExist as e:
             raise serializers.ValidationError({id_name: [str(e)]})
 
-        del attrs[id_name]
+        try:
+            del attrs[id_name]
+        except (AttributeError, KeyError):
+            pass
 
         return attrs
 
