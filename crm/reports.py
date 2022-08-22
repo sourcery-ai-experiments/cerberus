@@ -31,7 +31,7 @@ class InvoicePerWeek(BaseInvoiceReport):
             )
         )
 
-        return Response(invoices)
+        return Response({"data": invoices})
 
 
 urls = [path("invoice-per-week", InvoicePerWeek.as_view())]
