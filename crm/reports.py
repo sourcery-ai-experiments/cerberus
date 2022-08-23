@@ -27,8 +27,9 @@ class InvoicePerWeek(BaseInvoiceReport):
             .annotate(count=Count("id"))
             .annotate(
                 subtotal=Sum(F("charges__line") * F("charges__quantity")),
-                total=F("adjustment") + F("subtotal"),
+                total=Sum("adjustment") + F("subtotal"),
             )
+            .order_by("week")
         )
 
         return Response({"data": invoices})
