@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev
+.PHONY: help clean test install all init dev dist
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
@@ -25,16 +25,13 @@ help: ## Display this help
 requirements.%.in:
 	echo "-c requirements.txt" > $@
 
-requirements.in:
-	@touch $@
-
 requirements.%.txt: requirements.%.in requirements.txt
 	@echo "Builing $@"
 	@python -m piptools compile --generate-hashes -q -o $@ $^
 
-requirements.txt: requirements.in
+requirements.txt: pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q $^
+	@python -m piptools compile --generate-hashes -q pyproject.toml
 
 .direnv: .envrc
 	python -m pip install --upgrade pip
@@ -76,3 +73,6 @@ dev: init install ## Start work
 
 pytest:
 	pytest
+
+dist:
+	python setup.py sdist
