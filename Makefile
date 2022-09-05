@@ -25,16 +25,13 @@ help: ## Display this help
 requirements.%.in:
 	echo "-c requirements.txt" > $@
 
-requirements.in:
-	@touch $@
-
 requirements.%.txt: requirements.%.in requirements.txt
 	@echo "Builing $@"
 	@python -m piptools compile --generate-hashes -q -o $@ $^
 
-requirements.txt: requirements.in
+requirements.txt: pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q $^
+	@python -m piptools compile --generate-hashes -q pyproject.toml
 
 .direnv: .envrc
 	python -m pip install --upgrade pip
