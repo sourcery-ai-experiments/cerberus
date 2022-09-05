@@ -7,7 +7,7 @@ import taggit.managers
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('taggit', '0004_alter_taggeditem_content_type_alter_taggeditem_tag'),
+        ('taggit', '0005_auto_20220424_2025'),
         ('cerberus', '0027_customer_invoice_address'),
     ]
 
