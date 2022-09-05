@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev
+.PHONY: help clean test install all init dev dist
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
@@ -73,3 +73,6 @@ dev: init install ## Start work
 
 pytest:
 	pytest
+
+dist:
+	python setup.py sdist
