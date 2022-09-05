@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "taggit",
     "djmoney",
-    "crm",
+    "cerberus",
 ]
 
 MIDDLEWARE = [
