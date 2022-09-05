@@ -1,13 +1,14 @@
 [project]
 name = "Cerberus"
-version = "1.0.0"
-description = "Cerber, the dog walkers CRM"
-authors = [
-    "Ben Gosney <bengosney@googlemail.com>"
-]
-python = "^3.10"
-homepage = "https://cerberus.stretchtheirlegs.co.uk/"
-repository = "http://www.github.com/bengosney/cerberus"
+version = "0.1.0"
+description = "Cerberus, the dog walkers CRM"
+#authors = [
+#    "Ben Gosney <bengosney@googlemail.com>"
+#]
+
+#python = "^3.10"
+#homepage = "https://cerberus.stretchtheirlegs.co.uk/"
+#repository = "http://www.github.com/bengosney/cerberus"
 
 [build-system]
 requires = ["setuptools", "wheel"]
@@ -40,4 +41,4 @@ warn_no_return = true
 
 
 [tool.django-stubs]
-django_settings_module = "cerberus.settings"
+django_settings_module = "cerberus-crm.settings"

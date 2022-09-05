@@ -72,7 +72,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "cerberus.urls"
+ROOT_URLCONF = "cerberus-crm.urls"
 
 TEMPLATES = [
     {
@@ -91,7 +91,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = "cerberus.wsgi.application"
+WSGI_APPLICATION = "cerberus-crm.wsgi.application"
 
 
 # Database
@@ -144,7 +144,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "cerberus" / "static",
+    BASE_DIR / "cerberus-crm" / "static",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
