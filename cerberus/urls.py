@@ -6,8 +6,7 @@ from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 # Locals
-from . import reports
-from .api import router
+from . import api, reports
 
 urlpatterns = [
     path("reports/", include(reports.urls)),
@@ -15,7 +14,8 @@ urlpatterns = [
     path("api-auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api-auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework_auth")),
-    path("", include(router.urls)),
+    path("", include(api.router.urls)),
+    path("", include(api.urls)),
 ]
 
 if settings.DEBUG:

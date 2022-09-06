@@ -8,7 +8,6 @@ from django.db import transaction
 # Third Party
 from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
-from taggit.models import Tag
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 # Locals
@@ -218,11 +217,6 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
         attrs = self.fixNestedObject(attrs, "vet", Vet, False)
 
         return super().validate(attrs)
-
-
-class TagSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj: Tag) -> str:
-        return obj.name
 
 
 class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
