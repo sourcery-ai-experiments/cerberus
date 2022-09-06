@@ -2,14 +2,20 @@
 from django.conf import settings
 from django.urls import include, path
 
+# Third Party
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+
 # Locals
 from . import reports
 from .api import router
 
 urlpatterns = [
-    path("api/reports/", include(reports.urls)),
-    path("api/", include(router.urls)),
+    path("reports/", include(reports.urls)),
+    path("api-auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api-auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api-auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework_auth")),
+    path("", include(router.urls)),
 ]
 
 if settings.DEBUG:
