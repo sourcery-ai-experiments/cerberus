@@ -17,6 +17,7 @@ dependencies = [
     "django>=4",
     "djangorestframework",
     "djangorestframework-simplejwt[crypto]",
+    "drf-spectacular",
     "gunicorn",
     "markdown",
     "psycopg2",
