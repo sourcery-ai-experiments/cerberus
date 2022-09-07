@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "django_fsm_log",
     "taggit",
     "djmoney",
+    "drf_spectacular",
     "cerberus",
 ]
 
@@ -176,6 +177,14 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Cerberus API",
+    "DESCRIPTION": "Cerberus API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SIMPLE_JWT = {

@@ -8,14 +8,16 @@ from django.contrib.staticfiles import finders
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.http import HttpResponse
+from django.urls import path
 
 # Third Party
 from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
 from rest_framework import filters as drf_filters
-from rest_framework import mixins, permissions, routers, viewsets
+from rest_framework import permissions, routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from taggit.models import Tag
 
 # Locals
@@ -33,7 +35,6 @@ from .serializers import (
     InvoiceSerializer,
     PetSerializer,
     ServiceSerializer,
-    TagSerializer,
     VetSerializer,
 )
 
@@ -299,12 +300,14 @@ class VetViewSet(viewsets.ModelViewSet):
     permission_classes = default_permissions
 
 
-class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    filter_backends = [drf_filters.SearchFilter]
-    search_fields = ["name"]
-    pagination_class = None
+class TagListView(APIView):
+    def get_queryset(self):
+        return Tag.objects.all()
+
+    def get(self, request, format=None):
+        tags = self.get_queryset()
+
+        return Response([tag.name for tag in tags])
 
 
 router = routers.DefaultRouter()
@@ -318,4 +321,6 @@ router.register(r"contact", ContactViewSet)
 router.register(r"customer", CustomerViewSet)
 router.register(r"pet", PetViewSet)
 router.register(r"vet", VetViewSet)
-router.register(r"tag", TagViewSet)
+
+
+urls = [path("tag/", TagListView.as_view())]
