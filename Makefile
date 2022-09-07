@@ -76,3 +76,7 @@ pytest:
 
 dist:
 	python setup.py sdist
+
+upgrade: pyproject.toml
+	@echo "Upgrading pip packages"
+	@python -m piptools compile -q --upgrade pyproject.toml
