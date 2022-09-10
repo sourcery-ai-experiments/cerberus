@@ -75,10 +75,10 @@ class InvoiceTests(TestCase):
 
         self.assertTrue(all(c.state == Charge.States.PAID.value for c in invoice.charges.all()))
 
-    def test_avalibe_state_transitions(self):
+    def test_available_state_transitions(self):
         invoice = Invoice.objects.create(customer=self.customer)
         invoice.save()
 
         available_state_transitions = invoice.available_state_transitions
-        expected_state_transitions = ["send", "void"]
-        self.assertEqual(available_state_transitions, expected_state_transitions)
+        expected_state_transitions = ["send", "mark_sent", "void"]
+        self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
