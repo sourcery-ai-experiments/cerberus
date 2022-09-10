@@ -440,11 +440,6 @@ class Invoice(models.Model):
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 
     @save_after
-    @transition(field=state, source=States.DRAFT.value, target=States.UNPAID.value)
-    def mark_sent(self, to=None, send_email=True, send_notes=None):
-        pass
-
-    @save_after
     @transition(
         field=state,
         source=States.DRAFT.value,
