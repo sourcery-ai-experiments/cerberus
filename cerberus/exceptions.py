@@ -16,3 +16,7 @@ class BookingSlotMaxPets(BookingSlotException):
 
 class BookingSlotOverlaps(BookingSlotException):
     pass
+
+
+class InvalidEmail(Exception):
+    pass

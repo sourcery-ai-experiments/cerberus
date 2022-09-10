@@ -36,7 +36,13 @@ from xhtml2pdf import pisa
 
 # Locals
 from .decorators import save_after
-from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from .exceptions import (
+    BookingSlotIncorectService,
+    BookingSlotMaxCustomers,
+    BookingSlotMaxPets,
+    BookingSlotOverlaps,
+    InvalidEmail,
+)
 from .utils import choice_length
 
 
@@ -261,6 +267,13 @@ class Contact(models.Model):
     def __str__(self) -> str:
         return f"{self.name}"
 
+    def set_as_invoice(self):
+        if self.type != self.Type.EMAIL:
+            raise InvalidEmail("Can only set email as invoice email")
+
+        self.customer.invoice_email = self.details
+        return self.customer.save()
+
 
 def get_default_due_date() -> datetime:
     return datetime.now() + timedelta(weeks=1)
@@ -412,7 +425,7 @@ class Invoice(models.Model):
         return self.name
 
     def can_send(self) -> bool:
-        return self.customer is not None and self.customer.invoice_email
+        return self.customer is not None and len(self.customer.issues) == 0
 
     @property
     def can_edit(self) -> bool:
@@ -425,6 +438,11 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
+
+    @save_after
+    @transition(field=state, source=States.DRAFT.value, target=States.UNPAID.value)
+    def mark_sent(self, to=None, send_email=True, send_notes=None):
+        pass
 
     @save_after
     @transition(

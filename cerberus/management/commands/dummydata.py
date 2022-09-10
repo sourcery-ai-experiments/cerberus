@@ -1,5 +1,6 @@
 # Standard Library
 import random
+import re
 
 # Django
 from django.core.management.base import BaseCommand
@@ -21,29 +22,40 @@ class Command(BaseCommand):
 
         vet_count = 10
         customer_count = 200
-        pet_count = int(customer_count * 1.25)
-        contact_count = int(customer_count * 1.25)
+        pet_count = int(customer_count * 1.5)
 
         for _ in range(vet_count - Vet.objects.count()):
             vet = Vet.objects.create(name=fake.company(), phone=fake.phone_number())
             self.stdout.write(f"Created vet {vet.name}")
 
         vets = Vet.objects.all()
+        titles = "|".join(["Sir", "Madam", "Mr", "Mrs", "Ms", "Miss", "Dr", "Professor"])
+        regex = re.compile(rf"^({titles})\s+", re.IGNORECASE)
+
         for _ in range(customer_count - Customer.objects.count()):
-            customer = Customer.objects.create(name=fake.name(), vet=random.choice(vets))
+            customer = Customer.objects.create(vet=random.choice(vets))
+            name_parts = regex.sub("", f"{fake.name()}").split(" ")
+            customer.first_name = name_parts[0]
+            customer.last_name = name_parts[-1]
+            customer.other_names = " ".join(name_parts[1:-1])
+            customer.save()
+
             self.stdout.write(f"Created customer {customer.name}")
 
         customers = Customer.objects.all()
 
-        for _ in range(contact_count - Contact.objects.count()):
-            try:
-                Contact.objects.create(
-                    customer=random.choice(customers),
-                    name=random.choice(["Home", "Work", "Mobile", fake.name()]),
-                    details=fake.phone_number() if fake.pybool() else fake.ascii_email(),
-                )
-            except IntegrityError:
-                pass
+        for customer in customers:
+            r = random.Random()
+            r.seed(customer.id)
+            for _ in range(r.randint(0, 5) - customer.contacts.count()):
+                try:
+                    Contact.objects.create(
+                        customer=customer,
+                        name=random.choice(["Home", "Work", "Mobile", fake.name()]),
+                        details=fake.phone_number() if fake.pybool() else fake.ascii_email(),
+                    )
+                except IntegrityError:
+                    pass
 
         for _ in range(pet_count - Pet.objects.count()):
             if fake.pybool():
