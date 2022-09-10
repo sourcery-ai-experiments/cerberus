@@ -36,7 +36,13 @@ from xhtml2pdf import pisa
 
 # Locals
 from .decorators import save_after
-from .exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from .exceptions import (
+    BookingSlotIncorectService,
+    BookingSlotMaxCustomers,
+    BookingSlotMaxPets,
+    BookingSlotOverlaps,
+    InvalidEmail,
+)
 from .utils import choice_length
 
 
@@ -260,6 +266,13 @@ class Contact(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def set_as_invoice(self):
+        if self.type != self.Type.EMAIL:
+            raise InvalidEmail("Can only set email as invoice email")
+
+        self.customer.invoice_email = self.details
+        return self.customer.save()
 
 
 def get_default_due_date() -> datetime:
