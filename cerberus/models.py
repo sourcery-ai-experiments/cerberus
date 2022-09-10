@@ -425,7 +425,7 @@ class Invoice(models.Model):
         return self.name
 
     def can_send(self) -> bool:
-        return self.customer is not None and self.customer.invoice_email
+        return self.customer is not None and len(self.customer.issues) == 0
 
     @property
     def can_edit(self) -> bool:
@@ -438,6 +438,11 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
+
+    @save_after
+    @transition(field=state, source=States.DRAFT.value, target=States.UNPAID.value)
+    def mark_sent(self, to=None, send_email=True, send_notes=None):
+        pass
 
     @save_after
     @transition(
