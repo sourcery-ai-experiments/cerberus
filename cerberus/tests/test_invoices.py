@@ -80,5 +80,5 @@ class InvoiceTests(TestCase):
         invoice.save()
 
         available_state_transitions = invoice.available_state_transitions
-        expected_state_transitions = ["send", "mark_sent", "void"]
+        expected_state_transitions = ["send", "void"]
         self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
