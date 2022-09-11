@@ -288,4 +288,6 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
 
 
 class InvoiceSendSerializer(serializers.Serializer):
+    to = serializers.EmailField(default="")
+    send_email = serializers.BooleanField(default=True)
     send_notes = serializers.CharField(default="")
