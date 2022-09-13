@@ -82,3 +82,36 @@ class InvoiceTests(TestCase):
         available_state_transitions = invoice.available_state_transitions
         expected_state_transitions = ["send", "void"]
         self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
+
+    def test_loaded_total(self):
+        invoice = Invoice.objects.create(customer=self.customer)
+        invoice.save()
+
+        for _ in range(2):
+            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
+            charge.save()
+
+        loadedInv = Invoice.objects.get(id=invoice.id)
+        self.assertEqual(loadedInv.total.amount, 20)
+
+    def test_loaded_total_with_adjustment(self):
+        invoice = Invoice.objects.create(customer=self.customer, adjustment=10)
+        invoice.save()
+
+        for _ in range(2):
+            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
+            charge.save()
+
+        loadedInv = Invoice.objects.get(id=invoice.id)
+        self.assertEqual(loadedInv.total.amount, 30)
+
+    def test_total(self):
+        invoice = Invoice.objects.create(customer=self.customer)
+        invoice.save()
+
+        for _ in range(2):
+            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
+            charge.save()
+
+        invoice = Invoice.objects.get(id=invoice.id)
+        self.assertEqual(invoice.total.amount, 20)

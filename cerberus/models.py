@@ -385,6 +385,7 @@ class InvoiceManager(models.Manager["Invoice"]):
 
 class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
+    payments: models.QuerySet["Payment"]
     get_available_state_transitions: Callable[[], Iterable[Transition]]
 
     class States(models.TextChoices):
@@ -491,11 +492,22 @@ class Invoice(models.Model):
 
         return email.send()
 
+    @property
+    def paid(self):
+        return sum(p.amount for p in self.payments.all())
+
+    @property
+    def unpaid(self):
+        return (self.total or 0) - self.paid
+
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
     def pay(self):
         for charge in self.charges.all():
             charge.pay()
+
+        payment = Payment(invoice=self, amount=self.unpaid)
+        payment.save()
 
     @save_after
     @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)
@@ -605,6 +617,22 @@ class Invoice(models.Model):
 class InvoiceOpen(models.Model):
     opened = models.DateTimeField(auto_now_add=True, editable=False)
     invoice = models.ForeignKey("cerberus.Invoice", on_delete=models.CASCADE, related_name="opens")
+
+
+class Payment(models.Model):
+    amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
+    invoice = models.ForeignKey(
+        "cerberus.Invoice",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="payments",
+    )
+
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    last_updated = models.DateTimeField(auto_now=True, editable=False)
+
+    def __str__(self) -> str:
+        return f"{self.amount} for {self.invoice}"
 
 
 class BookingSlot(models.Model):
