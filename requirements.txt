@@ -78,7 +78,7 @@ djangorestframework==3.13.1
     #   drf-spectacular
 djangorestframework-simplejwt[crypto]==5.2.0
     # via Cerberus (pyproject.toml)
-drf-spectacular==0.23.1
+drf-spectacular==0.24.0
     # via Cerberus (pyproject.toml)
 future==0.18.2
     # via arabic-reshaper
