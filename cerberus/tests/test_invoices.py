@@ -4,10 +4,11 @@ from django.test import TestCase
 # Third Party
 from django_fsm import TransitionNotAllowed
 from model_bakery import baker
+from moneyed import Money
 from xhtml2pdf.context import pisaContext
 
 # Locals
-from ..models import Charge, Customer, Invoice
+from ..models import Charge, Customer, Invoice, Payment
 
 
 class InvoiceTests(TestCase):
@@ -83,35 +84,62 @@ class InvoiceTests(TestCase):
         expected_state_transitions = ["send", "void"]
         self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
 
-    def test_loaded_total(self):
-        invoice = Invoice.objects.create(customer=self.customer)
+    def create_invoice(self, charge_count=2, charge_ammount=10, adjustment=0) -> Invoice:
+        invoice = Invoice.objects.create(customer=self.customer, adjustment=adjustment)
         invoice.save()
 
-        for _ in range(2):
-            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
+        for _ in range(charge_count):
+            charge = Charge(line=charge_ammount, quantity=1, name="Service", invoice=invoice)
             charge.save()
 
-        loadedInv = Invoice.objects.get(id=invoice.id)
+        return invoice
+
+    def test_loaded_total(self):
+        invoice = self.create_invoice()
+
+        loadedInv = Invoice.objects.get(pk=invoice.pk)
         self.assertEqual(loadedInv.total.amount, 20)
 
     def test_loaded_total_with_adjustment(self):
-        invoice = Invoice.objects.create(customer=self.customer, adjustment=10)
-        invoice.save()
+        invoice = self.create_invoice(adjustment=10)
 
-        for _ in range(2):
-            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
-            charge.save()
-
-        loadedInv = Invoice.objects.get(id=invoice.id)
+        loadedInv = Invoice.objects.get(pk=invoice.pk)
         self.assertEqual(loadedInv.total.amount, 30)
 
     def test_total(self):
-        invoice = Invoice.objects.create(customer=self.customer)
-        invoice.save()
+        invoice = self.create_invoice()
 
-        for _ in range(2):
-            charge = Charge(line=10, quantity=1, name="Service", invoice=invoice)
-            charge.save()
-
-        invoice = Invoice.objects.get(id=invoice.id)
+        invoice = Invoice.objects.get(pk=invoice.pk)
         self.assertEqual(invoice.total.amount, 20)
+
+    def test_create_payment(self):
+        invoice = self.create_invoice()
+
+        invoice.send(send_email=False)
+        invoice.pay()
+
+        payments = sum(p.amount for p in invoice.payments.all())
+        self.assertEqual(invoice.total, payments)
+
+    def test_invoice_paid(self):
+        invoice = self.create_invoice()
+
+        Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
+        Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
+
+        payments = sum(p.amount for p in invoice.payments.all())
+
+        self.assertEqual(payments, invoice.paid)
+
+    def test_create_partial_payments(self):
+        invoice = self.create_invoice()
+        invoice.send(send_email=False)
+
+        Payment.objects.create(invoice=invoice, amount=invoice.total / 2)
+
+        self.assertGreater(invoice.paid, Money(0, "GBP"))
+        self.assertLess(invoice.paid, invoice.total)
+
+        invoice.pay()
+
+        self.assertEqual(invoice.paid, invoice.total)
