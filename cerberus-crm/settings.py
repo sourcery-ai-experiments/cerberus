@@ -27,7 +27,7 @@ env = os.environ.copy()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-DEBUG = "DEBUG" in env
+DEBUG = "SECRET_KEY" not in env
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@" if DEBUG else env["SECRET_KEY"]
