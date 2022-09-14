@@ -17,7 +17,7 @@ attrs==22.1.0
     # via jsonschema
 babel==2.10.3
     # via py-moneyed
-certifi==2022.6.15.1
+certifi==2022.9.14
     # via requests
 cffi==1.15.1
     # via cryptography
