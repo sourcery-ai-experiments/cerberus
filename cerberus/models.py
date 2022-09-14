@@ -3,7 +3,6 @@ import os
 import re
 from collections.abc import Callable, Iterable
 from datetime import date, datetime, timedelta
-from decimal import InvalidOperation
 from enum import Enum
 from typing import Optional
 
@@ -29,7 +28,7 @@ from django_fsm import FSMField, Transition, transition
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
 from model_utils.fields import MonitorField
-from moneyed import GBP, Money
+from moneyed import Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 from xhtml2pdf import pisa
@@ -554,31 +553,21 @@ class Invoice(models.Model):
             raise Exception(f"media URI must start with {sUrl} or {mUrl}")
         return path
 
-    _subtotal = None
-
     @property
     def subtotal(self):
-        try:
-            return Money(self._subtotal, GBP)
-        except InvalidOperation:
-            return None
+        return sum(c.line for c in self.charges.all())
 
     @subtotal.setter
     def subtotal(self, value):
-        self._subtotal = value
+        pass
 
     @property
     def total(self):
-        try:
-            return Money(self._total, GBP)
-        except InvalidOperation:
-            return None
-
-    _total = None
+        return self.subtotal + self.adjustment
 
     @total.setter
     def total(self, value):
-        self._total = value
+        pass
 
     def get_pdf(self, renderTo=None):
         template_path = "cerberus/invoice.html"
