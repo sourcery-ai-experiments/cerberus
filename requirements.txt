@@ -86,7 +86,7 @@ gunicorn==20.1.0
     # via Cerberus (pyproject.toml)
 html5lib==1.1
     # via xhtml2pdf
-idna==3.3
+idna==3.4
     # via requests
 inflection==0.5.1
     # via drf-spectacular
