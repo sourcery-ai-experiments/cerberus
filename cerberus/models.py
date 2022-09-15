@@ -455,9 +455,6 @@ class Invoice(models.Model):
 
         self.send_notes = send_notes
 
-        if not send_email:
-            self.send_notes = "\n".join(n for n in [send_notes, "Email not sent"] if n is not None)
-
         if send_email:
             self.sent_to = to or self.customer.invoice_email
             self.send_email([f"{self.customer.name} <{self.customer.invoice_email}>"])
@@ -513,8 +510,8 @@ class Invoice(models.Model):
     def void(self) -> None:
         pass
 
-    def delete(self, using=None, keep_parents=False) -> None:
-        if self.state == self.States.DRAFT.value:
+    def delete(self, using=None, keep_parents=False, force=False) -> None:
+        if self.state == self.States.DRAFT.value or force:
             super().delete(using=using, keep_parents=keep_parents)
         else:
             self.void()
