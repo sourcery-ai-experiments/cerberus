@@ -84,12 +84,12 @@ class InvoiceTests(TestCase):
         expected_state_transitions = ["send", "void"]
         self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
 
-    def create_invoice(self, charge_count=2, charge_ammount=10, adjustment=0) -> Invoice:
+    def create_invoice(self, charge_count=2, charge_amount=10, adjustment=0) -> Invoice:
         invoice = Invoice.objects.create(customer=self.customer, adjustment=adjustment)
         invoice.save()
 
         for _ in range(charge_count):
-            charge = Charge(line=charge_ammount, quantity=1, name="Service", invoice=invoice)
+            charge = Charge(line=charge_amount, quantity=1, name="Service", invoice=invoice)
             charge.save()
 
         return invoice
