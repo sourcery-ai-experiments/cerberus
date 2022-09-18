@@ -35,9 +35,6 @@ class Command(BaseCommand):
         customer_count = 200
         pet_count = int(customer_count * 1.5)
 
-        invoice_per_week = 10
-        invoice_weeks = 10
-
         for _ in range(vet_count - Vet.objects.count()):
             vet = Vet.objects.create(name=fake.company(), phone=fake.phone_number())
             self.stdout.write(f"Created vet {vet.name}")
@@ -98,8 +95,11 @@ class Command(BaseCommand):
                 {"name": "Solo Walk", "cost": 24},
                 {"name": "Dropin", "cost": 10},
             ]
+            invoice_per_week = 10
+            invoice_weeks = 10
+
             for weeks in range(invoice_weeks, -1, -1):
-                date = datetime.today() - timedelta(weeks=weeks)
+                date = datetime.now() - timedelta(weeks=weeks)
                 start = date - timedelta(days=date.weekday())
                 end = start + timedelta(days=6)
 

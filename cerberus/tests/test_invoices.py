@@ -162,7 +162,7 @@ class InvoiceTests(TestCase):
 
     def test_totals_match(self):
         customers = []
-        for i in range(10):
+        for _ in range(10):
             customer: Customer = baker.make(Customer, invoice_email="bob@example.com")
             customers.append(customer)
 
