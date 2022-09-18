@@ -22,7 +22,8 @@ from taggit.models import Tag
 
 # Locals
 from .filters import BookingFilter, CustomerFilter, InvoiceFilter, PetFilter
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
+from .permissions import IsUsers
 from .serializers import (
     AddressSerializer,
     BookingSerializer,
@@ -35,6 +36,7 @@ from .serializers import (
     InvoiceSerializer,
     PetSerializer,
     ServiceSerializer,
+    UserSettingsSerializer,
     VetSerializer,
 )
 
@@ -310,6 +312,12 @@ class TagListView(APIView):
         return Response([tag.name for tag in tags])
 
 
+class UserSettingsViewSet(ChangeStateMixin, viewsets.ModelViewSet):
+    queryset = UserSettings.objects.all()
+    serializer_class = UserSettingsSerializer
+    permission_classes = default_permissions + [IsUsers]
+
+
 router = routers.DefaultRouter()
 router.register(r"address", AddressViewSet)
 router.register(r"service", ServiceViewSet)
@@ -321,6 +329,7 @@ router.register(r"contact", ContactViewSet)
 router.register(r"customer", CustomerViewSet)
 router.register(r"pet", PetViewSet)
 router.register(r"vet", VetViewSet)
+router.register(r"usersettings", UserSettingsViewSet)
 
 
 urls = [path("tag/", TagListView.as_view())]

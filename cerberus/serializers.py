@@ -11,7 +11,7 @@ from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
 # Locals
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, Vet
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
 
 default_read_only = [
     "id",
@@ -291,3 +291,11 @@ class InvoiceSendSerializer(serializers.Serializer):
     to = serializers.EmailField(default="")
     send_email = serializers.BooleanField(default=True)
     send_notes = serializers.CharField(default="")
+
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = "__all__"
+
+        extra_kwargs = {"user": {"read_only": True}}
