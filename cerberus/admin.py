@@ -2,7 +2,21 @@
 from django.contrib import admin
 
 # Locals
-from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, InvoiceOpen, Payment, Pet, Service, Vet
+from .models import (
+    Address,
+    Booking,
+    BookingSlot,
+    Charge,
+    Contact,
+    Customer,
+    Invoice,
+    InvoiceOpen,
+    Payment,
+    Pet,
+    Service,
+    UserSettings,
+    Vet,
+)
 
 
 @admin.action(description="Mark selected inactive")
@@ -60,6 +74,10 @@ class PaymentAdmin(admin.ModelAdmin):
     pass
 
 
+class UserSettingsAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Pet, PetAdmin)
 admin.site.register(Vet, VetAdmin)
@@ -72,3 +90,4 @@ admin.site.register(Contact, ContactAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(InvoiceOpen, InvoiceOpenAdmin)
 admin.site.register(Payment, PaymentAdmin)
+admin.site.register(UserSettings, UserSettingsAdmin)

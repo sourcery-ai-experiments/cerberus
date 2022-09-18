@@ -8,6 +8,7 @@ from typing import Optional
 
 # Django
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
@@ -43,6 +44,11 @@ from .exceptions import (
     InvalidEmail,
 )
 from .utils import choice_length
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    ui_settings = models.JSONField(default=dict)
 
 
 class CustomerManager(models.Manager["Customer"]):
