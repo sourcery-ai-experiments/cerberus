@@ -552,7 +552,7 @@ class Invoice(models.Model):
 
     @property
     def subtotal(self):
-        return sum(c.line for c in self.charges.all())
+        return sum(c.total_money for c in self.charges.all())
 
     @subtotal.setter
     def subtotal(self, value):

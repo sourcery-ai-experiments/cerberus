@@ -143,3 +143,14 @@ class InvoiceTests(TestCase):
         invoice.pay()
 
         self.assertEqual(invoice.paid, invoice.total)
+
+    def test_complex_totals(self):
+        invoice: Invoice = Invoice.objects.create(customer=self.customer)
+        invoice.save()
+
+        Charge.objects.create(line=15, quantity=2, invoice=invoice)
+        Charge.objects.create(line=10, quantity=3, invoice=invoice)
+
+        invoice.send(send_email=False)
+
+        self.assertEqual(invoice.total, Money(60, "GBP"))
