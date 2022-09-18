@@ -1,3 +1,6 @@
+# Standard Library
+import random
+
 # Django
 from django.test import TestCase
 
@@ -9,6 +12,8 @@ from xhtml2pdf.context import pisaContext
 
 # Locals
 from ..models import Charge, Customer, Invoice, Payment
+
+baker.generators.add("djmoney.models.fields.MoneyField", lambda: Money(random.uniform(1.0, 100.0), "GBP"))
 
 
 class InvoiceTests(TestCase):
@@ -154,3 +159,27 @@ class InvoiceTests(TestCase):
         invoice.send(send_email=False)
 
         self.assertEqual(invoice.total, Money(60, "GBP"))
+
+    def test_totals_match(self):
+        customers = []
+        for i in range(10):
+            customer: Customer = baker.make(Customer, invoice_email="bob@example.com")
+            customers.append(customer)
+
+        for i in range(20):
+            invoice: Invoice = baker.make(Invoice, customer=customers[i % len(customers)])
+            for _ in range(3):
+                baker.make(Charge, invoice=invoice)
+
+            invoice.send(send_email=False)
+
+        total_totals = Money(0, "GBP")
+        for customer in Customer.objects.all():
+            total = Money(0, "GBP")
+            for invoice in customer.invoices.all():
+                total += invoice.total
+
+            self.assertEqual(customer.invoiced_unpaid, total)
+            total_totals += total
+
+        self.assertGreater(total_totals, Money(0, "GBP"))

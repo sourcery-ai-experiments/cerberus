@@ -77,6 +77,8 @@ class Customer(models.Model):
     contacts: "QuerySet[Contact]"
     charges: "QuerySet[Charge]"
     invoices: "QuerySet[Invoice]"
+    unpaid_count: int
+    overdue_count: int
 
     # Fields
     first_name = models.CharField(max_length=125)
@@ -119,6 +121,16 @@ class Customer(models.Model):
         # but has a getter for nested serialization
         # so it needs a setter to stop attribution error
         pass
+
+    _invoiced_unpaid = None
+
+    @property
+    def invoiced_unpaid(self):
+        return self._invoiced_unpaid
+
+    @invoiced_unpaid.setter
+    def invoiced_unpaid(self, value):
+        self._invoiced_unpaid = Money(value, "GBP")
 
     @property
     def issues(self):
@@ -551,15 +563,15 @@ class Invoice(models.Model):
         return path
 
     @property
-    def subtotal(self):
-        return sum(c.total_money for c in self.charges.all())
+    def subtotal(self) -> Money:
+        return Money(0, "GBP") + sum(c.total_money for c in self.charges.all())
 
     @subtotal.setter
     def subtotal(self, value):
         pass
 
     @property
-    def total(self):
+    def total(self) -> Money:
         return self.subtotal + self.adjustment
 
     @total.setter
