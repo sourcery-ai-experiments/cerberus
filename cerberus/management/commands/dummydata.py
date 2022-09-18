@@ -1,16 +1,27 @@
 # Standard Library
 import random
 import re
+from datetime import datetime, timedelta
 
 # Django
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
+from django.db.models import QuerySet
+from django.utils.timezone import make_aware
 
 # Third Party
 from faker import Faker
 
 # First Party
-from cerberus.models import Contact, Customer, Pet, Vet
+from cerberus.models import Charge, Contact, Customer, Invoice, Pet, Vet
+
+try:
+    # Third Party
+    from freezegun import freeze_time
+
+    has_freezegun = True
+except ModuleNotFoundError:
+    has_freezegun = False
 
 
 class Command(BaseCommand):
@@ -42,7 +53,7 @@ class Command(BaseCommand):
 
             self.stdout.write(f"Created customer {customer.name}")
 
-        customers = Customer.objects.all()
+        customers: QuerySet[Customer] = Customer.objects.all()
 
         for customer in customers:
             r = random.Random()
@@ -77,3 +88,46 @@ class Command(BaseCommand):
                 allergies=fake.text(max_nb_chars=200) if fake.pybool() else "",
             )
             self.stdout.write(f"Created pet {pet.name}")
+
+        if has_freezegun:
+            services = [
+                {"name": "Walk", "cost": 12},
+                {"name": "Solo Walk", "cost": 24},
+                {"name": "Dropin", "cost": 10},
+            ]
+            invoice_per_week = 10
+            invoice_weeks = 10
+
+            for weeks in range(invoice_weeks, -1, -1):
+                date = datetime.now() - timedelta(weeks=weeks)
+                start = date - timedelta(days=date.weekday())
+                end = start + timedelta(days=6)
+
+                invoice_count = Invoice.objects.filter(created__gte=make_aware(start), created__lte=make_aware(end)).count()
+
+                with freeze_time(date):
+                    for _ in range(invoice_per_week - invoice_count):
+                        self.stdout.write("Creating invoice")
+
+                        customer = random.choice(customers)
+                        if customer.invoice_email == "":
+                            customer.invoice_email = fake.ascii_email()
+                            customer.save()
+
+                        adjustment = random.choice([0, 0, 0, 0, 0, random.choice([2, 10, 12.5, 20])])
+                        invoice: Invoice = Invoice.objects.create(customer=customer, adjustment=adjustment)
+                        invoice.save()
+
+                        for _ in range(random.randrange(1, 5)):
+                            service = random.choice(services)
+                            charge = Charge(
+                                line=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
+                            )
+                            charge.save()
+
+                        stage = random.randrange(1, 5)
+                        if stage >= 1:
+                            invoice.send(send_email=False)
+
+                        if stage >= 2:
+                            invoice.pay()

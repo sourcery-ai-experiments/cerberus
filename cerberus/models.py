@@ -3,7 +3,6 @@ import os
 import re
 from collections.abc import Callable, Iterable
 from datetime import date, datetime, timedelta
-from decimal import InvalidOperation
 from enum import Enum
 from typing import Optional
 
@@ -29,7 +28,7 @@ from django_fsm import FSMField, Transition, transition
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
 from model_utils.fields import MonitorField
-from moneyed import GBP, Money
+from moneyed import Money
 from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 from xhtml2pdf import pisa
@@ -78,6 +77,8 @@ class Customer(models.Model):
     contacts: "QuerySet[Contact]"
     charges: "QuerySet[Charge]"
     invoices: "QuerySet[Invoice]"
+    unpaid_count: int
+    overdue_count: int
 
     # Fields
     first_name = models.CharField(max_length=125)
@@ -120,6 +121,16 @@ class Customer(models.Model):
         # but has a getter for nested serialization
         # so it needs a setter to stop attribution error
         pass
+
+    _invoiced_unpaid = None
+
+    @property
+    def invoiced_unpaid(self):
+        return self._invoiced_unpaid
+
+    @invoiced_unpaid.setter
+    def invoiced_unpaid(self, value):
+        self._invoiced_unpaid = Money(value, "GBP")
 
     @property
     def issues(self):
@@ -385,6 +396,7 @@ class InvoiceManager(models.Manager["Invoice"]):
 
 class Invoice(models.Model):
     charges: models.QuerySet["Charge"]
+    payments: models.QuerySet["Payment"]
     get_available_state_transitions: Callable[[], Iterable[Transition]]
 
     class States(models.TextChoices):
@@ -455,9 +467,6 @@ class Invoice(models.Model):
 
         self.send_notes = send_notes
 
-        if not send_email:
-            self.send_notes = "\n".join(n for n in [send_notes, "Email not sent"] if n is not None)
-
         if send_email:
             self.sent_to = to or self.customer.invoice_email
             self.send_email([f"{self.customer.name} <{self.customer.invoice_email}>"])
@@ -491,19 +500,30 @@ class Invoice(models.Model):
 
         return email.send()
 
+    @property
+    def paid(self):
+        return sum(p.amount for p in self.payments.all())
+
+    @property
+    def unpaid(self):
+        return (self.total or 0) - self.paid
+
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
     def pay(self):
         for charge in self.charges.all():
             charge.pay()
 
+        payment = Payment(invoice=self, amount=self.unpaid)
+        payment.save()
+
     @save_after
     @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)
     def void(self) -> None:
         pass
 
-    def delete(self, using=None, keep_parents=False) -> None:
-        if self.state == self.States.DRAFT.value:
+    def delete(self, using=None, keep_parents=False, force=False) -> None:
+        if self.state == self.States.DRAFT.value or force:
             super().delete(using=using, keep_parents=keep_parents)
         else:
             self.void()
@@ -542,31 +562,21 @@ class Invoice(models.Model):
             raise Exception(f"media URI must start with {sUrl} or {mUrl}")
         return path
 
-    _subtotal = None
-
     @property
-    def subtotal(self):
-        try:
-            return Money(self._subtotal, GBP)
-        except InvalidOperation:
-            return None
+    def subtotal(self) -> Money:
+        return Money(0, "GBP") + sum(c.total_money for c in self.charges.all())
 
     @subtotal.setter
     def subtotal(self, value):
-        self._subtotal = value
+        pass
 
     @property
-    def total(self):
-        try:
-            return Money(self._total, GBP)
-        except InvalidOperation:
-            return None
-
-    _total = None
+    def total(self) -> Money:
+        return self.subtotal + self.adjustment
 
     @total.setter
     def total(self, value):
-        self._total = value
+        pass
 
     def get_pdf(self, renderTo=None):
         template_path = "cerberus/invoice.html"
@@ -605,6 +615,22 @@ class Invoice(models.Model):
 class InvoiceOpen(models.Model):
     opened = models.DateTimeField(auto_now_add=True, editable=False)
     invoice = models.ForeignKey("cerberus.Invoice", on_delete=models.CASCADE, related_name="opens")
+
+
+class Payment(models.Model):
+    amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
+    invoice = models.ForeignKey(
+        "cerberus.Invoice",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="payments",
+    )
+
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    last_updated = models.DateTimeField(auto_now=True, editable=False)
+
+    def __str__(self) -> str:
+        return f"{self.amount} for {self.invoice}"
 
 
 class BookingSlot(models.Model):
