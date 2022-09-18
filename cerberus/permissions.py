@@ -23,6 +23,6 @@ class IsUsers(permissions.BasePermission):
             return False
 
         try:
-            return bool(obj.user == request.user)
+            return obj.user == request.user
         except AttributeError:
             return False
