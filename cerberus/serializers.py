@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 # Third Party
+from django_fsm_log.models import StateLog
 from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
@@ -69,6 +70,26 @@ class NestedObjectSerializer:
             pass
 
         return attrs
+
+
+class StatusLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StateLog
+        fields = [
+            "timestamp",
+            "source_state",
+            "state",
+            "transition",
+            "description",
+            "by",
+        ]
+        read_only = True
+
+    def get_fields(self, *args, **kwargs):
+        fields = super().get_fields(*args, **kwargs)
+        for field in fields:
+            fields[field].read_only = True
+        return fields
 
 
 class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
@@ -229,6 +250,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     total = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     available_state_transitions = serializers.ListField(read_only=True, child=serializers.CharField(read_only=True))
     can_edit = serializers.BooleanField(read_only=True)
+    state_log = StatusLogSerializer(read_only=True, many=True)
 
     class Meta:
         model = Invoice
