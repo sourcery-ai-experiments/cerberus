@@ -223,7 +223,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     vet = VetSerializer(many=False, read_only=True, exclude=("customers", "pets"))
     vet_id = serializers.IntegerField(write_only=True)
     tags = TagListSerializerField(required=False)
-    invoiced_unpaid = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    invoiced_unpaid = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     unpaid_count = serializers.IntegerField(read_only=True)
     overdue_count = serializers.IntegerField(read_only=True)
     issues = serializers.ListSerializer(child=serializers.CharField(read_only=True), read_only=True)
