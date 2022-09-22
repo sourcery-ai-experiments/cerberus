@@ -460,7 +460,20 @@ class Invoice(models.Model):
 
     @property
     def state_log(self):
-        return StateLog.objects.for_(self)
+        created = {
+            "pk": 0,
+            "timestamp": self.created,
+            "source_state": None,
+            "state": self.States.DRAFT,
+            "transition": None,
+            "description": "Created",
+            "by": None,
+        }
+        createdLog = StateLog(**created)
+
+        log = [createdLog] + list(StateLog.objects.for_(self))
+
+        return log
 
     @save_after
     @transition(
