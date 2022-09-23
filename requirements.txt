@@ -215,9 +215,9 @@ djangorestframework-simplejwt[crypto]==5.2.0 \
     --hash=sha256:a60b09afb27d91ad1d7ac904cc632bd52cecead8f389f0fa1532ceb0fb757a74 \
     --hash=sha256:bcc4cb74dcb637ca1e17eed35276bd618ab19491f8c53e65dee6271177c355e8
     # via Cerberus (pyproject.toml)
-drf-spectacular==0.24.0 \
-    --hash=sha256:a59e33cfc87555dde027bc1bd0e379fbfd558e55a3abd9ebf975dee8c9e5052e \
-    --hash=sha256:bf22390e8d0aa53d81c5abf718ad4989c4e2eab133decc411a15c7e4ae3f6baf
+drf-spectacular==0.24.1 \
+    --hash=sha256:0befbe0520ae8ebcfcfb1b2e43be61726e7b69f71085b46e67f7072909d1cf1f \
+    --hash=sha256:28863b528d92e40a77de6707abb6c0a813b2244793aacde82b34116b83b50dd1
     # via Cerberus (pyproject.toml)
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
