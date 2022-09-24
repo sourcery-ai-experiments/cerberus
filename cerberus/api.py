@@ -13,6 +13,7 @@ from django.urls import path
 # Third Party
 from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
+from django_fsm_log.helpers import FSMLogDescriptor
 from rest_framework import filters as drf_filters
 from rest_framework import permissions, routers, viewsets
 from rest_framework.decorators import action
@@ -64,15 +65,16 @@ class ActiveMixin:
 
 
 class ChangeStateMixin:
-    def change_state(self, action: str, **kwargs) -> Response:
+    def change_state(self, action: str, request, **kwargs) -> Response:
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
         item = self.get_object()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
-            getattr(item, action)(**kwargs)
-            item.save()
-            status = 200
+            with FSMLogDescriptor(item, "by", request.user):
+                getattr(item, action)(**kwargs)
+                item.save()
+                status = 200
 
         serializer = self.get_serializer(item)
 
@@ -100,23 +102,23 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
 
     @action(detail=True, methods=["put"])
     def process(self, request, pk=None):
-        return self.change_state("process")
+        return self.change_state("process", request)
 
     @action(detail=True, methods=["put"])
     def confirm(self, request, pk=None):
-        return self.change_state("confirm")
+        return self.change_state("confirm", request)
 
     @action(detail=True, methods=["put"])
     def cancel(self, request, pk=None):
-        return self.change_state("cancel")
+        return self.change_state("cancel", request)
 
     @action(detail=True, methods=["put"])
     def reopen(self, request, pk=None):
-        return self.change_state("reopen")
+        return self.change_state("reopen", request)
 
     @action(detail=True, methods=["put"])
     def complete(self, request, pk=None):
-        return self.change_state("complete")
+        return self.change_state("complete", request)
 
 
 class BookingSlotViewSet(viewsets.ModelViewSet):
@@ -170,15 +172,15 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def send(self, request, pk=None):
         serializer = InvoiceSendSerializer(data=request.data)
         serializer.is_valid()
-        return self.change_state("send", **serializer.validated_data)
+        return self.change_state("send", request, **serializer.validated_data)
 
     @action(detail=True, methods=["put"])
     def pay(self, request, pk=None):
-        return self.change_state("pay")
+        return self.change_state("pay", request)
 
     @action(detail=True, methods=["put"])
     def void(self, request, pk=None):
-        return self.change_state("void")
+        return self.change_state("void", request)
 
     @action(detail=True, methods=["get"])
     def resend(self, request, pk=None):
