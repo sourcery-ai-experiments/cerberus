@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 # Third Party
+from django_fsm_log.models import StateLog
 from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
@@ -69,6 +70,26 @@ class NestedObjectSerializer:
             pass
 
         return attrs
+
+
+class StatusLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StateLog
+        fields = [
+            "timestamp",
+            "source_state",
+            "state",
+            "transition",
+            "description",
+            "by",
+        ]
+        read_only = True
+
+    def get_fields(self, *args, **kwargs):
+        fields = super().get_fields(*args, **kwargs)
+        for field in fields:
+            fields[field].read_only = True
+        return fields
 
 
 class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
@@ -202,7 +223,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
     vet = VetSerializer(many=False, read_only=True, exclude=("customers", "pets"))
     vet_id = serializers.IntegerField(write_only=True)
     tags = TagListSerializerField(required=False)
-    invoiced_unpaid = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    invoiced_unpaid = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     unpaid_count = serializers.IntegerField(read_only=True)
     overdue_count = serializers.IntegerField(read_only=True)
     issues = serializers.ListSerializer(child=serializers.CharField(read_only=True), read_only=True)
@@ -229,6 +250,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     total = MoneyField(max_digits=10, decimal_places=2, read_only=True)
     available_state_transitions = serializers.ListField(read_only=True, child=serializers.CharField(read_only=True))
     can_edit = serializers.BooleanField(read_only=True)
+    state_log = StatusLogSerializer(read_only=True, many=True)
 
     class Meta:
         model = Invoice

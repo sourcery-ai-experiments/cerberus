@@ -26,6 +26,7 @@ from django.utils.translation import gettext_lazy as _
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from django_fsm_log.models import StateLog
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
 from model_utils.fields import MonitorField
@@ -456,6 +457,21 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
+
+    @property
+    def state_log(self):
+        created = {
+            "pk": 0,
+            "timestamp": self.created,
+            "source_state": None,
+            "state": self.States.DRAFT,
+            "transition": None,
+            "description": "Created",
+            "by": None,
+        }
+        createdLog = StateLog(**created)
+
+        return [createdLog] + list(StateLog.objects.for_(self))
 
     @save_after
     @transition(
