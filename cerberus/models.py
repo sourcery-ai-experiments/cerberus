@@ -471,9 +471,7 @@ class Invoice(models.Model):
         }
         createdLog = StateLog(**created)
 
-        log = [createdLog] + list(StateLog.objects.for_(self))
-
-        return log
+        return [createdLog] + list(StateLog.objects.for_(self))
 
     @save_after
     @transition(
