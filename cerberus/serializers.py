@@ -286,6 +286,12 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
                 charge.save()
                 charges.append(charge)
 
+        ids = list(map(lambda c: c.id, charges))
+
+        for charge in invoice.charges.all():
+            if charge.id not in ids:
+                charge.delete()
+
         return super().update(invoice, validated_data)
 
     @transaction.atomic
