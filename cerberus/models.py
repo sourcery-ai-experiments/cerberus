@@ -367,7 +367,7 @@ class Charge(PolymorphicModel):
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.VOID.value)
     def void(self) -> None:
-        pass
+        self.invoice = None
 
     @save_after
     @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
