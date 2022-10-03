@@ -161,6 +161,10 @@ class BookingSerializer(DynamicFieldsModelSerializer):
         ]
 
 
+class BookingMoveSerializer(serializers.Serializer):
+    to = serializers.DateField()
+
+
 class AddressSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 

@@ -27,6 +27,7 @@ from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, In
 from .permissions import IsUsers
 from .serializers import (
     AddressSerializer,
+    BookingMoveSerializer,
     BookingSerializer,
     BookingSlotSerializer,
     ChargeSerializer,
@@ -101,6 +102,15 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     filterset_class = BookingFilter
 
     @action(detail=True, methods=["put"])
+    def move_booking(self, request, pk=None):
+        # item = self.get_object()
+
+        serializer = BookingMoveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        return True
+
+    @action(detail=True, methods=["put"])
     def process(self, request, pk=None):
         return self.change_state("process", request)
 
@@ -171,7 +181,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=["put"])
     def send(self, request, pk=None):
         serializer = InvoiceSendSerializer(data=request.data)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         return self.change_state("send", request, **serializer.validated_data)
 
     @action(detail=True, methods=["put"])
