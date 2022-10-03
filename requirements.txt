@@ -211,9 +211,9 @@ djangorestframework==3.14.0 \
     #   Cerberus (pyproject.toml)
     #   djangorestframework-simplejwt
     #   drf-spectacular
-djangorestframework-simplejwt[crypto]==5.2.0 \
-    --hash=sha256:a60b09afb27d91ad1d7ac904cc632bd52cecead8f389f0fa1532ceb0fb757a74 \
-    --hash=sha256:bcc4cb74dcb637ca1e17eed35276bd618ab19491f8c53e65dee6271177c355e8
+djangorestframework-simplejwt[crypto]==5.2.1 \
+    --hash=sha256:1965246979f521c24a3be81d305c3df40bb564e136823868aebc1a1b16e51b8c \
+    --hash=sha256:7613874c322a3f6e330cc118f9f00a3db957fea7f8e3bed81ba451853cd1dbd5
     # via Cerberus (pyproject.toml)
 drf-spectacular==0.24.2 \
     --hash=sha256:b276e6f7bda6dfb911e742dab87c6e97bc67da2dafe82d6fd8df7cec6c8b03ec \
