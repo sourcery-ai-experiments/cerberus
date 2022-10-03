@@ -22,10 +22,10 @@ help: ## Display this help
 	python -m pip install pre-commit
 	pre-commit autoupdate
 
-requirements.%.in:
+requirements.%.in: requirements.txt
 	echo "-c requirements.txt" > $@
 
-requirements.%.txt: requirements.%.in requirements.txt
+requirements.%.txt: requirements.%.in
 	@echo "Builing $@"
 	@python -m piptools compile --generate-hashes -q -o $@ $^
 

@@ -1,4 +1,3 @@
-# djangorestframework-stubs[compatible-mypy]
 -c requirements.txt
 black
 django-debug-toolbar
