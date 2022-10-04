@@ -29,6 +29,7 @@ from .serializers import (
     AddressSerializer,
     BookingMoveSerializer,
     BookingSerializer,
+    BookingSlotMoveSerializer,
     BookingSlotSerializer,
     ChargeSerializer,
     ContactSerializer,
@@ -109,6 +110,19 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
 
         item: Booking = self.get_object()
         item.move_booking(serializer.validated_data["to"])
+
+        booking = BookingSerializer(item)
+        return Response(booking.data)
+
+    @action(detail=True, methods=["put"])
+    def move_booking_slot(self, request, pk=None):
+        serializer = BookingSlotMoveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        item: Booking = self.get_object()
+        item.booking_slot.move_slot(data["start"], data["end"])
 
         booking = BookingSerializer(item)
         return Response(booking.data)
