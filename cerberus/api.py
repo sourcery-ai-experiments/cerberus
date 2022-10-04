@@ -36,6 +36,7 @@ from .serializers import (
     CustomerSerializer,
     InvoiceSendSerializer,
     InvoiceSerializer,
+    PetListSerializer,
     PetSerializer,
     ServiceSerializer,
     UserSettingsSerializer,
@@ -306,6 +307,19 @@ class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = PetFilter
+
+    @action(detail=False, methods=["get"])
+    def dropdown(self, request):
+        serializer = PetListSerializer(self.queryset.filter(active=True).filter(customer__active=True), many=True)
+
+        return Response(
+            {
+                "results": serializer.data,
+                "next": None,
+                "previous": None,
+                "count": len(serializer.data),
+            }
+        )
 
 
 class VetViewSet(viewsets.ModelViewSet):

@@ -244,6 +244,14 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
         return super().validate(attrs)
 
 
+class PetListSerializer(serializers.ModelSerializer):
+    customer = serializers.StringRelatedField()
+
+    class Meta:
+        model = Pet
+        fields = ["id", "name", "customer"]
+
+
 class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     name = serializers.CharField(read_only=True)
     customer = CustomerSerializer(read_only=True, fields=("id", "name", "invoice_address"))
