@@ -1,4 +1,5 @@
 # Standard Library
+import contextlib
 from collections import Counter
 
 # Django
@@ -21,7 +22,5 @@ class Command(BaseCommand):
                 if counts[Contact.Type.EMAIL] == 1:
                     self.stdout.write(f"Can fix invoice email for {customer.name}")
                     for contact in customer.contacts.all():
-                        try:
+                        with contextlib.suppress(InvalidEmail):
                             contact.set_as_invoice()
-                        except InvalidEmail:
-                            pass

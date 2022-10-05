@@ -1,4 +1,5 @@
 # Standard Library
+import contextlib
 from enum import Enum
 
 # Django
@@ -62,13 +63,10 @@ class NestedObjectSerializer:
         except (AttributeError, KeyError):
             pass
         except ObjectDoesNotExist as e:
-            raise serializers.ValidationError({id_name: [str(e)]})
+            raise serializers.ValidationError({id_name: [str(e)]}) from e
 
-        try:
+        with contextlib.suppress(AttributeError, KeyError):
             del attrs[id_name]
-        except (AttributeError, KeyError):
-            pass
-
         return attrs
 
 

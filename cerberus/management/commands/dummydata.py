@@ -1,4 +1,5 @@
 # Standard Library
+import contextlib
 import random
 import re
 from datetime import datetime, timedelta
@@ -59,15 +60,12 @@ class Command(BaseCommand):
             r = random.Random()
             r.seed(customer.id)
             for _ in range(r.randint(0, 5) - customer.contacts.count()):
-                try:
+                with contextlib.suppress(IntegrityError):
                     Contact.objects.create(
                         customer=customer,
                         name=random.choice(["Home", "Work", "Mobile", fake.name()]),
                         details=fake.phone_number() if fake.pybool() else fake.ascii_email(),
                     )
-                except IntegrityError:
-                    pass
-
         for _ in range(pet_count - Pet.objects.count()):
             if fake.pybool():
                 name = fake.first_name_male()
