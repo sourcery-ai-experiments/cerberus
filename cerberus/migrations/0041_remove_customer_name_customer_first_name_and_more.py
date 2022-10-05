@@ -6,7 +6,7 @@ import re
 
 def convert_name(apps, schema_editor):
     Customer = apps.get_model("taggit", "Tag")
-    
+
     titles = "|".join(["Sir", "Madam", "Mr", "Mrs", "Ms", "Miss", "Dr", "Professor"])        
     regex = re.compile(fr"^({titles})\s+" , re.IGNORECASE)
 
