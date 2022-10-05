@@ -22,7 +22,7 @@ jobs:
       - python/install-packages:
           pip-dependency-file: requirements.txt
           pkg-manager: pip
-      - python/install-dev-packages:
+      - python/install-packages:
           pip-dependency-file: requirements.dev.txt
           pkg-manager: pip
       - save_cache:
