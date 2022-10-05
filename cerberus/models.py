@@ -736,8 +736,12 @@ class BookingSlot(models.Model):
         return all(id in ids for id in bookingIDs)
 
     @classmethod
-    def clean_empty_slots(cls):
-        cls.objects.filter(bookings__isnull=True).delete()
+    def clean_empty_slots(cls, future=True):
+        slots = cls.objects.filter(bookings__isnull=True)
+        if future:
+            slots = slots.filter(start__gte=datetime.now())
+
+        slots.delete()
 
     @property
     def service(self) -> Optional["Service"]:
@@ -813,6 +817,8 @@ class Booking(models.Model):
                 self.booking_slot.save()
 
             super().save(*args, **kwargs)
+
+            BookingSlot.clean_empty_slots()
 
     def create_charge(self) -> Charge:
         charge = BookingCharge(

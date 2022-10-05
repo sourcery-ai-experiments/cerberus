@@ -225,6 +225,29 @@ class BookingSlotCreation(TestCase):
         with self.assertRaises(BookingSlotMaxCustomers):
             self.create_booking(pet=pet)
 
+    def test_clean_slots(self):
+        baker.make(BookingSlot)
+
+        self.assertEqual(BookingSlot.objects.all().count(), 1)
+        BookingSlot.clean_empty_slots()
+        self.assertEqual(BookingSlot.objects.all().count(), 1)
+
+    def test_clean_future_slots(self):
+        baker.make(BookingSlot, start=datetime.now() + timedelta(hours=1))
+        baker.make(BookingSlot, start=datetime.now() - timedelta(hours=1))
+
+        self.assertEqual(BookingSlot.objects.all().count(), 2)
+        BookingSlot.clean_empty_slots()
+        self.assertEqual(BookingSlot.objects.all().count(), 1)
+
+    def test_clean_all_slots(self):
+        baker.make(BookingSlot, start=datetime.now() + timedelta(hours=1))
+        baker.make(BookingSlot, start=datetime.now() - timedelta(hours=1))
+
+        self.assertEqual(BookingSlot.objects.all().count(), 2)
+        BookingSlot.clean_empty_slots(future=False)
+        self.assertEqual(BookingSlot.objects.all().count(), 0)
+
 
 class test_booking_states(TestCase):
     def setUp(self) -> None:
