@@ -133,9 +133,10 @@ class ServiceSerializer(DynamicFieldsModelSerializer):
         read_only_fields = default_read_only
 
 
-class BookingSerializer(DynamicFieldsModelSerializer):
+class BookingSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
     id = serializers.ReadOnlyField()
-    service = ServiceSerializer()
+    service = ServiceSerializer(read_only=True)
+    service_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Booking
@@ -150,12 +151,15 @@ class BookingSerializer(DynamicFieldsModelSerializer):
             "state",
             "pet",
             "service",
+            "service_id",
             "booking_slot",
             "can_move",
             "available_state_transitions",
         ]
         read_only_fields = default_read_only + [
             "state",
+            "name",
+            "booking_slot",
         ]
 
 
