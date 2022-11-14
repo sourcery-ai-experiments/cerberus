@@ -196,9 +196,9 @@ django-polymorphic==3.1.0 \
     --hash=sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e \
     --hash=sha256:d6955b5308bf6e41dcb22ba7c96f00b51dfa497a8a5ab1e9c06c7951bf417bf8
     # via Cerberus (pyproject.toml)
-django-reversion==5.0.3 \
-    --hash=sha256:acb600f8482147312a27bd58e63766aa0383310181e485e6eaa2f42d26502c9b \
-    --hash=sha256:c5955e09c4f290a8a3c5048b3f77d5ba75eae325c0fb1e571b0cd98df6a0017b
+django-reversion==5.0.4 \
+    --hash=sha256:a591cbce8621b5d036a37617554668b5ef2eb9777682e3af20b6401ee87cfbc5 \
+    --hash=sha256:c12bab452d31dd3c244456cf1df383acf14ba147cf99404c5e44412596de42fc
     # via Cerberus (pyproject.toml)
 django-taggit==3.0.0 \
     --hash=sha256:ca2df20399a11321db75988404afb640a08eff61e52bde35f6c16f307004ec9e \
