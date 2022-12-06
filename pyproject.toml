@@ -41,6 +41,9 @@ repository = "http://www.github.com/bengosney/cerberus"
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.package-data]
+cerberus = ["templates/cerberus/*.html"]
+
 [tool.black]
 line-length = 128
 target-version = ['py310']
