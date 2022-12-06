@@ -134,6 +134,7 @@ cryptography==38.0.4 \
     --hash=sha256:ca57eb3ddaccd1112c18fc80abe41db443cc2e9dcb1917078e02dfa010a4f353 \
     --hash=sha256:ce127dd0a6a0811c251a6cddd014d292728484e530d80e872ad9806cfb1c5b3c
     # via
+    #   djangorestframework-simplejwt
     #   pyhanko
     #   pyhanko-certvalidator
 cssselect2==0.7.0 \
