@@ -122,7 +122,8 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         data = serializer.validated_data
 
         item: Booking = self.get_object()
-        item.booking_slot.move_slot(data["start"], data["end"])
+        if item.booking_slot is not None:
+            item.booking_slot.move_slot(data["start"], data["end"])
 
         booking = BookingSerializer(item)
         return Response(booking.data)
