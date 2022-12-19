@@ -458,9 +458,9 @@ python-bidi==0.4.2 \
     --hash=sha256:50eef6f6a0bbdd685f9e8c207f3c9050f5b578d0a46e37c76a9c4baea2cc2e13 \
     --hash=sha256:5347f71e82b3e9976dc657f09ded2bfe39ba8d6777ca81a5b2c56c30121c496e
     # via xhtml2pdf
-pytz==2022.6 \
-    --hash=sha256:222439474e9c98fced559f1709d89e6c9cbf8d79c794ff3eb9f8800064291427 \
-    --hash=sha256:e89512406b793ca39f5971bc999cc538ce125c0e51c27941bef4568b460095e2
+pytz==2022.7 \
+    --hash=sha256:7ccfae7b4b2c067464a6733c6261673fdb8fd1be905460396b97a073e9fa683a \
+    --hash=sha256:93007def75ae22f7cd991c84e02d434876818661f8df9ad5df9e950ff4e52cfd
     # via
     #   babel
     #   djangorestframework
