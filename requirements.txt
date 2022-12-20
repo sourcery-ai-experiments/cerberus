@@ -9,9 +9,9 @@ arabic-reshaper==2.1.4 \
     --hash=sha256:a06297fa436f56bdade4f7751710dbea5645b404debdca5017999e5233daf34a \
     --hash=sha256:e84b3b0ad8eae395641c94d3010b53bfed2c2b1ab80f25eb8cdc01019ddf6426
     # via xhtml2pdf
-asgiref==3.5.2 \
-    --hash=sha256:1d2880b792ae8757289136f1db2b7b99100ce959b2aa57fd69dab783d05afac4 \
-    --hash=sha256:4a29362a6acebe09bf1d6640db38c1dc3d9217c68e6f9f6204d72667fc19a424
+asgiref==3.6.0 \
+    --hash=sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac \
+    --hash=sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506
     # via django
 asn1crypto==1.5.1 \
     --hash=sha256:13ae38502be632115abf8a24cbe5f4da52e3b5231990aff31123c805306ccb9c \
