@@ -588,8 +588,8 @@ sqlparse==0.4.3 \
     --hash=sha256:0323c0ec29cd52bceabc1b4d9d579e311f3e4961b98d174201d5622a23b85e34 \
     --hash=sha256:69ca804846bb114d2ec380e4360a8a340db83f0ccf3afceeb1404df028f57268
     # via django
-svglib==1.5.0 \
-    --hash=sha256:bd76385a8ebad5ccc406e0e110d9db6ca256e84dba08c4169ca72d4a2df27d78
+svglib==1.5.1 \
+    --hash=sha256:3ae765d3a9409ee60c0fb4d24c2deb6a80617aa927054f5bcd7fc98f0695e587
     # via xhtml2pdf
 tinycss2==1.2.1 \
     --hash=sha256:2b80a96d41e7c3914b8cda8bc7f705a4d9c49275616e886103dd839dfc847847 \
