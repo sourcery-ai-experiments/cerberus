@@ -4,10 +4,9 @@
 #
 #    pip-compile --generate-hashes pyproject.toml
 #
-arabic-reshaper==2.1.4 \
-    --hash=sha256:23465907417191521da568bd1ae5064eca801c52f88329ef5fdcfbac9c64888b \
-    --hash=sha256:a06297fa436f56bdade4f7751710dbea5645b404debdca5017999e5233daf34a \
-    --hash=sha256:e84b3b0ad8eae395641c94d3010b53bfed2c2b1ab80f25eb8cdc01019ddf6426
+arabic-reshaper==3.0.0 \
+    --hash=sha256:3f71d5034bb694204a239a6f1ebcf323ac3c5b059de02259235e2016a1a5e2dc \
+    --hash=sha256:ffcd13ba5ec007db71c072f5b23f420da92ac7f268512065d49e790e62237099
     # via xhtml2pdf
 asgiref==3.6.0 \
     --hash=sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac \
