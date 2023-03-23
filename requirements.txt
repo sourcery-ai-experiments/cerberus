@@ -250,9 +250,9 @@ django-fsm==2.8.1 \
     # via
     #   Cerberus (pyproject.toml)
     #   django-fsm-log
-django-fsm-log==3.0.0 \
-    --hash=sha256:8d7b7f5b29cca5567473eba1016af8cd607b8abae1405df70c61f57ed54cd9ab \
-    --hash=sha256:e7f4df38a7c1913a588ae446387017da9687f895b111347a3127781cdd7ce7a7
+django-fsm-log==3.1.0 \
+    --hash=sha256:9ef766f5e6d7c573d1953cf91df73538a611373cc1ef97488eff19a3f71d6ed6 \
+    --hash=sha256:ac4394f22659e7fb8e5ac42d1cc075490cd5a2af37202377ab2a1cb221c5f3db
     # via Cerberus (pyproject.toml)
 django-model-utils==4.3.1 \
     --hash=sha256:2e2e4f13e4f14613134a9777db7ad4265f59a1d8f1384107bcaa3028fe3c87c1 \
