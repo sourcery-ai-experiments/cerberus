@@ -1,12 +1,15 @@
-.PHONY: help clean test install all init dev dist
+.PHONY: help clean test install all init dev
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
 HOOKS=$(.git/hooks/pre-commit)
-INS=$(wildcard requirements.*.in)
-REQS=$(subst in,txt,$(INS))
+REQS=$(wildcard requirements.*.txt)
 
-EMAIL_TEMPLATES=$(subst .mjml,.html,$(wildcard templates/emails/*.mjml))
+PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
+PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
+WHEEL_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/wheel
+PIP_SYNC_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip-sync
+PRE_COMMIT_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pre-commit
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -17,66 +20,60 @@ help: ## Display this help
 .git: .gitignore
 	git init
 
-.pre-commit-config.yaml:
-	curl https://gist.githubusercontent.com/bengosney/4b1f1ab7012380f7e9b9d1d668626143/raw/060fd68f4c7dec75e8481e5f5a4232296282779d/.pre-commit-config.yaml > $@
-	python -m pip install pre-commit
+.pre-commit-config.yaml: $(PRE_COMMIT_PATH) .git
+	curl https://gist.githubusercontent.com/bengosney/4b1f1ab7012380f7e9b9d1d668626143/raw/.pre-commit-config.yaml > $@
 	pre-commit autoupdate
+	@touch $@
 
-requirements.%.in:
-	echo "-c requirements.txt" > $@
+pyproject.toml:
+	curl https://gist.githubusercontent.com/bengosney/f703f25921628136f78449c32d37fcb5/raw/pyproject.toml > $@
+	@touch $@
 
-requirements.%.txt: requirements.%.in requirements.txt
+requirements.%.txt: $(PIP_SYNC_PATH) pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q -o $@ $^
+	@python -m piptools compile --generate-hashes -q --extra $* -o $@ $(filter-out $<,$^)
 
-requirements.txt: pyproject.toml
+requirements.txt: $(PIP_SYNC_PATH) pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q pyproject.toml
+	@python -m piptools compile --generate-hashes -q $(filter-out $<,$^)
 
 .direnv: .envrc
-	python -m pip install --upgrade pip
-	python -m pip install wheel pip-tools
+	@python -m ensurepip
+	@python -m pip install --upgrade pip
 	@touch $@ $^
 
-.git/hooks/pre-commit: .pre-commit-config.yaml
-	python -m pip install pre-commit
+.git/hooks/pre-commit: .git $(PRE_COMMIT_PATH) .pre-commit-config.yaml
 	pre-commit install
 
 .envrc:
 	@echo "Setting up .envrc then stopping"
-	@echo "layout python python3.10" > $@
+	@echo "layout python python3.11" > $@
 	@touch -d '+1 minute' $@
 	@false
 
-piptools:
-	python -m pip install pip-tools
+$(PIP_PATH):
+	@python -m ensurepip
+	@python -m pip install --upgrade pip
 
-init: .direnv .git .git/hooks/pre-commit piptools requirements.dev.txt ## Initalise a enviroment
+$(WHEEL_PATH): $(PIP_PATH)
+	@python -m pip install wheel
+
+$(PIP_SYNC_PATH): $(PIP_PATH) $(WHEEL_PATH)
+	@python -m pip install pip-tools
+
+$(PRE_COMMIT_PATH): $(PIP_PATH) $(WHEEL_PATH)
+	@python -m pip install pre-commit
+
+init: .direnv $(PIP_SYNC_PATH) requirements.dev.txt .git/hooks/pre-commit ## Initalise a enviroment
+	@python -m pip install --upgrade pip
 
 clean: ## Remove all build files
 	find . -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 	rm -rf .pytest_cache
 	rm -f .testmondata
+	rm -rf *.egg-info
 
-install: requirements.txt $(REQS) ## Install development requirements (default)
-	@echo "Installing $^"
-	@python -m piptools sync $^
-
-templates/emails/%.html: templates/emails/%.mjml
-	npx mjml $< --config.minify -o $@
-
-emails: $(EMAIL_TEMPLATES) ## Compile the email templates to django templates
-
-dev: init install ## Start work
-	code .
-
-pytest:
-	pytest
-
-dist:
-	python setup.py sdist
-
-upgrade: pyproject.toml
-	@echo "Upgrading pip packages"
-	@python -m piptools compile -q --upgrade pyproject.toml
+install: $(PIP_SYNC_PATH) requirements.txt $(REQS) ## Install development requirements (default)
+	@echo "Installing $(filter-out $<,$^)"
+	@python -m piptools sync requirements.txt $(REQS)
