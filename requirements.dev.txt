@@ -348,6 +348,7 @@ django==4.2.2 \
     #   djangorestframework-simplejwt
     #   drf-spectacular
     #   model-bakery
+    #   neapolitan
 django-appconf==1.0.5 \
     --hash=sha256:ae9f864ee1958c815a965ed63b3fba4874eec13de10236ba063a788f9a17389d \
     --hash=sha256:be3db0be6c81fa84742000b89a81c016d70ae66a7ccb620cdef592b1f1a6aaa4
@@ -367,7 +368,9 @@ django-debugtools==2.0 \
 django-filter==23.2 \
     --hash=sha256:2fe15f78108475eda525692813205fa6f9e8c1caf1ae65daa5862d403c6dbf00 \
     --hash=sha256:d12d8e0fc6d3eb26641e553e5d53b191eb8cec611427d4bdce0becb1f7c172b5
-    # via Cerberus (pyproject.toml)
+    # via
+    #   Cerberus (pyproject.toml)
+    #   neapolitan
 django-fsm==2.8.1 \
     --hash=sha256:e2c02cbf273fb9691aa9a907c29990afdd21a4adea09c5640344c93fbe03f8d9 \
     --hash=sha256:fd9f8de9f33188e50f876ce53908fbd7289e5031a44ffdb97d43909e56699ef8
@@ -405,6 +408,10 @@ django-stubs-ext==4.2.1 \
 django-taggit==4.0.0 \
     --hash=sha256:4d52de9d37245a9b9f98c0ec71fdccf1d2283e38e8866d40a7ae6a3b6787a161 \
     --hash=sha256:eb800dabef5f0a4e047ab0751f82cf805bc4a9e972037ef12bf519f52cd92480
+    # via Cerberus (pyproject.toml)
+django-vanilla-views==3.0.0 \
+    --hash=sha256:ab49c4e410f00e04a89eff0403aa14f098c0ba251657deff7a2d5c3ebe23602f \
+    --hash=sha256:b65f27b8d5de53f695a397438337be882a6c7b5d8d30333a4cf98c9239fe0b86
     # via Cerberus (pyproject.toml)
 djangorestframework==3.14.0 \
     --hash=sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8 \
@@ -613,6 +620,10 @@ mypy-extensions==1.0.0 \
     # via
     #   black
     #   mypy
+neapolitan==23.11 \
+    --hash=sha256:1c3b8703807e708ca4a47b542ef535111f9f1f7ea80c412cbeb69fa2be10cafd \
+    --hash=sha256:f1afc4f60e8219e338c59108f29e228e4d4812430e9ee9e603c78969e8ae04ac
+    # via Cerberus (pyproject.toml)
 nodeenv==1.8.0 \
     --hash=sha256:d51e0c37e64fbf47d017feac3145cdbb58836d7eee8c6f6d3b6880c5456227d2 \
     --hash=sha256:df865724bb3c3adc86b3876fa209771517b0cfe596beff01a92700e0e8be4cec
