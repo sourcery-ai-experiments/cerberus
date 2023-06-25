@@ -1,12 +1,10 @@
-from django.conf import settings
-from django.urls import include, path
-from neapolitan.views import CRUDView
+# Django
+from django.urls import path
 
+# Locals
 from .. import views
-#from ..views import dashboard, ListCustomer
-from ..models import Customer, Contact, Pet
-from ..serializers import PetSerializer
 
+# from ..views import dashboard, ListCustomer
 
 
 urlpatterns = [

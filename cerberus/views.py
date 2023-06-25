@@ -1,11 +1,16 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from vanilla import ListView, DetailView, GenericModelView, CreateView, DeleteView, UpdateView
+# Standard Library
 from enum import Enum
-from django.utils.decorators import classonlymethod
-from django.urls import path, reverse
-from django.db.models import Model
 
+# Django
+from django.db.models import Model
+from django.shortcuts import render
+from django.urls import path
+from django.utils.decorators import classonlymethod
+
+# Third Party
+from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
+
+# Locals
 from .models import Customer
 
 
@@ -39,9 +44,9 @@ class CRUDViews(GenericModelView):
             case Actions.CREATE:
                 base_cls = CreateView
             case _:
-                raise NotImplemented(f"{action} not implemented yet")
+                raise NotImplementedError(f"{action} not implemented yet")
 
-        return type(f"{model_name}_list", (base_cls, ), dict(cls.__dict__)).as_view()
+        return type(f"{model_name}_list", (base_cls,), dict(cls.__dict__)).as_view()
 
     @classonlymethod
     def get_urls(cls):
@@ -54,6 +59,7 @@ class CRUDViews(GenericModelView):
             path(f"{model_name}/<int:pk>/delete/", cls.as_view(action=Actions.DELETE), name=f"{model_name}-delete"),
         ]
         return urlpatterns
+
 
 class CustomerCRUD(CRUDViews):
     model = Customer

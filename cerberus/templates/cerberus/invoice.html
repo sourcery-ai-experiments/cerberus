@@ -125,11 +125,11 @@
     <div id="footer_content">
       <table>
         {% if invoice.due %}
-        <tr>
-          <td colspan="2">
-            Payment to be made on or before {{ invoice.due|date:"d-M-Y" }}
-          </td>
-        </tr>
+          <tr>
+            <td colspan="2">
+              Payment to be made on or before {{ invoice.due|date:"d-M-Y" }}
+            </td>
+          </tr>
         {% endif %}
         <tr>
           <td width="200px">Bank</td>
@@ -199,12 +199,12 @@
         </tr>
 
         {% for charge in invoice.charges.all|dictsort:"created" %}
-        <tr class="{% cycle 'odd' 'even' %}">
-          <td>{{ charge.name }}</td>
-          <td align="center">{{ charge.quantity }}</td>
-          <td align="right">{{ charge.line }}</td>
-          <td align="right">{{ charge.cost }}</td>
-        </tr>
+          <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ charge.name }}</td>
+            <td align="center">{{ charge.quantity }}</td>
+            <td align="right">{{ charge.line }}</td>
+            <td align="right">{{ charge.cost }}</td>
+          </tr>
         {% endfor %}
 
         <tr>
@@ -221,10 +221,10 @@
         </tr>
       </table>
       {% if invoice.details %}
-      <p class="details">
-        Notes:<br />
-        {{ invoice.details }}
-      </p>
+        <p class="details">
+          Notes:<br />
+          {{ invoice.details }}
+        </p>
       {% endif %}
     </div>
   </body>

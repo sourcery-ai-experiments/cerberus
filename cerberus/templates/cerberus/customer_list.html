@@ -1,22 +1,21 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Customers</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Controls</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for customer in object_list %}
-    <tr>
-      <td>{{ customer.name }}</td>
-      <td>
-        <a href="{% url 'customer_detail' customer.id %}">details</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% extends 'base.html' %} {% block content %}
+  <h1>Customers</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Controls</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for customer in object_list %}
+        <tr>
+          <td>{{ customer.name }}</td>
+          <td>
+            <a href="{% url 'customer_detail' customer.id %}">details</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
