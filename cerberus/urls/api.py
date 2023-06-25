@@ -7,7 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 # Locals
-from . import api, reports
+from .. import api, reports
 
 urlpatterns = [
     path("reports/", include(reports.urls)),
