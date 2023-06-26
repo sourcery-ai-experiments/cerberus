@@ -14,7 +14,7 @@ from cerberus.models import Customer
 
 
 class Command(BaseCommand):
-    help = "Create some dummy data"
+    help = "Anonymise customer data"
 
     def handle(self, *args, **options):
         self.stdout.write("Anonymising customer data")

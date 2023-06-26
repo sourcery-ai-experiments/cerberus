@@ -10,7 +10,7 @@ from cerberus.models import Contact, Customer
 
 
 class Command(BaseCommand):
-    help = "Create some dummy data"
+    help = "Fix bad customer data"
 
     def handle(self, *args, **options):
         self.stdout.write("Fixing as many customers it can")
