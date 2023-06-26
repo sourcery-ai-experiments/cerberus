@@ -3,38 +3,25 @@
 {% block content %}
     <div class="container">
         <h2 class="subtitle">Customer Details</h2>
+        <a href="{% url 'customer_update' customer.id %}">Edit</a>
         <div class="block">{{ customer.name }}</div>
         <div class="block">{{ customer.invoice_email }}</div>
         <div class="block">{{ customer.invoice_address|linebreaks }}</div>
 
-
-        <h3>Pets</h3>
+        <h3 class="title is-4">Pets</h3>
         <div class="columns is-multiline">
             {% for pet in customer.active_pets %}
-                <div class="column is-one-quarter">
-                    <div class="card">
-                        <div class="card-content">
-                            <p class="has-text-weight-bold">{{ pet.name }}</p>
-                            <div class="content">
-                                {{ pet.description }}
-                            </div>
-                        </div>
-                    </div>
+                <div class="column is-one-third">
+                    {% include "components/card.html" with title=pet.name type="Pet" description=pet.description %}
                 </div>
             {% endfor %}
         </div>
 
-
-        <h3>Contacts</h3>
+        <h3 class="title is-4">Contacts</h3>
         <div class="columns">
             {% for contact in customer.contacts.all %}
-                <div class="column">
-                    <div class="card">
-                        <div class="card-content">
-                            <p class="has-text-weight-bold">{{ contact.name }}</p>
-                            <p>{{ contact.details }}</p>
-                        </div>
-                    </div>
+                <div class="column is-one-quarter">
+                    {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
                 </div>
             {% endfor %}
         </div>

@@ -4,8 +4,10 @@ version = "0.1.0"
 description = "Cerberus, the dog walkers CRM"
 license = { file = "LICENSE" }
 dependencies = [
+    "crispy-bulma",
     "dj-database-url",
     "django-cors-headers",
+    "django-crispy-forms",
     "django-filter",
     "django-fsm",
     "django-fsm-log",

@@ -11,6 +11,7 @@ from django.utils.decorators import classonlymethod
 from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
+from .forms import CustomerForm
 from .models import Customer
 
 
@@ -53,13 +54,14 @@ class CRUDViews(GenericModelView):
         model_name = cls.model._meta.model_name
         urlpatterns = [
             path(f"{model_name}/", cls.as_view(action=Actions.LIST), name=f"{model_name}_list"),
-            path(f"{model_name}/new/", cls.as_view(action=Actions.CREATE), name=f"{model_name}-create"),
+            path(f"{model_name}/new/", cls.as_view(action=Actions.CREATE), name=f"{model_name}_create"),
             path(f"{model_name}/<int:pk>/", cls.as_view(action=Actions.DETAIL), name=f"{model_name}_detail"),
-            path(f"{model_name}/<int:pk>/edit/", cls.as_view(action=Actions.UPDATE), name=f"{model_name}-update"),
-            path(f"{model_name}/<int:pk>/delete/", cls.as_view(action=Actions.DELETE), name=f"{model_name}-delete"),
+            path(f"{model_name}/<int:pk>/edit/", cls.as_view(action=Actions.UPDATE), name=f"{model_name}_update"),
+            path(f"{model_name}/<int:pk>/delete/", cls.as_view(action=Actions.DELETE), name=f"{model_name}_delete"),
         ]
         return urlpatterns
 
 
 class CustomerCRUD(CRUDViews):
     model = Customer
+    form_class = CustomerForm

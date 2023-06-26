@@ -20,6 +20,7 @@ from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
@@ -162,6 +163,9 @@ class Customer(models.Model):
             bookings.extend(pet.bookings.all())
 
         return bookings
+
+    def get_absolute_url(self) -> str:
+        return reverse("customer_detail", kwargs={"pk": self.pk})
 
 
 @reversion.register()

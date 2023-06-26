@@ -290,6 +290,10 @@ coverage[toml]==7.2.7 \
     --hash=sha256:f75f7168ab25dd93110c8a8117a22450c19976afbc44234cbf71481094c1b850 \
     --hash=sha256:fdec9e8cbf13a5bf63290fc6013d216a4c7232efb51548594ca3631a7f13c3a3
     # via pytest-cov
+crispy-bulma==0.9.0 \
+    --hash=sha256:1613d001adea6612f28cdff66ac1d57b9475e817863b276f2412558d7051c303 \
+    --hash=sha256:2f77a8b26ac1ff3743e7bf7f95f78229e9dc12e101b2af35166d282635b37474
+    # via Cerberus (pyproject.toml)
 cryptography==41.0.1 \
     --hash=sha256:059e348f9a3c1950937e1b5d7ba1f8e968508ab181e75fc32b879452f08356db \
     --hash=sha256:1a5472d40c8f8e91ff7a3d8ac6dfa363d8e3138b961529c996f3e2df0c7a411a \
@@ -331,9 +335,11 @@ django==4.2.2 \
     --hash=sha256:672b3fa81e1f853bb58be1b51754108ab4ffa12a77c06db86aa8df9ed0c46fe5
     # via
     #   Cerberus (pyproject.toml)
+    #   crispy-bulma
     #   dj-database-url
     #   django-appconf
     #   django-cors-headers
+    #   django-crispy-forms
     #   django-debug-toolbar
     #   django-filter
     #   django-fsm-log
@@ -357,6 +363,12 @@ django-cors-headers==4.1.0 \
     --hash=sha256:36a8d7a6dee6a85f872fe5916cc878a36d0812043866355438dfeda0b20b6b78 \
     --hash=sha256:88a4bfae24b6404dd0e0640203cb27704a2a57fd546a429e5d821dfa53dd1acf
     # via Cerberus (pyproject.toml)
+django-crispy-forms==2.0 \
+    --hash=sha256:90193b068bf948d9c68449bc8260afed1a8e2afe11ee0bac8c4ebfaeb175b322 \
+    --hash=sha256:d1d4e585929058a9ab3b797666ea5b69320b9ba7937f9d146d32173246a6fd13
+    # via
+    #   Cerberus (pyproject.toml)
+    #   crispy-bulma
 django-debug-toolbar==4.1.0 \
     --hash=sha256:a0b532ef5d52544fd745d1dcfc0557fa75f6f0d1962a8298bd568427ef2fa436 \
     --hash=sha256:f57882e335593cb8e74c2bda9f1116bbb9ca8fc0d81b50a75ace0f83de5173c7
