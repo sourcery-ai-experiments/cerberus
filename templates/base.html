@@ -1,3 +1,6 @@
+{% load static %}
+{% load django_htmx %}
+
 <!doctype html>
 <html>
   <head>
@@ -6,8 +9,9 @@
     <title>Cerberus</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+      href="{% static '/css/bulma.min.css' %}"
     />
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
   </head>
   <body>
     <section class="section">
@@ -18,5 +22,7 @@
     <section class="section">
       {% block content %}{% endblock %}
     </section>
+
+    {% django_htmx_script %}
   </body>
 </html>

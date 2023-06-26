@@ -343,6 +343,7 @@ django==4.2.2 \
     #   django-debug-toolbar
     #   django-filter
     #   django-fsm-log
+    #   django-htmx
     #   django-model-utils
     #   django-money
     #   django-polymorphic
@@ -392,6 +393,10 @@ django-fsm==2.8.1 \
 django-fsm-log==3.1.0 \
     --hash=sha256:9ef766f5e6d7c573d1953cf91df73538a611373cc1ef97488eff19a3f71d6ed6 \
     --hash=sha256:ac4394f22659e7fb8e5ac42d1cc075490cd5a2af37202377ab2a1cb221c5f3db
+    # via Cerberus (pyproject.toml)
+django-htmx==1.15.0 \
+    --hash=sha256:b76068485905ad9f911419746f07f877633bb036c0870a0f9fc13dec42c6e425 \
+    --hash=sha256:bac7ff59bf507db6d40424f635f83889ce028a54f47663f227083413de22cabf
     # via Cerberus (pyproject.toml)
 django-model-utils==4.3.1 \
     --hash=sha256:2e2e4f13e4f14613134a9777db7ad4265f59a1d8f1384107bcaa3028fe3c87c1 \
