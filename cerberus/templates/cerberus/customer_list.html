@@ -2,10 +2,22 @@
 
 {% load django_htmx %}
 
+{% block subtitle %}
+  <h2 class="subtitle">Customers</h2>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="container">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="is-active"><a aria-current="page" href="{% url 'customer_list' %}">Customers</a></li>
+      </ul>
+    </nav>
+  </div>
+{% endblock %}
+
 {% block content %}
-  {% if not request.htmx %}
-    <h1>Customers</h1>
-  {% endif%}
   <div id="customer-list">
     <table class="table">
       {% include "components/pagination.html" with hx_target="#customer-list" %}

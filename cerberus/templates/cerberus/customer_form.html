@@ -2,10 +2,23 @@
 
 {% load crispy_forms_tags %}
 
+{% block breadcrumbs %}
+    <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'customer_list' %}">Customers</a></li>
+                <li><a href="{% url 'customer_detail' object.id %}">{{ object.name }}</a></li>
+                <li class="is-active"><a aria-current="page" href="{% url 'customer_update' object.id %}">Edit</a></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
 {% block content %}
     <h2>Edit: {{ object.name }}</h2>
 
-    <form method="post" class="my-class">
+    <form method="post">
         {{ form|crispy }}
         {% csrf_token %}
         <input type="submit" class="button" value="Save">

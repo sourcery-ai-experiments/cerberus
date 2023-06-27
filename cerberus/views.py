@@ -2,6 +2,8 @@
 from enum import Enum
 
 # Django
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
 from django.shortcuts import render
 from django.urls import path
@@ -15,6 +17,7 @@ from .forms import CustomerForm
 from .models import Customer
 
 
+@login_required
 def dashboard(request):
     return render(request, "cerberus/dashboard.html", {})
 
@@ -31,8 +34,21 @@ class CRUDViews(GenericModelView):
     model = Model
 
     @classonlymethod
+    def get_defaults(cls):
+        return {
+            "paginate_by": 25,
+        }
+
+    @classonlymethod
     def as_view(cls, action: Actions):
-        return type(f"{cls.model._meta.model_name}_list", (action.value,), dict(cls.__dict__)).as_view()
+        return type(
+            f"{cls.model._meta.model_name}_list",
+            (
+                LoginRequiredMixin,
+                action.value,
+            ),
+            {**cls.get_defaults(), **dict(cls.__dict__)},
+        ).as_view()
 
     @classonlymethod
     def get_urls(cls):
@@ -50,4 +66,3 @@ class CRUDViews(GenericModelView):
 class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
-    paginate_by = 25
