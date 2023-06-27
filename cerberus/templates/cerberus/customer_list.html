@@ -32,7 +32,7 @@
         {% if i|is_numeric %}
           <a class="pagination-link {% if i == page_obj.number %}is-current{% endif %}" href="?page={{ i }}" aria-label="Goto page {{ i }}">{{ i }}</a>
         {% else %}
-          <span class="pagination-ellipsis">&hellip;</span>
+          <span class="pagination-ellipsis">{{ i }}</span>
         {% endif %}
       {% endfor %}
     </ol>
