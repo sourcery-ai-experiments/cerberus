@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load paginator_tags %}
+
 {% block content %}
   <h1>Customers</h1>
   <table class="table">
@@ -22,4 +24,17 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <nav class="pagination" role="navigation" aria-label="pagination">
+    {% page_range paginator page_obj.number as pages %}
+    <ol class="pagination-list">
+      {% for i in pages %}
+        {% if i|is_numeric %}
+          <a class="pagination-link {% if i == page_obj.number %}is-current{% endif %}" href="?page={{ i }}" aria-label="Goto page {{ i }}">{{ i }}</a>
+        {% else %}
+          <span class="pagination-ellipsis">&hellip;</span>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
 {% endblock %}

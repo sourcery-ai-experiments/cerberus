@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "django_htmx",
     "crispy_forms",
     "crispy_bulma",
-    "neapolitan",
     "polymorphic",
     "corsheaders",
     "rest_framework",

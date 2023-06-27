@@ -24,7 +24,6 @@ dependencies = [
     "drf-spectacular",
     "gunicorn",
     "markdown",
-    "neapolitan",
     "psycopg2",
     "reportlab",
     "uritemplate",

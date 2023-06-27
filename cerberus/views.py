@@ -50,3 +50,4 @@ class CRUDViews(GenericModelView):
 class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
+    paginate_by = 25
