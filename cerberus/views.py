@@ -20,11 +20,11 @@ def dashboard(request):
 
 
 class Actions(Enum):
-    CREATE = "create"
-    DETAIL = "detail"
-    UPDATE = "update"
-    DELETE = "delete"
-    LIST = "list"
+    CREATE = CreateView
+    DETAIL = DetailView
+    UPDATE = UpdateView
+    DELETE = DeleteView
+    LIST = ListView
 
 
 class CRUDViews(GenericModelView):
@@ -32,22 +32,7 @@ class CRUDViews(GenericModelView):
 
     @classonlymethod
     def as_view(cls, action: Actions):
-        model_name = cls.model._meta.model_name
-        match action:
-            case Actions.LIST:
-                base_cls = ListView
-            case Actions.DETAIL:
-                base_cls = DetailView
-            case Actions.UPDATE:
-                base_cls = UpdateView
-            case Actions.DELETE:
-                base_cls = DeleteView
-            case Actions.CREATE:
-                base_cls = CreateView
-            case _:
-                raise NotImplementedError(f"{action} not implemented yet")
-
-        return type(f"{model_name}_list", (base_cls,), dict(cls.__dict__)).as_view()
+        return type(f"{cls.model._meta.model_name}_list", (action.value,), dict(cls.__dict__)).as_view()
 
     @classonlymethod
     def get_urls(cls):
