@@ -1,40 +1,34 @@
-{% extends 'base.html' %}
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load paginator_tags %}
+{% load django_htmx %}
 
 {% block content %}
-  <h1>Customers</h1>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Pets</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for customer in object_list %}
+  {% if not request.htmx %}
+    <h1>Customers</h1>
+  {% endif%}
+  <div id="customer-list">
+    <table class="table">
+      {% include "components/pagination.html" with hx_target="#customer-list" %}
+      <thead>
         <tr>
-          <td>{{ customer.name }}</td>
-          <td>{{ customer.active_pets|join:", " }}</td>
-          <td>
-            <a href="{% url 'customer_detail' customer.id %}">details</a>
-          </td>
+          <th>Name</th>
+          <th>Pets</th>
+          <th>Actions</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for customer in object_list %}
+          <tr>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.active_pets|join:", " }}</td>
+            <td>
+              <a href="{% url 'customer_detail' customer.id %}">details</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-  <nav class="pagination" role="navigation" aria-label="pagination">
-    {% page_range paginator page_obj.number as pages %}
-    <ol class="pagination-list">
-      {% for i in pages %}
-        {% if i|is_numeric %}
-          <a class="pagination-link {% if i == page_obj.number %}is-current{% endif %}" href="?page={{ i }}" aria-label="Goto page {{ i }}">{{ i }}</a>
-        {% else %}
-          <span class="pagination-ellipsis">{{ i }}</span>
-        {% endif %}
-      {% endfor %}
-    </ol>
-  </nav>
+    {% include "components/pagination.html" with hx_target="#customer-list" %}
+  </div>
 {% endblock %}
