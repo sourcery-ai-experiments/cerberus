@@ -202,3 +202,4 @@ CRISPY_TEMPLATE_PACK = "bulma"
 
 
 LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard"

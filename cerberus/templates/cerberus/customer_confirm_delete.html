@@ -1,0 +1,30 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block content %}
+    {% if request.htmx %}
+        <div class="modal is-active" id="delete-modal">
+            <div class="modal-background" x-on:click="document.getElementById('delete-modal').remove()"></div>
+            <div class="modal-content">
+                <div class="box">
+    {% endif %}
+    <p>Are you sure you want to delete {{ customer.name }}?</p>
+    <div>
+        <a
+            class="is-large"
+            aria-label="No"
+            {% if request.htmx %}
+                x-on:click="document.getElementById('delete-modal').remove()"
+            {% else %}
+                href="{% url 'customer_detail' object.id %}"
+            {% endif %}
+        >No</a>
+        <a class="is-large" aria-label="Yes">Yes</a>
+    </div>
+    {% if request.htmx %}
+        </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" x-on:click="document.getElementById('delete-modal').remove()"></button>
+
+        </div>
+    {% endif %}
+{% endblock %}
