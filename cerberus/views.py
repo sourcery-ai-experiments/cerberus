@@ -52,7 +52,7 @@ class CRUDViews(GenericModelView):
     @classonlymethod
     def as_view(cls, action: Actions):
         return type(
-            f"{cls.model._meta.model_name}_list",
+            f"{cls.model._meta.model_name}_{action.name.lower()}",
             (
                 LoginRequiredMixin,
                 action.value,
