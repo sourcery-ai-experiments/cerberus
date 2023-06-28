@@ -9,16 +9,21 @@
     {% endif %}
     <p>Are you sure you want to delete {{ customer.name }}?</p>
     <div>
-        <a
-            class="is-large"
-            aria-label="No"
-            {% if request.htmx %}
-                x-on:click="document.getElementById('delete-modal').remove()"
-            {% else %}
-                href="{% url 'customer_detail' object.id %}"
-            {% endif %}
-        >No</a>
-        <a class="is-large" aria-label="Yes">Yes</a>
+        <form action="{% url 'customer_delete' object.id %}" method="post">
+            {% csrf_token %}
+            <a
+                class="button"
+                aria-label="No"
+                {% if request.htmx %}
+                    x-on:click="document.getElementById('delete-modal').remove()"
+                {% else %}
+                    href="{% url 'customer_detail' object.id %}"
+                {% endif %}
+            >
+                No
+            </a>
+            <button class="button" type="submit">Yes</button>
+        </form>
     </div>
     {% if request.htmx %}
         </div>
