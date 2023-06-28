@@ -18,29 +18,5 @@
 {% endblock %}
 
 {% block content %}
-  <div id="customer-list">
-    <table class="table">
-      {% include "components/pagination.html" with hx_target="#customer-list" %}
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Pets</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for customer in object_list %}
-          <tr>
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.active_pets|join:", " }}</td>
-            <td>
-              <a href="{% url 'customer_detail' customer.id %}">details</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    {% include "components/pagination.html" with hx_target="#customer-list" %}
-  </div>
+  {% include 'cerberus/components/customer_list.html' with customers=object_list %}
 {% endblock %}

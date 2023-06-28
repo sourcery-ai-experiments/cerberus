@@ -1,0 +1,25 @@
+{% url 'customer_list' as pagi_url %}
+<div id="customer-list">
+  {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Pets</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for customer in customers %}
+        <tr>
+          <td>{{ customer.name }}</td>
+          <td>{{ customer.active_pets|join:", " }}</td>
+          <td>
+            <a href="{% url 'customer_detail' customer.id %}">details</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
+</div>
