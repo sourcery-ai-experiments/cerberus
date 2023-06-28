@@ -1,0 +1,22 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load django_htmx %}
+
+{% block subtitle %}
+  <h2 class="subtitle">Pets</h2>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="container">
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="is-active"><a aria-current="page" href="{% url 'pet_list' %}">Pets</a></li>
+      </ul>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block content %}
+  {% include 'cerberus/components/pet_list.html' with pets=object_list %}
+{% endblock %}

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load field_tags %}
+
 {% block breadcrumbs %}
     <div class="container">
         <nav class="breadcrumb" aria-label="breadcrumbs">
@@ -16,8 +18,8 @@
     <div class="block">
         <a href="{% url 'customer_update' customer.id %}">Edit</a>
         <a hx-get="{% url 'customer_delete' customer.id %}" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a>
-        <!-- hx-get="{% url 'customer_delete' customer.id %}" hx-confirm="Are you sure you want to delete {{ customer.name }}?" -->
     </div>
+
     <div class="block">{{ customer.name }}</div>
     <div class="block">{{ customer.invoice_email }}</div>
     <div class="block">{{ customer.invoice_address|linebreaks }}</div>

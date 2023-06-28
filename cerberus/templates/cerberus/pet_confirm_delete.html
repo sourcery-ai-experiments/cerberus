@@ -1,0 +1,35 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block content %}
+    {% if request.htmx %}
+        <div class="modal is-active" id="delete-modal">
+            <div class="modal-background" x-on:click="document.getElementById('delete-modal').remove()"></div>
+            <div class="modal-content">
+                <div class="box">
+    {% endif %}
+    <p>Are you sure you want to delete {{ pet.name }}?</p>
+    <div>
+        <form action="{% url 'pet_delete' object.id %}" method="post">
+            {% csrf_token %}
+            <a
+                class="button"
+                aria-label="No"
+                {% if request.htmx %}
+                    x-on:click="document.getElementById('delete-modal').remove()"
+                {% else %}
+                    href="{% url 'pet_detail' object.id %}"
+                {% endif %}
+            >
+                No
+            </a>
+            <button class="button" type="submit">Yes</button>
+        </form>
+    </div>
+    {% if request.htmx %}
+        </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" x-on:click="document.getElementById('delete-modal').remove()"></button>
+
+        </div>
+    {% endif %}
+{% endblock %}

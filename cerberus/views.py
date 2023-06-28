@@ -16,8 +16,8 @@ from vanilla import DeleteView as DeleteView
 from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
-from .forms import CustomerForm
-from .models import Customer
+from .forms import CustomerForm, PetForm
+from .models import Customer, Pet
 
 
 @login_required
@@ -77,3 +77,8 @@ class CRUDViews(GenericModelView):
 class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
+
+
+class PetCRUD(CRUDViews):
+    model = Pet
+    form_class = PetForm
