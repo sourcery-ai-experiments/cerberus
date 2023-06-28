@@ -1,0 +1,25 @@
+{% url 'invoice_list' as pagi_url %}
+<div id="invoice-list" {% if invoices|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Customer</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        <tr>
+          <td>{{ invoice.name }}</td>
+          <td>{{ invoice.customer }}</td>
+          <td>
+            <a href="{% url 'invoice_detail' invoice.id %}">details</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+</div>
