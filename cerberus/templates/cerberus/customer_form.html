@@ -8,8 +8,12 @@
             <ul>
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                 <li><a href="{% url 'customer_list' %}">Customers</a></li>
-                <li><a href="{% url 'customer_detail' object.id %}">{{ object.name }}</a></li>
-                <li class="is-active"><a aria-current="page" href="{% url 'customer_update' object.id %}">Edit</a></li>
+                {% if object %}
+                    <li><a href="{% url 'customer_detail' object.id %}">{{ object.name }}</a></li>
+                    <li class="is-active"><a aria-current="page" href="{% url 'customer_update' object.id %}">Edit</a></li>
+                {% else %}
+                    <li class="is-active"><a aria-current="page" href="{% url 'customer_create' %}">Create</a></li>
+                {% endif %}
             </ul>
         </nav>
     </div>
