@@ -13,4 +13,5 @@ urlpatterns = (
     ]
     + views.CustomerCRUD.get_urls()
     + views.PetCRUD.get_urls()
+    + views.InvoiceCRUD.get_urls()
 )

@@ -17,7 +17,7 @@ from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
 from .forms import CustomerForm, PetForm
-from .models import Customer, Pet
+from .models import Customer, Invoice, Pet
 
 
 @login_required
@@ -82,3 +82,7 @@ class CustomerCRUD(CRUDViews):
 class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
+
+
+class InvoiceCRUD(CRUDViews):
+    model = Invoice
