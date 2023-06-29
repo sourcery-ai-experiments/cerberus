@@ -650,6 +650,7 @@ class Payment(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name="payments",
+        limit_choices_to={"state": Invoice.States.UNPAID.value},
     )
 
     created = models.DateTimeField(auto_now_add=True, editable=False)

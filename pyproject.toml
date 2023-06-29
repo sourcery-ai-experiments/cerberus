@@ -10,6 +10,7 @@ dependencies = [
     "django-crispy-forms",
     "django-filter",
     "django-fsm",
+    "django-fsm-admin2",
     "django-fsm-log",
     "django-htmx",
     "django-model-utils",
