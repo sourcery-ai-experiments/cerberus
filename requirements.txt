@@ -225,6 +225,7 @@ django==4.2.2 \
     #   django-cors-headers
     #   django-crispy-forms
     #   django-filter
+    #   django-fsm-admin2
     #   django-fsm-log
     #   django-htmx
     #   django-model-utils
@@ -258,7 +259,12 @@ django-fsm==2.8.1 \
     --hash=sha256:fd9f8de9f33188e50f876ce53908fbd7289e5031a44ffdb97d43909e56699ef8
     # via
     #   Cerberus (pyproject.toml)
+    #   django-fsm-admin2
     #   django-fsm-log
+django-fsm-admin2==0.1.3 \
+    --hash=sha256:01ad05c8a115783aab8c6a196adfde9ab58f513b00c62d180fcee57a8e9adaf3 \
+    --hash=sha256:0f57b860c7ec48a92127ec574ebb469e0285b68fea3f283dea742b11845fde39
+    # via Cerberus (pyproject.toml)
 django-fsm-log==3.1.0 \
     --hash=sha256:9ef766f5e6d7c573d1953cf91df73538a611373cc1ef97488eff19a3f71d6ed6 \
     --hash=sha256:ac4394f22659e7fb8e5ac42d1cc075490cd5a2af37202377ab2a1cb221c5f3db

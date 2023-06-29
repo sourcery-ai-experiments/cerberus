@@ -1,6 +1,9 @@
 # Django
 from django.contrib import admin
 
+# Third Party
+from fsm_admin2.admin import FSMTransitionMixin
+
 # Locals
 from .models import (
     Address,
@@ -71,9 +74,21 @@ class VetAdmin(admin.ModelAdmin):
     pass
 
 
+class ChargeInline(admin.TabularInline):
+    model = Charge
+    extra = 3
+
+    readonly_fields = ["state", "paid_on", "customer"]
+
+
 @admin.register(Invoice)
-class InvoiceAdmin(admin.ModelAdmin):
+class InvoiceAdmin(FSMTransitionMixin, admin.ModelAdmin):
+    fsm_fields = ["state"]  # list your fsm fields
     readonly_fields = ["state"]
+    list_display = ("name", "customer", "state", "due", "paid_on", "sent_on")
+
+    inlines = [ChargeInline]
+    list_filter = ["state", "customer"]
 
 
 @admin.register(InvoiceOpen)
@@ -83,7 +98,7 @@ class InvoiceOpenAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("amount", "invoice", "created")
 
 
 @admin.register(UserSettings)
