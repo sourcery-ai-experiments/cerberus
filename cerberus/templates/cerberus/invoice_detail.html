@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load field_tags %}
+
+{% block breadcrumbs %}
+    <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'invoice_list' %}">Invoices</a></li>
+                <li class="is-active"><a aria-current="page" href="{% url 'invoice_detail' object.id %}">{{ object.name }}</a></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="block">
+        <a href="{% url 'invoice_update' invoice.id %}">Edit</a>
+        <a hx-get="{% url 'invoice_delete' invoice.id %}" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a>
+    </div>
+    <div class="block">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for charge in invoice.charges.all %}
+                    <tr>
+                        <td>{{ charge.name }}</td>
+                        <td>{{ charge.line }}</td>
+                        <td>{{ charge.quantity }}</td>
+                        <td>{{ charge.cost }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr />
+    {% for label, value in invoice|fields %}
+        <div class="block">{{ label }}: {{ value }}</div>
+    {% endfor %}
+{% endblock %}

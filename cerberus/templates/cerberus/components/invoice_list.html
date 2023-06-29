@@ -6,6 +6,8 @@
       <tr>
         <th>Name</th>
         <th>Customer</th>
+        <th>Total</th>
+        <th>Charges</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -14,6 +16,8 @@
         <tr>
           <td>{{ invoice.name }}</td>
           <td>{{ invoice.customer }}</td>
+          <td>{{ invoice.total }}</td>
+          <td>{{ invoice.charges.all|length }}</td>
           <td>
             <a href="{% url 'invoice_detail' invoice.id %}">details</a>
           </td>
