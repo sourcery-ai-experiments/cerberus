@@ -16,7 +16,7 @@ from vanilla import DeleteView as DeleteView
 from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
-from .forms import CustomerForm, PetForm
+from .forms import CustomerForm, InvoiceForm, PetForm
 from .models import Customer, Invoice, Pet
 
 
@@ -86,3 +86,4 @@ class PetCRUD(CRUDViews):
 
 class InvoiceCRUD(CRUDViews):
     model = Invoice
+    form_class = InvoiceForm
