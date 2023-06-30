@@ -10,6 +10,7 @@ class CustomerForm(forms.ModelForm):
         model = Customer
         fields = "__all__"
         # fields = ["first_name","last_name","other_names","invoice_address","invoice_email"]
+        widgets = {"tags": forms.TextInput()}
 
 
 class PetForm(forms.ModelForm):
