@@ -548,9 +548,9 @@ class Invoice(models.Model):
     def void(self) -> None:
         pass
 
-    def delete(self, using=None, keep_parents=False, force=False) -> None:
+    def delete(self, force=False, *args, **kwargs) -> None:
         if self.state == self.States.DRAFT.value or force:
-            super().delete(using=using, keep_parents=keep_parents)
+            super().delete(*args, **kwargs)
         else:
             self.void()
 
@@ -647,17 +647,33 @@ class Payment(models.Model):
     amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
     invoice = models.ForeignKey(
         "cerberus.Invoice",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         related_name="payments",
         limit_choices_to={"state": Invoice.States.UNPAID.value},
     )
 
+    customer = models.ForeignKey(
+        "cerberus.Customer",
+        on_delete=models.PROTECT,
+        related_name="payments",
+    )
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(name="%(app_label)s_%(class)s_gte_0", check=models.Q(amount__gte=0)),
+        ]
+
     def __str__(self) -> str:
         return f"{self.amount} for {self.invoice}"
+
+    def save(self, *args, **kwargs) -> None:
+        if not hasattr(self, "customer") and self.invoice is not None:
+            self.customer = self.invoice.customer
+        return super().save(*args, **kwargs)
 
 
 class BookingSlot(models.Model):
