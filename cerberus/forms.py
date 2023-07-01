@@ -2,7 +2,7 @@
 from django import forms
 
 # Locals
-from .models import Customer, Invoice, Pet
+from .models import Charge, Customer, Invoice, Pet
 
 
 class CustomerForm(forms.ModelForm):
@@ -24,3 +24,9 @@ class InvoiceForm(forms.ModelForm):
         model = Invoice
         fields = "__all__"
         widgets = {"adjustment": forms.TextInput()}
+
+
+class ChargeForm(forms.ModelForm):
+    class Meta:
+        model = Charge
+        fields = "__all__"

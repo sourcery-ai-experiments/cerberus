@@ -26,11 +26,11 @@ def dashboard(request):
 
 
 class Actions(Enum):
-    CREATE = CreateView
-    DETAIL = DetailView
-    UPDATE = UpdateView
-    DELETE = DeleteView
-    LIST = ListView
+    CREATE = "create"
+    DETAIL = "detail"
+    UPDATE = "update"
+    DELETE = "delete"
+    LIST = "list"
 
 
 class CRUDViews(GenericModelView):
@@ -50,12 +50,29 @@ class CRUDViews(GenericModelView):
         return defaults
 
     @classonlymethod
+    def get_view_class(cls, action: Actions):
+        match action:
+            case Actions.CREATE:
+                return CreateView
+            case Actions.DETAIL:
+                return DetailView
+            case Actions.UPDATE:
+                return UpdateView
+            case Actions.DELETE:
+                return DeleteView
+            case Actions.LIST:
+                return ListView
+            case _:
+                raise Exception(f"Unhandled action {action}")
+
+    @classonlymethod
     def as_view(cls, action: Actions):
+        actionClass = cls.get_view_class(action)
         return type(
             f"{cls.model._meta.model_name}_{action.name.lower()}",
             (
                 LoginRequiredMixin,
-                action.value,
+                actionClass,
             ),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
         ).as_view()
@@ -87,3 +104,11 @@ class PetCRUD(CRUDViews):
 class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
+
+    @classonlymethod
+    def get_view_class(cls, action: Actions):
+        match action:
+            case Actions.UPDATE:
+                return UpdateView
+            case _:
+                return super().get_view_class(action)
