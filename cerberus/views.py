@@ -6,6 +6,7 @@ from typing import Any
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
+from django.forms import modelformset_factory
 from django.shortcuts import render
 from django.urls import path, reverse_lazy
 from django.utils.decorators import classonlymethod
@@ -16,8 +17,8 @@ from vanilla import DeleteView as DeleteView
 from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
-from .forms import CustomerForm, InvoiceForm, PetForm
-from .models import Customer, Invoice, Pet
+from .forms import ChargeForm, CustomerForm, InvoiceForm, PetForm
+from .models import Charge, Customer, Invoice, Pet
 
 
 @login_required
@@ -101,6 +102,16 @@ class PetCRUD(CRUDViews):
     form_class = PetForm
 
 
+class InvoiceUpdate(UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        formset = modelformset_factory(Charge, form=ChargeForm, extra=2)
+        context["formset"] = formset(queryset=context["object"].charges.all())
+
+        return context
+
+
 class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
@@ -109,6 +120,6 @@ class InvoiceCRUD(CRUDViews):
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.UPDATE:
-                return UpdateView
+                return InvoiceUpdate
             case _:
                 return super().get_view_class(action)

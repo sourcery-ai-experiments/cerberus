@@ -1,6 +1,9 @@
 # Django
 from django import forms
 
+# Third Party
+from crispy_forms.helper import FormHelper
+
 # Locals
 from .models import Charge, Customer, Invoice, Pet
 
@@ -29,4 +32,9 @@ class InvoiceForm(forms.ModelForm):
 class ChargeForm(forms.ModelForm):
     class Meta:
         model = Charge
-        fields = "__all__"
+        fields = ["name", "line", "quantity"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_horizontal = True

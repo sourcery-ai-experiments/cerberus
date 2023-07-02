@@ -1,5 +1,21 @@
 {
   "dependencies": {
     "mjml": "^4.13.0"
+  },
+  "name": "cerberus",
+  "description": "======== Cerberus ========",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bengosney/cerberus.git"
+  },
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/bengosney/cerberus/issues"
+  },
+  "homepage": "https://github.com/bengosney/cerberus#readme",
+  "devDependencies": {
+    "lightningcss-cli": "^1.21.2"
   }
 }

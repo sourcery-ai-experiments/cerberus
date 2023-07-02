@@ -1,9 +1,11 @@
-.PHONY: help clean test install all init dev
+.PHONY: help clean test install all init dev css
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
 HOOKS=$(.git/hooks/pre-commit)
 REQS=$(wildcard requirements.*.txt)
+
+CSS_FILES:=$(shell find assets -name *.css)
 
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
@@ -73,6 +75,12 @@ clean: ## Remove all build files
 	rm -rf .pytest_cache
 	rm -f .testmondata
 	rm -rf *.egg-info
+
+cerberus-crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
+	npx lightningcss --minify --bundle --targets '>= 0.25%' $< -o $@
+	@touch $@
+
+css: cerberus-crm/static/css/main.min.css
 
 install: $(PIP_SYNC_PATH) requirements.txt $(REQS) ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
