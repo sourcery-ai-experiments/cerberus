@@ -77,10 +77,17 @@ clean: ## Remove all build files
 	rm -rf *.egg-info
 
 cerberus-crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
-	npx lightningcss --minify --bundle --targets '>= 0.25%' $< -o $@
+	npx lightningcss --minify --bundle --nesting --targets '>= 0.25%' $< -o $@
 	@touch $@
 
-css: cerberus-crm/static/css/main.min.css
+css: cerberus-crm/static/css/main.min.css ## Build the css
+
+watch-css: ## Watch and build the css
+	@echo "Watching scss"
+	$(MAKE) css
+	@while inotifywait -qr -e close_write assets/; do \
+		$(MAKE) css; \
+	done
 
 install: $(PIP_SYNC_PATH) requirements.txt $(REQS) ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"

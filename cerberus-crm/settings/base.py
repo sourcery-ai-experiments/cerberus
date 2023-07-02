@@ -183,6 +183,10 @@ SIMPLE_JWT = {
 TAGGIT_CASE_INSENSITIVE = True
 
 DEFAULT_CURRENCY = "GBP"
+CURRENCIES = ("GBP",)
+CURRENCY_CHOICES = [
+    ("GBP", "GBP £"),
+]
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "tmp"

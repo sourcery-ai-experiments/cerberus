@@ -1,3 +1,1 @@
-.inline {
-  display: flex;
-}
+.inline{display:flex}.inline.gap{gap:2em}.money-input{gap:.25em;display:flex}.money-input input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.money-input input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.money-input input[type=number]{-moz-appearance:textfield}.money-input .controls{flex-direction:column;flex-grow:0;justify-content:space-between;height:auto;display:flex}.money-input .controls .button{height:1.1em;margin:0;padding:0 .5em}.money-input .controls .button .icon{height:1.25em}.money-input .controls .icon{height:auto}.money-input input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.money-input input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.money-input input[type=number]{-moz-appearance:textfield}

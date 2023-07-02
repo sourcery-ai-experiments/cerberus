@@ -2,10 +2,21 @@
 from django import forms
 
 # Third Party
-from crispy_forms.helper import FormHelper
+from djmoney.forms import MoneyWidget
 
 # Locals
 from .models import Charge, Customer, Invoice, Pet
+
+
+class MoneyInput(forms.NumberInput):
+    template_name = "cerberus/widgets/money_input.html"
+
+
+class SingleMoneyWidget(MoneyWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            amount_widget=MoneyInput(attrs={"step": "0.01", "min": "0"}), currency_widget=forms.HiddenInput(), *args, **kwargs
+        )
 
 
 class CustomerForm(forms.ModelForm):
@@ -25,16 +36,13 @@ class PetForm(forms.ModelForm):
 class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
-        fields = "__all__"
-        widgets = {"adjustment": forms.TextInput()}
+        # fields = "__all__"
+        exclude = ["paid_on", "sent_on", "state", "sent_to", "created", "last_updated"]
+        widgets = {"adjustment": SingleMoneyWidget()}
 
 
 class ChargeForm(forms.ModelForm):
     class Meta:
         model = Charge
         fields = ["name", "line", "quantity"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_horizontal = True
+        widgets = {"line": SingleMoneyWidget()}
