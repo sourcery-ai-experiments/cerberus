@@ -254,9 +254,9 @@ django-model-utils==4.3.1 \
     --hash=sha256:2e2e4f13e4f14613134a9777db7ad4265f59a1d8f1384107bcaa3028fe3c87c1 \
     --hash=sha256:8c0b0177bab909a8635b602d960daa67e80607aa5469217857271a60726d7a4b
     # via Cerberus (pyproject.toml)
-django-money==3.1.0 \
-    --hash=sha256:06a9257fa784576f5a0885e9b179065e3d4da4797876fa0a4f310de06b6dc65b \
-    --hash=sha256:e2d3cd025704dc00fcdf05733273299db5f8a6519335ad79a82c9d4269da6789
+django-money==3.2.0 \
+    --hash=sha256:2e4174b47993780bf4b61ad3fa0a66ebe140da42fdbe68b628c7ba9788287214 \
+    --hash=sha256:3099f906407175af06b56ef3ff5c250e2fc525ff00f50d42f77b98597e625459
     # via Cerberus (pyproject.toml)
 django-polymorphic==3.1.0 \
     --hash=sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e \
