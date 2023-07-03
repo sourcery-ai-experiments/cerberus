@@ -8,14 +8,20 @@ from djmoney.forms import MoneyWidget
 from .models import Charge, Customer, Invoice, Pet
 
 
-class MoneyInput(forms.NumberInput):
-    template_name = "cerberus/widgets/money_input.html"
-
-
 class SingleMoneyWidget(MoneyWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, attrs={}, *args, **kwargs):
         super().__init__(
-            amount_widget=MoneyInput(attrs={"step": "0.01", "min": "0"}), currency_widget=forms.HiddenInput(), *args, **kwargs
+            amount_widget=forms.NumberInput(
+                attrs={
+                    **{
+                        "step": "any",
+                    },
+                    **attrs,
+                }
+            ),
+            currency_widget=forms.HiddenInput(),
+            *args,
+            **kwargs,
         )
 
 
@@ -36,7 +42,6 @@ class PetForm(forms.ModelForm):
 class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
-        # fields = "__all__"
         exclude = ["paid_on", "sent_on", "state", "sent_to", "created", "last_updated"]
         widgets = {"adjustment": SingleMoneyWidget()}
 
@@ -45,4 +50,7 @@ class ChargeForm(forms.ModelForm):
     class Meta:
         model = Charge
         fields = ["name", "line", "quantity"]
-        widgets = {"line": SingleMoneyWidget()}
+        widgets = {
+            "line": SingleMoneyWidget(attrs={"x-model.number.fill": "line", "min": "0"}),
+            "quantity": forms.NumberInput(attrs={"x-model.number.fill": "quantity"}),
+        }

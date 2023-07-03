@@ -26,8 +26,17 @@
   <h2>Edit: {{ object.name }}</h2>
 
   <form method="post">
-    {{ formset.management_data }} {% for f in formset %}
-      <div class="inline gap">{{ f|crispy }}</div>
+    {{ formset.management_form }}
+    {% for f in formset %}
+      <div class="inline gap" x-data="{ line: '', quantity: '' }">
+        {{ f|crispy }}
+        <div class="field">
+          <label class="label"> Total </label>
+          <div class="control">
+            <input readonly type="number" x-model.number="line * quantity" class="numberinput input" />
+          </div>
+        </div>
+      </div>
     {% endfor %}
 
     <hr />

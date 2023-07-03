@@ -103,13 +103,32 @@ class PetCRUD(CRUDViews):
 
 
 class InvoiceUpdate(UpdateView):
+    def get_success_url(self):
+        return reverse_lazy("invoice_detail", kwargs={"pk": self.object.id})
+
+    def get_formset(self):
+        return modelformset_factory(Charge, form=ChargeForm, extra=1)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        formset = modelformset_factory(Charge, form=ChargeForm, extra=2)
+        formset = self.get_formset()
         context["formset"] = formset(queryset=context["object"].charges.all())
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        formset = self.get_formset()(data=request.POST, files=request.FILES)
+        if formset.is_valid():
+            formset.save()
+            return super().post(request, *args, **kwargs)
+
+        form = self.get_form(
+            data=request.POST,
+            files=request.FILES,
+            instance=self.object,
+        )
+        return self.form_invalid(form)
 
 
 class InvoiceCRUD(CRUDViews):

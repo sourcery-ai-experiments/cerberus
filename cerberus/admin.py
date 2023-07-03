@@ -84,8 +84,8 @@ class ChargeInline(admin.TabularInline):
 @admin.register(Invoice)
 class InvoiceAdmin(FSMTransitionMixin, admin.ModelAdmin):
     fsm_fields = ["state"]  # list your fsm fields
-    readonly_fields = ["state"]
-    list_display = ("name", "customer", "state", "due", "paid_on", "sent_on")
+    readonly_fields = ["state", "paid_on", "sent_on"]
+    list_display = ("name", "customer", "state", "total", "due", "paid_on", "sent_on")
 
     inlines = [ChargeInline]
     list_filter = ["state", "customer"]

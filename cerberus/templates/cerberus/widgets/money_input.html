@@ -1,5 +1,4 @@
-
-<div class="money-input" x-data="{val: {{ widget.value }}}">
+<div class="money-input" x-data="{val: {{ widget.value }}}" x-modelable="val" {% for name, value in widget.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}>
   <p class="control has-icons-left">
     <input class="input" type="number" step="0.01" x-model="val" name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %} />
     <span class="icon is-small is-left">
