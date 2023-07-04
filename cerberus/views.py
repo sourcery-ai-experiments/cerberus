@@ -50,7 +50,7 @@ class BreadcrumbMixin:
             return Crumb(self.model._meta.verbose_name_plural.title(), reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
         def detail_crumb():
-            return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
+            return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": self.object.id}))
 
         def update_crumb():
             return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": self.object.id}))
