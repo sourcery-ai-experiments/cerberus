@@ -6,16 +6,6 @@
   <h2 class="subtitle">Customers</h2>
 {% endblock %}
 
-{% block breadcrumbs %}
-  <div class="container">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-        <li class="is-active"><a aria-current="page" href="{% url 'customer_list' %}">Customers</a></li>
-      </ul>
-    </nav>
-  </div>
-{% endblock %}
 
 {% block content %}
   {% include 'cerberus/components/customer_list.html' with customers=object_list %}

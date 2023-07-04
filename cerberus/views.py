@@ -1,4 +1,5 @@
 # Standard Library
+from collections import namedtuple
 from enum import Enum
 from typing import Any
 
@@ -32,6 +33,53 @@ class Actions(Enum):
     UPDATE = "update"
     DELETE = "delete"
     LIST = "list"
+
+
+Crumb = namedtuple("Crumb", ["name", "url"])
+
+
+class BreadcrumbMixin:
+    def get_breadcrumbs(self):
+        crumbs = [
+            Crumb("Dashboard", reverse_lazy("dashboard")),
+        ]
+
+        model_name = self.model._meta.model_name
+
+        def list_crumb():
+            return Crumb(self.model._meta.verbose_name_plural.title(), reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
+
+        def detail_crumb():
+            return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
+
+        def update_crumb():
+            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": self.object.id}))
+
+        def create_crumb():
+            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": self.object.id}))
+
+        def delete_crumb():
+            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
+
+        match self.__class__.__name__.split("_"):
+            case _, Actions.LIST.value:
+                crumbs += [list_crumb()]
+            case _, Actions.DETAIL.value:
+                crumbs += [list_crumb(), detail_crumb()]
+            case _, Actions.UPDATE.value:
+                crumbs += [list_crumb(), detail_crumb(), update_crumb()]
+            case _, Actions.CREATE.value:
+                crumbs += [list_crumb(), create_crumb()]
+            case _, Actions.DELETE.value:
+                crumbs += [list_crumb(), detail_crumb(), delete_crumb()]
+
+        return crumbs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = self.get_breadcrumbs()
+
+        return context
 
 
 class CRUDViews(GenericModelView):
@@ -70,9 +118,10 @@ class CRUDViews(GenericModelView):
     def as_view(cls, action: Actions):
         actionClass = cls.get_view_class(action)
         return type(
-            f"{cls.model._meta.model_name}_{action.name.lower()}",
+            f"{cls.model._meta.model_name}_{action.value}",
             (
                 LoginRequiredMixin,
+                BreadcrumbMixin,
                 actionClass,
             ),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
@@ -83,11 +132,17 @@ class CRUDViews(GenericModelView):
         model_name = cls.model._meta.model_name
 
         urlpatterns = [
-            path(f"{model_name}/", cls.as_view(action=Actions.LIST), name=f"{model_name}_list"),
-            path(f"{model_name}/new/", cls.as_view(action=Actions.CREATE), name=f"{model_name}_create"),
-            path(f"{model_name}/<int:pk>/", cls.as_view(action=Actions.DETAIL), name=f"{model_name}_detail"),
-            path(f"{model_name}/<int:pk>/edit/", cls.as_view(action=Actions.UPDATE), name=f"{model_name}_update"),
-            path(f"{model_name}/<int:pk>/delete/", cls.as_view(action=Actions.DELETE), name=f"{model_name}_delete"),
+            path(f"{model_name}/", cls.as_view(action=Actions.LIST), name=f"{model_name}_{Actions.LIST.value}"),
+            path(f"{model_name}/new/", cls.as_view(action=Actions.CREATE), name=f"{model_name}_{Actions.CREATE.value}"),
+            path(f"{model_name}/<int:pk>/", cls.as_view(action=Actions.DETAIL), name=f"{model_name}_{Actions.DETAIL.value}"),
+            path(
+                f"{model_name}/<int:pk>/edit/", cls.as_view(action=Actions.UPDATE), name=f"{model_name}_{Actions.UPDATE.value}"
+            ),
+            path(
+                f"{model_name}/<int:pk>/delete/",
+                cls.as_view(action=Actions.DELETE),
+                name=f"{model_name}_{Actions.DELETE.value}",
+            ),
         ]
         return urlpatterns
 
