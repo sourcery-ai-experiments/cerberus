@@ -13,21 +13,21 @@
     <div>{{ customer.invoice_email }}</div>
     <div>{{ customer.invoice_address|linebreaks }}</div>
 
-    <h3 class="title is-4">Pets</h3>
-    <div class="columns is-multiline">
+    <h3>Pets</h3>
+    <div class="columns">
         {% for pet in customer.active_pets %}
-            <div class="column is-one-third">
-                {% include "components/card.html" with title=pet.name type="Pet" description=pet.description %}
-            </div>
+            {% include "components/card.html" with title=pet.name type="Pet" description=pet.description %}
+        {% empty %}
+            <p>No pets</p>
         {% endfor %}
     </div>
 
-    <h3 class="title is-4">Contacts</h3>
+    <h3>Contacts</h3>
     <div class="columns">
         {% for contact in customer.contacts.all %}
-            <div class="column is-one-quarter">
-                {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
-            </div>
+            {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
+        {% empty %}
+            <p>No contacts</p>
         {% endfor %}
     </div>
 {% endblock %}

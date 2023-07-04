@@ -18,3 +18,12 @@ a[role="button"] + button {
   margin-left: 0.5em;
   margin-bottom: 0;
 }
+
+.columns {
+  display: flex;
+  gap: 1em;
+
+  & > * {
+    flex: 1;
+  }
+}
