@@ -1,19 +1,23 @@
-{% load paginator_tags %}
-
-<nav class="pagination {{ size|default:'is-small' }}" hx-boost="true" hx-target="{{ hx_target }}" hx-swap="outerHTML" role="navigation" aria-label="pagination">
-  {% page_range paginator page_obj.number as pages %}
-  <ol class="pagination-list">
-    {% for i in pages %}
+{% load paginator_tags %} {% page_range paginator page_obj.number as pages %}
+<ol
+  hx-boost="true"
+  hx-target="{{ hx_target }}"
+  hx-swap="outerHTML"
+  role="pagination"
+  aria-label="pagination"
+>
+  {% for i in pages %}
+    <li>
       {% if i|is_numeric %}
         <a
-          class="pagination-link {% if i == page_obj.number %}is-current{% endif %}"
+          class="{% if i == page_obj.number %}current{% endif %}"
           href="{{ base_url }}?page={{ i }}"
-          aria-label="Goto page {{ i }}">
-          {{ i }}
-        </a>
+          aria-label="Goto page {{ i }}"
+        >{{ i }}</a
+          >
       {% else %}
-        <span class="pagination-ellipsis">{{ i }}</span>
+        <span>{{ i }}</span>
       {% endif %}
-    {% endfor %}
-  </ol>
-</nav>
+    </li>
+  {% endfor %}
+</ol>

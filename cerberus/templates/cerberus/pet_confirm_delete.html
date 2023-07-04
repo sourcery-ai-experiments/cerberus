@@ -2,34 +2,25 @@
 
 {% block content %}
     {% if request.htmx %}
-        <div class="modal is-active" id="delete-modal">
-            <div class="modal-background" x-on:click="document.getElementById('delete-modal').remove()"></div>
-            <div class="modal-content">
-                <div class="box">
+        <dialog open id="delete-modal">
+            <article>
     {% endif %}
-    <p>Are you sure you want to delete {{ pet.name }}?</p>
-    <div>
+    <h3>Are you sure you want to delete {{ pet.name }}?</h3>
+    <footer>
         <form action="{% url 'pet_delete' object.id %}" method="post">
             {% csrf_token %}
-            <a
-                class="button"
-                aria-label="No"
-                {% if request.htmx %}
-                    x-on:click="document.getElementById('delete-modal').remove()"
-                {% else %}
-                    href="{% url 'pet_detail' object.id %}"
-                {% endif %}
-            >
-                No
-            </a>
-            <button class="button" type="submit">Yes</button>
+            {% if request.htmx %}
+                <button x-on:click="document.getElementById('delete-modal').remove()">
+                    No
+                </button>
+            {% else %}
+                <a role="button" href="{% url 'pet_detail' object.id %}">No</a>
+            {% endif %}
+            <button type="submit">Yes</button>
         </form>
-    </div>
+    </footer>
     {% if request.htmx %}
-        </div>
-        </div>
-        <button class="modal-close is-large" aria-label="close" x-on:click="document.getElementById('delete-modal').remove()"></button>
-
-        </div>
+        </article>
+        </dialog>
     {% endif %}
 {% endblock %}

@@ -4,14 +4,14 @@
 
 
 {% block content %}
-    <div class="block">
+    <div>
         <a href="{% url 'customer_update' customer.id %}">Edit</a>
         <a hx-get="{% url 'customer_delete' customer.id %}" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a>
     </div>
 
-    <div class="block">{{ customer.name }}</div>
-    <div class="block">{{ customer.invoice_email }}</div>
-    <div class="block">{{ customer.invoice_address|linebreaks }}</div>
+    <div>{{ customer.name }}</div>
+    <div>{{ customer.invoice_email }}</div>
+    <div>{{ customer.invoice_address|linebreaks }}</div>
 
     <h3 class="title is-4">Pets</h3>
     <div class="columns is-multiline">

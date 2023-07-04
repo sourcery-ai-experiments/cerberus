@@ -1,7 +1,7 @@
 {% url 'invoice_list' as pagi_url %}
 <div id="invoice-list" {% if invoices|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
   {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
-  <table class="table">
+  <table>
     <thead>
       <tr>
         <th>Name</th>

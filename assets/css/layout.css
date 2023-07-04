@@ -11,3 +11,10 @@ body {
     gap: 2em;
   }
 }
+
+a[role="button"] + button {
+  display: inline-block;
+  width: auto;
+  margin-left: 0.5em;
+  margin-bottom: 0;
+}

@@ -3,14 +3,13 @@
 {% load field_tags %}
 
 
-
 {% block content %}
-    <div class="block">
+    <div>
         <a href="{% url 'invoice_update' invoice.id %}">Edit</a>
         <a hx-get="{% url 'invoice_delete' invoice.id %}" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a>
     </div>
-    <div class="block">
-        <table class="table">
+    <div>
+        <table>
             <thead>
                 <tr>
                     <th>Name</th>
@@ -33,6 +32,6 @@
     </div>
     <hr />
     {% for label, value in invoice|fields %}
-        <div class="block">{{ label }}: {{ value }}</div>
+        <div>{{ label }}: {{ value }}</div>
     {% endfor %}
 {% endblock %}

@@ -5,11 +5,11 @@
 
 
 {% block content %}
-    <div class="block">
+    <div>
         <a href="{% url 'pet_update' pet.id %}">Edit</a>
         <a hx-get="{% url 'pet_delete' pet.id %}" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">Delete</a>
     </div>
     {% for label, value in pet|fields %}
-        <div class="block">{{ label }}: {{ value }}</div>
+        <div>{{ label }}: {{ value }}</div>
     {% endfor %}
 {% endblock %}
