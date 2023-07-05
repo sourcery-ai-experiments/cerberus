@@ -14,7 +14,7 @@
     <div>{{ customer.invoice_address|linebreaks }}</div>
 
     <h3>Pets</h3>
-    <div class="columns">
+    <div class="columns half">
         {% for pet in customer.active_pets %}
             {% include "components/card.html" with title=pet.name type="Pet" description=pet.description %}
         {% empty %}
@@ -23,7 +23,7 @@
     </div>
 
     <h3>Contacts</h3>
-    <div class="columns">
+    <div class="columns third">
         {% for contact in customer.contacts.all %}
             {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
         {% empty %}

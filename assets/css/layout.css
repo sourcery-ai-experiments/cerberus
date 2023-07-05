@@ -21,9 +21,32 @@ a[role="button"] + button {
 
 .columns {
   display: flex;
-  gap: 1em;
+  flex-wrap: wrap;
+  --gap: 1em;
+  gap: var(--gap);
 
-  & > * {
-    flex: 1;
+  flex-direction: column;
+  @media only screen and (min-width: 768px) {
+    flex-direction: row;
+    & > * {
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    &.half > * {
+      flex: 0 0 calc(50% - calc(var(--gap) * 0.5));
+    }
+
+    &.quarter > * {
+      flex: 0 0 calc(25% - calc(var(--gap) * 0.75));
+    }
+
+    &.third > * {
+      flex: 0 0 calc(33.3333% - calc(var(--gap) * 0.66666666));
+    }
+
+    & > :is(article) {
+      margin: 0;
+    }
   }
 }

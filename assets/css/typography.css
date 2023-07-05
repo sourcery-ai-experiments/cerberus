@@ -1,7 +1,58 @@
-h1 + h2,
-h2 + h3,
-h3 + h4,
-h4 + h5,
-h5 + h6 {
-  margin-top: calc(-1 * calc(var(--typography-spacing-vertical) * 0.9));
+@supports selector(:has(*)) {
+  :is(h1, h2, h3, h4, h5, h6):has(+ :is(h1, h2, h3, h4, h5, h6)) {
+    margin-bottom: 0;
+  }
+}
+
+@supports not selector(:has(*)) {
+  :is(h1, h2, h3, h4, h5, h6) ~ :is(h1, h2, h3, h4, h5, h6) {
+    margin-top: calc(-1 * var(--typography-spacing-vertical));
+  }
+}
+
+header {
+  & :is(h1, h2, h3, h4, h5, h6):last-child {
+    margin-bottom: 0;
+  }
+  & hgroup {
+    margin-bottom: 0;
+  }
+}
+
+:root {
+  --font-size-sm: clamp(0.8rem, 0.15vw + 0.77rem, 0.89rem);
+  --font-size-base: clamp(1rem, 0.31vw + 0.94rem, 1.19rem);
+  --font-size-md: clamp(1.25rem, 0.55vw + 1.14rem, 1.58rem);
+  --font-size-lg: clamp(1.56rem, 0.91vw + 1.38rem, 2.11rem);
+  --font-size-xl: clamp(1.95rem, 1.43vw + 1.67rem, 2.81rem);
+  --font-size-xxl: clamp(2.44rem, 2.18vw + 2.01rem, 3.75rem);
+  --font-size-xxxl: clamp(3.05rem, 3.24vw + 2.4rem, 5rem);
+}
+
+.sm {
+  font-size: var(--font-size-sm);
+}
+.base {
+  font-size: var(--font-size-base);
+}
+.md {
+  font-size: var(--font-size-md);
+}
+.lg {
+  font-size: var(--font-size-lg);
+}
+.xl {
+  font-size: var(--font-size-xl);
+}
+.xxl {
+  font-size: var(--font-size-xxl);
+}
+.xxxl {
+  font-size: var(--font-size-xxxl);
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+  &:has(small) {
+    font-size: var(--font-size-sm);
+  }
 }
