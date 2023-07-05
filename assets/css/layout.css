@@ -10,6 +10,10 @@ body {
   &.gap {
     gap: 2em;
   }
+
+  & [role="main"] {
+    flex: 1;
+  }
 }
 
 a[role="button"] + button {
@@ -48,5 +52,13 @@ a[role="button"] + button {
     & > :is(article) {
       margin: 0;
     }
+  }
+}
+
+.grid {
+  &.pair {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1em 1em;
   }
 }
