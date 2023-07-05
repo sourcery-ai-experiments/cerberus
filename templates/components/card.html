@@ -1,7 +1,9 @@
-<article{% if size %} class="{{ size }}"{% endif %}>
+<article {% if size %}class="{{ size }}"{% endif %}>
     <header>
         <hgroup>
+            {% if url %}<a href="{{ url }}">{% endif %}
             <h3>{{ title }}</h3>
+            {% if url %}</a>{% endif %}
             <h4>
                 <small>{{ type }}</small>
             </h4>

@@ -22,7 +22,8 @@
     <h3>Pets</h3>
     <div class="columns half">
         {% for pet in customer.active_pets %}
-            {% include "components/card.html" with title=pet.name type="Pet" description=pet.description %}
+            {% url 'pet_detail' pet.id as url %}
+            {% include "components/card.html" with url=url title=pet.name type="Pet" description=pet.description %}
         {% empty %}
             <p>No pets</p>
         {% endfor %}
