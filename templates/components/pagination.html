@@ -10,8 +10,8 @@
     <li>
       {% if i|is_numeric %}
         <a
-          class="{% if i == page_obj.number %}current{% endif %}"
-          href="{{ base_url }}?page={{ i }}"
+          {% if i == page_obj.number %}class="current"{% endif %}
+          {% if i != page_obj.number %}href="{{ base_url }}?page={{ i }}"{% endif %}
           aria-label="Goto page {{ i }}"
         >{{ i }}</a
           >

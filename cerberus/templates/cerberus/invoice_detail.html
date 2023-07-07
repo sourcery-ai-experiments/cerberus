@@ -4,10 +4,19 @@
 
 
 {% block content %}
-    <div>
-        <a href="{% url 'invoice_update' invoice.id %}">Edit</a>
-        <a hx-get="{% url 'invoice_delete' invoice.id %}" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a>
-    </div>
+    <nav>
+        <ul>
+            <li>
+                <details role="list" dir="rtl">
+                    <summary aria-haspopup="listbox" role="link">Menu</summary>
+                    <ul role="listbox">
+                        <li><a href="{% url 'invoice_update' invoice.id %}">Edit</a></li>
+                        <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </nav>
     <div>
         <table>
             <thead>
