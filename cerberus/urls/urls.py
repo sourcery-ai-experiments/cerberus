@@ -8,9 +8,7 @@ from .. import views
 
 
 urlpatterns = (
-    [
-        path("", views.dashboard, name="dashboard"),
-    ]
+    [path("", views.dashboard, name="dashboard"), path("invoice/download/INV-<int:pk>.pdf", views.pdf, name="invoice_pdf")]
     + views.CustomerCRUD.get_urls()
     + views.PetCRUD.get_urls()
     + views.InvoiceCRUD.get_urls()
