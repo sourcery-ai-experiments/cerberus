@@ -1,4 +1,7 @@
-{% load paginator_tags %} {% page_range paginator page_obj.number as pages %}
+{% load paginator_tags %}
+{% load crispy_forms_tags %}
+
+{% page_range paginator page_obj.number as pages %}
 <ol
   hx-boost="true"
   hx-target="{{ hx_target }}"

@@ -14,11 +14,13 @@ from django.urls import path, reverse_lazy
 from django.utils.decorators import classonlymethod
 
 # Third Party
+from django_filters import FilterSet
 from vanilla import CreateView
 from vanilla import DeleteView as DeleteView
 from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
+from .filters import InvoiceFilter
 from .forms import ChargeForm, CustomerForm, InvoiceForm, PetForm
 from .models import Charge, Customer, Invoice, Pet
 
@@ -37,6 +39,32 @@ class Actions(Enum):
 
 
 Crumb = namedtuple("Crumb", ["name", "url"])
+
+
+class FilterableMixin:
+    filter_class: FilterSet | None
+
+    def get_filter(self):
+        return self.filter_class
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.filter_class:
+            filter = self.filter_class(self.request.GET, queryset)
+            return filter.qs
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.filter_class:
+            queryset = self.get_queryset()
+            filter = self.filter_class(self.request.GET, queryset)
+            context["filter"] = filter
+
+        return context
 
 
 class BreadcrumbMixin:
@@ -123,6 +151,7 @@ class CRUDViews(GenericModelView):
             (
                 LoginRequiredMixin,
                 BreadcrumbMixin,
+                FilterableMixin,
                 actionClass,
             ),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
@@ -158,6 +187,11 @@ class PetCRUD(CRUDViews):
     form_class = PetForm
 
 
+class InvoiceList(ListView):
+    def get_queryset(self):
+        return super().get_queryset()
+
+
 class InvoiceUpdate(UpdateView):
     def get_success_url(self):
         return reverse_lazy("invoice_detail", kwargs={"pk": self.object.id})
@@ -190,6 +224,7 @@ class InvoiceUpdate(UpdateView):
 class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
+    filter_class = InvoiceFilter
 
     @classonlymethod
     def get_view_class(cls, action: Actions):
