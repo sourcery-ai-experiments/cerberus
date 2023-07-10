@@ -225,6 +225,9 @@ class Pet(models.Model):
     def __str__(self) -> str:
         return f"{self.name}"
 
+    def get_absolute_url(self) -> str:
+        return reverse("pet_detail", kwargs={"pk": self.id})
+
 
 @reversion.register()
 class Vet(models.Model):
