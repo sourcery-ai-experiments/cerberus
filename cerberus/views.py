@@ -1,6 +1,5 @@
 # Standard Library
 from collections import namedtuple
-from contextlib import suppress
 from enum import Enum
 from typing import Any
 
@@ -51,18 +50,18 @@ class FilterableMixin:
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        try:
-            filter = self.filter_class(self.request.GET, queryset)
+        if filter_class := getattr(self, "filter_class", None):
+            filter = filter_class(self.request.GET, queryset)
             return filter.qs
-        except AttributeError:
-            return queryset
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         queryset = self.get_queryset()
-        with suppress(AttributeError):
-            filter = self.filter_class(self.request.GET, queryset)
+        if filter_class := getattr(self, "filter_class", None):
+            filter = filter_class(self.request.GET, queryset)
             context["filter"] = filter
 
         return context
