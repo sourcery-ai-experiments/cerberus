@@ -16,3 +16,16 @@ def page_range(paginator: Paginator, number: int, on_each_side: int = 1, on_ends
 @register.filter()
 def is_numeric(value):
     return str(value).isnumeric()
+
+
+@register.simple_tag(takes_context=True)
+def querystring(context, **kwargs):
+    request = context["request"]
+    updated = request.GET.copy()
+    for k, v in kwargs.items():
+        if v is not None:
+            updated[k] = v
+        else:
+            updated.pop(k, 0)
+
+    return updated.urlencode()

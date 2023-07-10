@@ -14,7 +14,7 @@
       {% if i|is_numeric %}
         <a
           {% if i == page_obj.number %}class="current"{% endif %}
-          {% if i != page_obj.number %}href="{{ base_url }}?page={{ i }}"{% endif %}
+          {% if i != page_obj.number %}href="{{ base_url }}?{% querystring page=i %}"{% endif %}
           aria-label="Goto page {{ i }}"
         >{{ i }}</a
           >
