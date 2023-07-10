@@ -22,8 +22,8 @@
     }
 
     &.current {
-      /*color: var(--primary-inverse);*/
-      text-decoration: underline;
+      color: var(--primary-inverse);
+      /*text-decoration: underline;*/
     }
   }
 }

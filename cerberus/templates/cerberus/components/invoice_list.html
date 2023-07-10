@@ -1,5 +1,15 @@
+{% load django_htmx %}
+{% load crispy_forms_tags %}
+
+
 {% url 'invoice_list' as pagi_url %}
-<div id="invoice-list" {% if invoices|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+<div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% if filter %}
+    <form method="get" hx-get="{{ pagi_url }}" hx-target="#invoice-list" hx-push-url="true">
+      {{ filter.form|crispy }}
+      <input type="submit" value="Filter" />
+    </form>
+  {% endif %}
   {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
   <table>
     <thead>
@@ -21,6 +31,10 @@
           <td>
             <a href="{% url 'invoice_detail' invoice.id %}">details</a>
           </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">No invoices found</td>
         </tr>
       {% endfor %}
     </tbody>

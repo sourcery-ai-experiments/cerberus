@@ -1,7 +1,6 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load django_htmx %}
-{% load crispy_forms_tags %}
+
 
 {% block subtitle %}
   <h2>Invoices</h2>
@@ -9,11 +8,5 @@
 
 
 {% block content %}
-  <form method="get">
-    {% if filter %}
-      {{ filter.form|crispy }}
-      <input type="submit" value="Filter" />
-    {% endif %}
-  </form>
   {% include 'cerberus/components/invoice_list.html' with invoices=object_list %}
 {% endblock %}
