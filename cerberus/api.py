@@ -240,7 +240,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 
 class CustomerViewSet(viewsets.ModelViewSet, ActiveMixin):
-    queryset: "QuerySet[Contact]" = Customer.objects.all()
+    queryset: "QuerySet[Customer]" = Customer.objects.all()
     serializer_class = CustomerSerializer
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend, drf_filters.OrderingFilter, drf_filters.SearchFilter)

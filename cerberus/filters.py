@@ -56,6 +56,7 @@ class BookingFilter(filters.FilterSet):
 
 class InvoiceFilter(filters.FilterSet):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices)
+    overdue = filters.BooleanFilter()
 
     class Meta:
         model = Invoice

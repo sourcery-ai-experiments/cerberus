@@ -12,7 +12,16 @@
     <tbody>
       {% for customer in customers %}
         <tr>
-          <td>{{ customer.name }}</td>
+          <td>
+            <span
+              class="customer{% if customer.unpaid_count %} unpaid{% endif %}{% if customer.overdue_count %} overdue{% endif %}"
+              data-unpaid="{{ customer.unpaid_count }}"
+              data-overdue="{{ customer.overdue_count }}">
+              <span {% if customer.unpaid_count %}data-tooltip="Owes {{ customer.invoiced_unpaid }}"{% endif %}>
+                {{ customer.name }}
+              </span>
+            </span>
+          </td>
           <td>{{ customer.active_pets|join:", " }}</td>
           <td>
             <a href="{% url 'customer_detail' customer.id %}">details</a>
