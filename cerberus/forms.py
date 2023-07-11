@@ -5,7 +5,7 @@ from django import forms
 from djmoney.forms import MoneyWidget
 
 # Locals
-from .models import Charge, Customer, Invoice, Pet
+from .models import Charge, Customer, Invoice, Pet, Vet
 
 
 class SingleMoneyWidget(MoneyWidget):
@@ -36,6 +36,12 @@ class CustomerForm(forms.ModelForm):
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
+        fields = "__all__"
+
+
+class VetForm(forms.ModelForm):
+    class Meta:
+        model = Vet
         fields = "__all__"
 
 

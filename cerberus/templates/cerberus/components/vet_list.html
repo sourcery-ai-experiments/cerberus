@@ -1,0 +1,25 @@
+{% url 'vet_list' as pagi_url %}
+<div id="vet-list" {% if vets|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#vet-list" base_url=pagi_url %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Customer</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vet in vets %}
+        <tr>
+          <td>{{ vet.name }}</td>
+          <td>{{ vet.customer }}</td>
+          <td>
+            <a href="{% url 'vet_detail' vet.id %}">details</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#vet-list" base_url=pagi_url %}
+</div>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+{% load field_tags %}
+
+
+
+{% block content %}
+    <nav>
+        <ul>
+            <li>
+                <details role="list" dir="rtl">
+                    <summary aria-haspopup="listbox" role="link">Menu</summary>
+                    <ul role="listbox">
+                        <li><a href="{% url 'vet_update' vet.id %}">Edit</a></li>
+                        <li><a hx-get="{% url 'vet_delete' vet.id %}" hx-swap="afterend" href="{% url 'vet_delete' vet.id %}">Delete</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </nav>
+    <div class="grid pair">
+        <div>Name</div><div>{{ vet.name }}</div>
+        <div>Phone</div><div>{{ vet.phone }}</div>
+        <div>Details</div><div>{{ vet.details|default:'-' }}</div>
+    </div>
+{% endblock %}

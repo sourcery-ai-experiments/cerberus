@@ -1,0 +1,12 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load django_htmx %}
+
+{% block subtitle %}
+  <h2>Vets</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% include 'cerberus/components/vet_list.html' with vets=object_list %}
+{% endblock %}

@@ -244,6 +244,9 @@ class Vet(models.Model):
     def __str__(self) -> str:
         return f"{self.name}"
 
+    def get_absolute_url(self) -> str:
+        return reverse("vet_detail", kwargs={"pk": self.pk})
+
 
 @reversion.register()
 class Contact(models.Model):

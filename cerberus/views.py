@@ -21,8 +21,8 @@ from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
 from .filters import InvoiceFilter
-from .forms import ChargeForm, CustomerForm, InvoiceForm, PetForm
-from .models import Charge, Customer, Invoice, Pet
+from .forms import ChargeForm, CustomerForm, InvoiceForm, PetForm, VetForm
+from .models import Charge, Customer, Invoice, Pet, Vet
 
 
 @login_required
@@ -185,6 +185,11 @@ class CustomerCRUD(CRUDViews):
 class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
+
+
+class VetCRUD(CRUDViews):
+    model = Vet
+    form_class = VetForm
 
 
 class InvoiceList(ListView):
