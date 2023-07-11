@@ -399,6 +399,7 @@ class Charge(PolymorphicModel):
         return super().save(*args, **kwargs)
 
 
+# self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 class InvoiceManager(models.Manager["Invoice"]):
     def get_queryset(self):
         return (
@@ -407,6 +408,7 @@ class InvoiceManager(models.Manager["Invoice"]):
             .annotate(
                 subtotal=Sum(F("charges__line") * F("charges__quantity")),
                 total=F("adjustment") + F("subtotal"),
+                overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )
         )
 
@@ -467,6 +469,10 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
+
+    @overdue.setter
+    def overdue(self, value):
+        pass
 
     @property
     def state_log(self):
