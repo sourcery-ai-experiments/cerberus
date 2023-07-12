@@ -895,6 +895,13 @@ class Booking(models.Model):
         self.save()
         return True
 
+    def move_booking_slot(self, start: datetime) -> bool:
+        if slot := self.booking_slot:
+            length = slot.end - slot.start
+            return slot.move_slot(start, start + length)
+
+        return False
+
     @save_after
     @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
     def process(self) -> None:

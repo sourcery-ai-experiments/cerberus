@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.urls import path
 
 # Third Party
+from dateutil import parser
 from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
 from django_fsm_log.helpers import FSMLogDescriptor
@@ -27,7 +28,9 @@ from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, In
 from .permissions import IsUsers
 from .serializers import (
     AddressSerializer,
+    BookingMoveSerializer,
     BookingSerializer,
+    BookingSlotMoveSerializer,
     BookingSlotSerializer,
     ChargeSerializer,
     ContactSerializer,
@@ -35,6 +38,7 @@ from .serializers import (
     CustomerSerializer,
     InvoiceSendSerializer,
     InvoiceSerializer,
+    PetDropDownSerializer,
     PetSerializer,
     ServiceSerializer,
     UserSettingsSerializer,
@@ -119,6 +123,38 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     @action(detail=True, methods=["put"])
     def complete(self, request, pk=None):
         return self.change_state("complete", request)
+
+    @action(detail=True, methods=["PUT"])
+    def move_booking(self, request, pk=None):
+        booking = self.get_object()
+        incoming = BookingMoveSerializer(data=request.data)
+        incoming.is_valid()
+        status = 400
+
+        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
+            with FSMLogDescriptor(booking, "by", request.user):
+                if booking.move_booking(parser.parse(incoming.data["to"])):
+                    status = 200
+
+        serializer = self.get_serializer(booking)
+
+        return Response({"item": serializer.data, "status": status}, status=status)
+
+    @action(detail=True, methods=["PUT"])
+    def move_booking_slot(self, request, pk=None):
+        booking = self.get_object()
+        incoming = BookingSlotMoveSerializer(data=request.data)
+        incoming.is_valid()
+        status = 400
+
+        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
+            with FSMLogDescriptor(booking, "by", request.user):
+                if booking.move_booking_slot(parser.parse(incoming.data["start"])):
+                    status = 200
+
+        serializer = self.get_serializer(booking)
+
+        return Response({"item": serializer.data, "status": status}, status=status)
 
 
 class BookingSlotViewSet(viewsets.ModelViewSet):
@@ -296,6 +332,19 @@ class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = PetFilter
+
+    @action(detail=False, methods=["get"])
+    def dropdown(self, request):
+        serializer = PetDropDownSerializer(self.queryset.filter(active=True), many=True)
+
+        return Response(
+            {
+                "results": serializer.data,
+                "next": None,
+                "previous": None,
+                "count": len(serializer.data),
+            }
+        )
 
 
 class VetViewSet(viewsets.ModelViewSet):
