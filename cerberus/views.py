@@ -1,4 +1,5 @@
 # Standard Library
+import functools
 from collections import namedtuple
 from enum import Enum
 from typing import Any
@@ -67,6 +68,17 @@ class FilterableMixin:
         return context
 
 
+def suppress(func):
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception:
+            return None
+
+    return wrapped
+
+
 class BreadcrumbMixin:
     def get_breadcrumbs(self):
         crumbs = [
@@ -78,15 +90,19 @@ class BreadcrumbMixin:
         def list_crumb():
             return Crumb(self.model._meta.verbose_name_plural.title(), reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
+        @suppress
         def detail_crumb():
             return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": self.object.id}))
 
+        @suppress
         def update_crumb():
             return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": self.object.id}))
 
+        @suppress
         def create_crumb():
             return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": self.object.id}))
 
+        @suppress
         def delete_crumb():
             return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
 
@@ -162,11 +178,25 @@ class CRUDViews(GenericModelView):
         model_name = cls.model._meta.model_name
 
         urlpatterns = [
-            path(f"{model_name}/", cls.as_view(action=Actions.LIST), name=f"{model_name}_{Actions.LIST.value}"),
-            path(f"{model_name}/new/", cls.as_view(action=Actions.CREATE), name=f"{model_name}_{Actions.CREATE.value}"),
-            path(f"{model_name}/<int:pk>/", cls.as_view(action=Actions.DETAIL), name=f"{model_name}_{Actions.DETAIL.value}"),
             path(
-                f"{model_name}/<int:pk>/edit/", cls.as_view(action=Actions.UPDATE), name=f"{model_name}_{Actions.UPDATE.value}"
+                f"{model_name}/",
+                cls.as_view(action=Actions.LIST),
+                name=f"{model_name}_{Actions.LIST.value}",
+            ),
+            path(
+                f"{model_name}/new/",
+                cls.as_view(action=Actions.CREATE),
+                name=f"{model_name}_{Actions.CREATE.value}",
+            ),
+            path(
+                f"{model_name}/<int:pk>/",
+                cls.as_view(action=Actions.DETAIL),
+                name=f"{model_name}_{Actions.DETAIL.value}",
+            ),
+            path(
+                f"{model_name}/<int:pk>/edit/",
+                cls.as_view(action=Actions.UPDATE),
+                name=f"{model_name}_{Actions.UPDATE.value}",
             ),
             path(
                 f"{model_name}/<int:pk>/delete/",
