@@ -20,7 +20,7 @@
         margin-left: 0.5em;
         content: " ";
         display: inline-block;
-        background: red;
+        background: var(--overdue);
         width: 1em;
         height: 1em;
         border-radius: 50%;

@@ -56,8 +56,12 @@ class BookingFilter(filters.FilterSet):
 
 class InvoiceFilter(filters.FilterSet):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices)
-    overdue = filters.BooleanFilter()
+    overdue = filters.BooleanFilter(label="Overdue")
+    customer__first_name = filters.CharFilter(lookup_expr="icontains")
+    customer__last_name = filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Invoice
-        fields = ["state"]
+        fields = [
+            "state",
+        ]

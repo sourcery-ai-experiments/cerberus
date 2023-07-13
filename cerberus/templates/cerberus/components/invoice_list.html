@@ -17,8 +17,7 @@
       <tr>
         <th>Name</th>
         <th>Customer</th>
-        <th>Total</th>
-        <th>Charges</th>
+        <th class="right">Total</th>
         <th>State</th>
         <th>Actions</th>
       </tr>
@@ -28,9 +27,12 @@
         <tr>
           <td>{{ invoice.name }}</td>
           <td>{{ invoice.customer }}</td>
-          <td>{{ invoice.total }}</td>
-          <td>{{ invoice.charges.all|length }}</td>
-          <td>{{ invoice.state|title }}</td>
+          <td class="right">{{ invoice.total }}</td>
+          {% if invoice.state == "unpaid" %}
+            <td><span class="{% if invoice.overdue %}overdue{% endif %}">Due {{ invoice.due }}</span></td>
+          {% else %}
+            <td>{{ invoice.state|title }}</td>
+          {% endif %}
           <td>
             <a href="{% url 'invoice_detail' invoice.id %}">details</a>
           </td>

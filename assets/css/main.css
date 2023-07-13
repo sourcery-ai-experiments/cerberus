@@ -1,3 +1,5 @@
+@import "vars.css";
+
 @import "layout.css";
 @import "dialog.css";
 @import "pagination.css";
@@ -6,4 +8,6 @@
 @import "card.css";
 @import "FAB.css";
 
-@import "customer-list.css";
+@import "list.css";
+@import "list-customer.css";
+@import "list-invoice.css";
