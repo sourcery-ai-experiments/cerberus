@@ -1,4 +1,5 @@
-td {
+td,
+th {
   &.left {
     text-align: left;
   }

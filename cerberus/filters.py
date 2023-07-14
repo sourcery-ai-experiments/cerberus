@@ -1,6 +1,6 @@
-# Standard Library
-
 # Django
+from django.db.models import Value
+from django.db.models.functions import Concat
 
 # Third Party
 from django_filters import rest_framework as filters
@@ -56,12 +56,15 @@ class BookingFilter(filters.FilterSet):
 
 class InvoiceFilter(filters.FilterSet):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices)
-    overdue = filters.BooleanFilter(label="Overdue")
-    customer__first_name = filters.CharFilter(lookup_expr="icontains")
-    customer__last_name = filters.CharFilter(lookup_expr="icontains")
+    customer = filters.CharFilter(method="customer_name_filter")
 
     class Meta:
         model = Invoice
         fields = [
             "state",
         ]
+
+    def customer_name_filter(self, queryset, name, value):
+        return queryset.annotate(customer__name=Concat("customer__first_name", Value(" "), "customer__last_name")).filter(
+            customer__name__contains=value
+        )
