@@ -3,47 +3,48 @@
 
 {% url 'invoice_list' as pagi_url %}
 
-{% if filter and not request.htmx %}
-  <form method="get" hx-get="{{ pagi_url }}" hx-target="#invoice-list" hx-push-url="true" class="inline">
-    {{ filter.form|crispy }}
-    <input type="submit" value="Filter" />
-    <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
-  </form>
-{% endif %}
+<div class="htmx-container">
+  {% if filter and not request.htmx %}
+    <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#invoice-list" hx-push-url="true" class="inline">
+      {{ filter.form|crispy }}
+      <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
+    </form>
+  {% endif %}
 
-<div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
-  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Customer</th>
-        <th class="right">Total</th>
-        <th>State</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for invoice in invoices %}
+  <div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %} class="htmx-load-target">
+    {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+    <table>
+      <thead>
         <tr>
-          <td>{{ invoice.name }}</td>
-          <td>{{ invoice.customer }}</td>
-          <td class="right">{{ invoice.total }}</td>
-          {% if invoice.state == "unpaid" %}
-            <td><span class="{% if invoice.overdue %}overdue{% endif %}">Due {{ invoice.due }}</span></td>
-          {% else %}
-            <td>{{ invoice.state|title }}</td>
-          {% endif %}
-          <td>
-            <a href="{% url 'invoice_detail' invoice.id %}">details</a>
-          </td>
+          <th>Name</th>
+          <th>Customer</th>
+          <th class="right">Total</th>
+          <th>State</th>
+          <th>Actions</th>
         </tr>
-      {% empty %}
-        <tr>
-          <td colspan="6">No invoices found</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+      </thead>
+      <tbody>
+        {% for invoice in invoices %}
+          <tr>
+            <td>{{ invoice.name }}</td>
+            <td>{{ invoice.customer }}</td>
+            <td class="right">{{ invoice.total }}</td>
+            {% if invoice.state == "unpaid" %}
+              <td><span class="{% if invoice.overdue %}overdue{% endif %}">Due {{ invoice.due }}</span></td>
+            {% else %}
+              <td>{{ invoice.state|title }}</td>
+            {% endif %}
+            <td>
+              <a href="{% url 'invoice_detail' invoice.id %}">details</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">No invoices found</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+  </div>
 </div>

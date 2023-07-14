@@ -1,14 +1,14 @@
 form {
   &.inline {
     gap: 2em;
+    justify-content: space-between;
 
     & > * {
-      flex: 10;
     }
 
     & button,
     & [type="submit"] {
-      flex: 1;
+      flex-basis: 10em;
       height: auto;
     }
   }
