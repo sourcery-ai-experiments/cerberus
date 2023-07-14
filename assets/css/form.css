@@ -1,0 +1,15 @@
+form {
+  &.inline {
+    gap: 2em;
+
+    & > * {
+      flex: 10;
+    }
+
+    & button,
+    & [type="submit"] {
+      flex: 1;
+      height: auto;
+    }
+  }
+}

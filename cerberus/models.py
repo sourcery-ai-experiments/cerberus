@@ -17,7 +17,6 @@ from django.db import models, transaction
 from django.db.models import Count, F, Q, Sum, Value
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
-from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
 from django.template.loader import get_template
 from django.urls import reverse

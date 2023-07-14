@@ -5,7 +5,7 @@
 {% url 'invoice_list' as pagi_url %}
 <div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
   {% if filter %}
-    <form method="get" hx-get="{{ pagi_url }}" hx-target="#invoice-list" hx-push-url="true">
+    <form method="get" hx-get="{{ pagi_url }}" hx-target="#invoice-list" hx-push-url="true" class="inline">
       {{ filter.form|crispy }}
       <input type="submit" value="Filter" />
       <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>

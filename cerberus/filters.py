@@ -1,4 +1,5 @@
 # Django
+from django import forms
 from django.db.models import Value
 from django.db.models.functions import Concat
 
@@ -55,7 +56,7 @@ class BookingFilter(filters.FilterSet):
 
 
 class InvoiceFilter(filters.FilterSet):
-    state = filters.MultipleChoiceFilter(choices=Invoice.States.choices)
+    state = filters.MultipleChoiceFilter(choices=Invoice.States.choices, widget=forms.CheckboxSelectMultiple)
     customer = filters.CharFilter(method="customer_name_filter")
 
     class Meta:
