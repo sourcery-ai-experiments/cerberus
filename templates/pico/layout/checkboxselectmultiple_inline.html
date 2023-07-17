@@ -1,0 +1,14 @@
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+    <div id="div_{{ field.auto_id }}" class="{% if form_show_errors and field.errors %} has-error{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+
+        {% if field.label %}
+            <label for="{{ field.auto_id }}"  class="{{ label_class }}">
+                {{ field.label }}
+            </label>
+        {% endif %}
+
+        {% include 'pico/layout/checkboxselectmultiple.html' %}
+    </div>
+{% endif %}

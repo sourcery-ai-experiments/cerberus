@@ -12,4 +12,16 @@ form {
       height: auto;
     }
   }
+
+  /*
+  *:has([required]) {
+    & label {
+      &:after {
+        content: "*";
+        vertical-align: super;
+        font-size: 0.8em;
+      }
+    }
+  }
+  */
 }

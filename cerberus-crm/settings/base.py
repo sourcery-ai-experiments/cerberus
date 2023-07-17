@@ -203,8 +203,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = ("bulma",)
-CRISPY_TEMPLATE_PACK = "bulma"
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("pico",)
+CRISPY_TEMPLATE_PACK = "pico"
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
