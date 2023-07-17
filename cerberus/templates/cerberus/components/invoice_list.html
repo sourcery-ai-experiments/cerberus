@@ -4,16 +4,15 @@
 {% url 'invoice_list' as pagi_url %}
 
 <div class="htmx-container">
-  {% if filter and not request.htmx %}
-    <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#invoice-list" hx-push-url="true" class="inline">
-      {{ filter.form|crispy }}
-      <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
-    </form>
-  {% endif %}
-
-  <div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %} class="htmx-load-target">
+  <div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+    {% if filter %}
+      <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#invoice-list" hx-push-url="true" class="inline">
+        {{ filter.form|crispy }}
+        <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
+      </form>
+    {% endif %}
     {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
-    <table>
+    <table class="htmx-load-target">
       <thead>
         <tr>
           <th>Name</th>

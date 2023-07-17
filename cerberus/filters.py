@@ -12,7 +12,7 @@ from django_filters import rest_framework as filters
 # Locals
 from .models import Booking, Customer, Invoice, Pet, Vet
 
-ACTIVE_CHOICES = (("true", "Active"), ("false", "Inactive"))
+ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
 
 class CustomerMixin:
