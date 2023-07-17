@@ -7,7 +7,14 @@ from django.db.models.functions import Concat
 from django_filters import rest_framework as filters
 
 # Locals
-from .models import Booking, Customer, Invoice, Pet
+from .models import Booking, Customer, Invoice, Pet, Vet
+
+
+class CustomerMixin:
+    def customer_name_filter(self, queryset, name, value):
+        return queryset.annotate(customer__name=Concat("customer__first_name", Value(" "), "customer__last_name")).filter(
+            customer__name__contains=value
+        )
 
 
 class FilterDefaults(filters.FilterSet):
@@ -23,7 +30,10 @@ class FilterDefaults(filters.FilterSet):
         super().__init__(data, *args, **kwargs)
 
 
-class PetFilter(FilterDefaults):
+class PetFilter(FilterDefaults, CustomerMixin):
+    name = filters.CharFilter(lookup_expr="icontains", label="Name")
+    customer = filters.CharFilter(method="customer_name_filter")
+
     default_filters = {
         "active": True,
     }
@@ -34,7 +44,8 @@ class PetFilter(FilterDefaults):
 
 
 class CustomerFilter(FilterDefaults):
-    name = filters.CharFilter(lookup_expr="icontains")
+    name = filters.CharFilter(lookup_expr="icontains", label="Name")
+    pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 
     default_filters = {
         "active": True,
@@ -55,7 +66,7 @@ class BookingFilter(filters.FilterSet):
         fields = []
 
 
-class InvoiceFilter(filters.FilterSet):
+class InvoiceFilter(filters.FilterSet, CustomerMixin):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices, widget=forms.CheckboxSelectMultiple)
     customer = filters.CharFilter(method="customer_name_filter")
 
@@ -65,7 +76,17 @@ class InvoiceFilter(filters.FilterSet):
             "state",
         ]
 
+
+class VetFilter(filters.FilterSet, CustomerMixin):
+    customer = filters.CharFilter(method="customer_name_filter", label="Customer")
+    pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
+    name = filters.CharFilter(lookup_expr="icontains", label="Name")
+
+    class Meta:
+        model = Vet
+        fields = ["name"]
+
     def customer_name_filter(self, queryset, name, value):
-        return queryset.annotate(customer__name=Concat("customer__first_name", Value(" "), "customer__last_name")).filter(
-            customer__name__contains=value
+        return queryset.annotate(customers__name=Concat("customers__first_name", Value(" "), "customers__last_name")).filter(
+            customers__name__contains=value
         )

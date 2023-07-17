@@ -1,25 +1,38 @@
+{% load django_htmx %}
+{% load crispy_forms_tags %}
+
 {% url 'pet_list' as pagi_url %}
-<div id="pet-list" {% if pets|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
-  {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Customer</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for pet in pets %}
+
+<div class="htmx-container">
+  {% if filter and not request.htmx %}
+    <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#pet-list" hx-push-url="true" class="inline">
+      {{ filter.form|crispy }}
+      <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
+    </form>
+  {% endif %}
+
+  <div id="pet-list" {% if pets|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+    {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
+    <table>
+      <thead>
         <tr>
-          <td>{{ pet.name }}</td>
-          <td>{{ pet.customer }}</td>
-          <td>
-            <a href="{% url 'pet_detail' pet.id %}">details</a>
-          </td>
+          <th>Name</th>
+          <th>Customer</th>
+          <th>Actions</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
+      </thead>
+      <tbody>
+        {% for pet in pets %}
+          <tr>
+            <td>{{ pet.name }}</td>
+            <td>{{ pet.customer }}</td>
+            <td>
+              <a href="{% url 'pet_detail' pet.id %}">details</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
+  </div>
 </div>

@@ -21,7 +21,7 @@ from vanilla import DeleteView as DeleteView
 from vanilla import DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
-from .filters import InvoiceFilter
+from .filters import CustomerFilter, InvoiceFilter, PetFilter, VetFilter
 from .forms import ChargeForm, CustomerForm, InvoiceForm, PetForm, VetForm
 from .models import Charge, Customer, Invoice, Pet, Vet
 
@@ -210,16 +210,19 @@ class CRUDViews(GenericModelView):
 class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
+    filter_class = CustomerFilter
 
 
 class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
+    filter_class = PetFilter
 
 
 class VetCRUD(CRUDViews):
     model = Vet
     form_class = VetForm
+    filter_class = VetFilter
 
 
 class InvoiceList(ListView):

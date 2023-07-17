@@ -1,32 +1,44 @@
+{% load crispy_forms_tags %}
+
 {% url 'customer_list' as pagi_url %}
-<div id="customer-list" {% if customers|length == 0 %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
-  {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Pets</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for customer in customers %}
+
+<div class="htmx-container">
+  {% if filter and not request.htmx %}
+    <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#customer-list" hx-push-url="true" class="inline">
+      {{ filter.form|crispy }}
+      <button hx-get="{{ pagi_url }}" href="{{ pagi_url }}">Clear</button>
+    </form>
+  {% endif %}
+
+  <div id="customer-list"{% if customers is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %} class="htmx-load-target">
+    {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
+    <table>
+      <thead>
         <tr>
-          <td>
-            <span
-              class="customer{% if customer.unpaid_count %} unpaid{% endif %}{% if customer.overdue_count %} overdue{% endif %}"
-              data-unpaid="{{ customer.unpaid_count }}"
-              data-overdue="{{ customer.overdue_count }}">
-              {{ customer.name }}
-            </span>
-          </td>
-          <td>{{ customer.active_pets|join:", " }}</td>
-          <td>
-            <a href="{% url 'customer_detail' customer.id %}">details</a>
-          </td>
+          <th>Name</th>
+          <th>Pets</th>
+          <th>Actions</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+          <tr>
+            <td>
+              <span
+                class="customer{% if customer.unpaid_count %} unpaid{% endif %}{% if customer.overdue_count %} overdue{% endif %}"
+                data-unpaid="{{ customer.unpaid_count }}"
+                data-overdue="{{ customer.overdue_count }}">
+                {{ customer.name }}
+              </span>
+            </td>
+            <td>{{ customer.active_pets|join:", " }}</td>
+            <td>
+              <a href="{% url 'customer_detail' customer.id %}">details</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "components/pagination.html" with hx_target="#customer-list" base_url=pagi_url %}
+  </div>
 </div>
