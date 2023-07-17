@@ -1,3 +1,6 @@
+# Standard Library
+from distutils.util import strtobool
+
 # Django
 from django import forms
 from django.db.models import Value
@@ -8,6 +11,8 @@ from django_filters import rest_framework as filters
 
 # Locals
 from .models import Booking, Customer, Invoice, Pet, Vet
+
+ACTIVE_CHOICES = (("true", "Active"), ("false", "Inactive"))
 
 
 class CustomerMixin:
@@ -31,6 +36,7 @@ class FilterDefaults(filters.FilterSet):
 
 
 class PetFilter(FilterDefaults, CustomerMixin):
+    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
     customer = filters.CharFilter(method="customer_name_filter")
 
@@ -44,6 +50,7 @@ class PetFilter(FilterDefaults, CustomerMixin):
 
 
 class CustomerFilter(FilterDefaults):
+    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 
