@@ -29,6 +29,10 @@
               <a href="{% url 'pet_detail' pet.id %}">details</a>
             </td>
           </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3">No pets found</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
