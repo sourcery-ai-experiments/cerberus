@@ -14,3 +14,7 @@
 
 @import "form.css";
 @import "htmx.css";
+
+body {
+  overflow-y: scroll;
+}

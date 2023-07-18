@@ -15,6 +15,11 @@ from .models import Booking, Customer, Invoice, Pet, Vet
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
 
+class Switch(forms.widgets.Input):
+    template_name = "forms/widgets/switch.html"
+    input_type = "checkbox"
+
+
 class CustomerMixin:
     def customer_name_filter(self, queryset, name, value):
         return queryset.annotate(customer__name=Concat("customer__first_name", Value(" "), "customer__last_name")).filter(
@@ -36,7 +41,7 @@ class FilterDefaults(filters.FilterSet):
 
 
 class PetFilter(FilterDefaults, CustomerMixin):
-    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool)
+    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool, widget=Switch)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
     customer = filters.CharFilter(method="customer_name_filter")
 
@@ -50,7 +55,7 @@ class PetFilter(FilterDefaults, CustomerMixin):
 
 
 class CustomerFilter(FilterDefaults):
-    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool)
+    active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool, widget=Switch)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 
