@@ -3,6 +3,11 @@
 {% if filter %}
   <form method="get"{% if url %} hx-get="{{ url }}" hx-trigger="change" hx-swap="morph:outerHTML"{% if target %} hx-target="{{ target }}" {% endif %}hx-push-url="true" {% endif %}class="inline">
     {{ filter.form|crispy }}
-    <button hx-get="{{ url }}" href="{{ url }}">Clear</button>
+    <div>
+      <label>Actions</label>
+      <div>
+        <a role="button" href="{{ url }}">Clear</a>
+      </div>
+    </div>
   </form>
 {% endif %}
