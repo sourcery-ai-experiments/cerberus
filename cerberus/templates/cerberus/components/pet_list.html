@@ -1,41 +1,39 @@
-{% load django_htmx %}
 {% load crispy_forms_tags %}
 
 {% url 'pet_list' as pagi_url %}
 
-<div class="htmx-container">
-  <div id="pet-list" {% if pets is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
-    {% if filter %}
-      <form method="get" hx-get="{{ pagi_url }}" hx-trigger="change" hx-target="#pet-list" hx-push-url="true" class="inline">
-        {{ filter.form|crispy }}
-        <button hx-get="{{ pagi_url }}" href="{{ pagi_url}}">Clear</button>
-      </form>
-    {% endif %}
-    {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
-    <table class="htmx-load-target">
-      <thead>
+{% if not request.htmx %}
+  <div class="htmx-container">
+    {% include 'cerberus/components/filters.html' with url=pagi_url target="#pet-list" clear_url=pagi_url %}
+{% endif %}
+<div id="pet-list" {% if pets is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %} >
+  {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
+  <table class="htmx-load-target">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Customer</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pet in pets %}
         <tr>
-          <th>Name</th>
-          <th>Customer</th>
-          <th>Actions</th>
+          <td>{{ pet.name }}</td>
+          <td>{{ pet.customer }}</td>
+          <td>
+            <a href="{% url 'pet_detail' pet.id %}">details</a>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {% for pet in pets %}
-          <tr>
-            <td>{{ pet.name }}</td>
-            <td>{{ pet.customer }}</td>
-            <td>
-              <a href="{% url 'pet_detail' pet.id %}">details</a>
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="3">No pets found</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
-  </div>
+      {% empty %}
+        <tr>
+          <td colspan="3">No pets found</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
 </div>
+{% if not request.htmx %}
+  </div>
+{% endif %}
