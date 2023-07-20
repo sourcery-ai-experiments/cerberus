@@ -24,6 +24,7 @@ dependencies = [
     "djangorestframework-simplejwt[crypto]",
     "drf-spectacular",
     "gunicorn",
+    "humanize",
     "markdown",
     "psycopg2",
     "reportlab",

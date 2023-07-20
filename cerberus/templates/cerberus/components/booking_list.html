@@ -1,0 +1,43 @@
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load human_duration %}
+
+{% url 'booking_list' as pagi_url %}
+
+{% if not request.htmx %}
+  <div class="htmx-container">
+    {% include 'cerberus/components/filters.html' with url=pagi_url target="#booking-list" clear_url=pagi_url %}
+{% endif %}
+<div id="booking-list" {% if bookings is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#booking-list" base_url=pagi_url %}
+  <table class="htmx-load-target">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Service</th>
+        <th>Start</th>
+        <th>Duration</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.name }}</td>
+          <td>{{ booking.service }}</td>
+          <td><span data-tooltip="{{ booking.start }}">{{ booking.start|naturaltime }}</span></td>
+          <td><span data-tooltip="{{ booking.length }}">{{ booking.length|naturaldelta }}</span></td>
+          <td><a href="{% url 'booking_detail' booking.id %}">Details</a></td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No bookings found</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#booking-list" base_url=pagi_url %}
+</div>
+{% if not request.htmx %}
+  </div>
+{% endif %}

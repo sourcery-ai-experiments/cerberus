@@ -831,6 +831,10 @@ class Booking(models.Model):
     def __str__(self) -> str:
         return f"{self.start} - {self.end}"
 
+    @property
+    def length(self):
+        return self.end - self.start
+
     def save(self, *args, **kwargs) -> None:
         self.name = f"{self.pet.name} {self.service.name}"
 
