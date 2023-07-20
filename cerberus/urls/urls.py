@@ -14,4 +14,5 @@ urlpatterns = (
     + views.VetCRUD.get_urls()
     + views.InvoiceCRUD.get_urls()
     + views.BookingCRUD.get_urls()
+    + views.BookingActions.get_urls()
 )

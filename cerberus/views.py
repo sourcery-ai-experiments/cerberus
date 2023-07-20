@@ -127,6 +127,18 @@ class BreadcrumbMixin:
         return context
 
 
+class ActionViews(GenericModelView):
+    model = Model
+    field = str
+
+    @classonlymethod
+    def get_urls(cls):
+        cls.model._meta.model_name
+        # model = getattr(cls.model, f"get_all_{cls.field}_transitions")
+
+        return []
+
+
 class CRUDViews(GenericModelView):
     model = Model
     delete_success_url: str | None = None
@@ -177,7 +189,7 @@ class CRUDViews(GenericModelView):
     def get_urls(cls):
         model_name = cls.model._meta.model_name
 
-        urlpatterns = [
+        return [
             path(
                 f"{model_name}/",
                 cls.as_view(action=Actions.LIST),
@@ -204,7 +216,6 @@ class CRUDViews(GenericModelView):
                 name=f"{model_name}_{Actions.DELETE.value}",
             ),
         ]
-        return urlpatterns
 
 
 class CustomerCRUD(CRUDViews):
@@ -228,6 +239,11 @@ class VetCRUD(CRUDViews):
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
+
+
+class BookingActions(ActionViews):
+    model = Booking
+    field = "state"
 
 
 class InvoiceList(ListView):

@@ -17,6 +17,7 @@
         <th>Service</th>
         <th>Start</th>
         <th>Duration</th>
+        <th>State</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -27,7 +28,13 @@
           <td>{{ booking.service }}</td>
           <td><span data-tooltip="{{ booking.start }}">{{ booking.start|naturaltime }}</span></td>
           <td><span data-tooltip="{{ booking.length }}">{{ booking.length|naturaldelta }}</span></td>
-          <td><a href="{% url 'booking_detail' booking.id %}">Details</a></td>
+          <td>{{ booking.state }}</td>
+          <td>
+            <a href="{% url 'booking_detail' booking.id %}">Details</a>
+            {% for transition in booking.available_state_transitions %}
+              <a href="#">{{ transition|title }}</a>
+            {% endfor %}
+          </td>
         </tr>
       {% empty %}
         <tr>

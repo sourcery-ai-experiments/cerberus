@@ -29,6 +29,7 @@ from django_fsm import FSMField, Transition, transition
 from django_fsm_log.models import StateLog
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
+from humanize import naturaldate
 from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
@@ -829,14 +830,14 @@ class Booking(models.Model):
         ordering = ("-created",)
 
     def __str__(self) -> str:
-        return f"{self.start} - {self.end}"
+        return f"{self.name} - {naturaldate(self.start)}"
 
     @property
     def length(self):
         return self.end - self.start
 
     def save(self, *args, **kwargs) -> None:
-        self.name = f"{self.pet.name} {self.service.name}"
+        self.name = f"{self.pet.name}, {self.service.name}"
 
         with transaction.atomic():
             if self.pk is None:
