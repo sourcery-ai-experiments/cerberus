@@ -9,10 +9,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
 from django.forms import modelformset_factory
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.utils.decorators import classonlymethod
+from django.views import View
 
 # Third Party
 from django_filters import FilterSet
@@ -127,16 +128,24 @@ class BreadcrumbMixin:
         return context
 
 
-class ActionViews(GenericModelView):
+class ActionView(View):
     model = Model
     field = str
 
-    @classonlymethod
-    def get_urls(cls):
-        cls.model._meta.model_name
-        # model = getattr(cls.model, f"get_all_{cls.field}_transitions")
+    def get(self, request, pk: int, action: str):
+        model = get_object_or_404(self.model, pk=pk)
+        transitions = getattr(model, f"get_all_{self.field}_transitions")()
+        available_transitions = getattr(model, f"get_all_{self.field}_transitions")()
 
-        return []
+        if action not in [t.name for t in transitions]:
+            raise Http404(f"{action} is not a valid action on {self.model._meta.model_name}")
+
+        if action not in [t.name for t in available_transitions]:
+            raise Http404(f"{action} is not currently available on {self.model._meta.model_name}")
+
+        getattr(model, action)()
+
+        return redirect(model.get_absolute_url())
 
 
 class CRUDViews(GenericModelView):
@@ -241,7 +250,7 @@ class BookingCRUD(CRUDViews):
     form_class = BookingForm
 
 
-class BookingActions(ActionViews):
+class BookingStateActions(ActionView):
     model = Booking
     field = "state"
 

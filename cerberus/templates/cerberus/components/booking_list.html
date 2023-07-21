@@ -32,7 +32,7 @@
           <td>
             <a href="{% url 'booking_detail' booking.id %}">Details</a>
             {% for transition in booking.available_state_transitions %}
-              <a href="#">{{ transition|title }}</a>
+              <a href="{% url 'booking_action' booking.id transition %}">{{ transition|title }}</a>
             {% endfor %}
           </td>
         </tr>

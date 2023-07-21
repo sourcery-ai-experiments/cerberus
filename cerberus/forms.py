@@ -49,6 +49,8 @@ class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = "__all__"
+        exclude = ["booking_slot"]
+        widgets = {"state": forms.TextInput(attrs={"readonly": True})}
 
 
 class InvoiceForm(forms.ModelForm):
