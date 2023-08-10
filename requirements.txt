@@ -621,9 +621,9 @@ tinycss2==1.2.1 \
     # via
     #   cssselect2
     #   svglib
-tqdm==4.66.0 \
-    --hash=sha256:39d459c7140b7890174e69d4d68d6291bc774a55b4bc5d93c0b760798ac5a03e \
-    --hash=sha256:cc6e7e52202d894e66632c5c8a9330bd0e3ff35d2965c93ca832114a3d865362
+tqdm==4.66.1 \
+    --hash=sha256:d302b3c5b53d47bce91fea46679d9c3c6508cf6332229aa1e7d8653723793386 \
+    --hash=sha256:d88e651f9db8d8551a62556d3cff9e3034274ca5d66e93197cf2490e2dcb69c7
     # via pypdf3
 typing-extensions==4.7.1 \
     --hash=sha256:440d5dd3af93b060174bf433bccd69b0babc3b15b1a8dca43789fd7f61514b36 \
