@@ -240,9 +240,9 @@ django-cors-headers==4.2.0 \
     --hash=sha256:9ada212b0e2efd4a5e339360ffc869cb21ac5605e810afe69f7308e577ea5bde \
     --hash=sha256:f9749c6410fe738278bc2b6ef17f05195bc7b251693c035752d8257026af024f
     # via Cerberus (pyproject.toml)
-django-filter==23.2 \
-    --hash=sha256:2fe15f78108475eda525692813205fa6f9e8c1caf1ae65daa5862d403c6dbf00 \
-    --hash=sha256:d12d8e0fc6d3eb26641e553e5d53b191eb8cec611427d4bdce0becb1f7c172b5
+django-filter==23.3 \
+    --hash=sha256:015fe155582e1805b40629344e4a6cf3cc40450827d294d040b4b8c1749a9fa6 \
+    --hash=sha256:65bc5d1d8f4fff3aaf74cb5da537b6620e9214fb4b3180f6c560776b1b6dccd0
     # via Cerberus (pyproject.toml)
 django-fsm==2.8.1 \
     --hash=sha256:e2c02cbf273fb9691aa9a907c29990afdd21a4adea09c5640344c93fbe03f8d9 \
