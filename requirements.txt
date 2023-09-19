@@ -590,8 +590,8 @@ pyyaml==6.0.1 \
 qrcode==7.3.1 \
     --hash=sha256:375a6ff240ca9bd41adc070428b5dfc1dcfbb0f2507f1ac848f6cded38956578
     # via pyhanko
-reportlab==4.0.4 \
-    --hash=sha256:3dcda79ce04baf70721e2ec54854722644262cac2feec3d5c4c5e77015504cb0
+reportlab==4.0.5 \
+    --hash=sha256:1344dbe779b9049a1888105503837d0e5b62163bf5c6b33bd1fbe84bad484f50
     # via
     #   Cerberus (pyproject.toml)
     #   svglib
