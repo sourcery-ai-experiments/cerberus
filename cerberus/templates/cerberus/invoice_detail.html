@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load field_tags %}
+
+
+{% block content %}
+    <nav>
+        <ul>
+            <li>
+                <details role="list" dir="rtl">
+                    <summary aria-haspopup="listbox" role="link">Menu</summary>
+                    <ul role="listbox">
+                        {% if invoice.can_edit %}
+                            <li><a href="{% url 'invoice_update' invoice.id %}">Edit</a></li>
+                            <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'invoice_pdf' invoice.id %}">Download</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </nav>
+    <section class="grid pair">
+        <div>Customer</div><div>{{ invoice.customer }}</div>
+        <div>Sent to</div><div>{{ invoice.sent_to|default:"-" }}</div>
+        <div>Invoice address</div><div>{{ invoice.invoice_address|default:"-" }}</div>
+        <div>Due</div><div>{{ invoice.due|default:"-" }}</div>
+        <div>Adjustment</div><div>{{ invoice.adjustment }}</div>
+        <div>Details</div><div>{{ invoice.details|default:"-" }}</div>
+        <div>State</div><div>{{ invoice.state|title }}</div>
+        <div>Paid on</div><div>{{ invoice.paid_on|default:"-" }}</div>
+        <div>Sent on</div><div>{{ invoice.sent_on|default:"-" }}</div>
+        <div>Send notes</div><div>{{ invoice.send_notes|default:"-" }}</div>
+    </section>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Cost</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for charge in invoice.charges.all %}
+                <tr>
+                    <td>{{ charge.name }}</td>
+                    <td>{{ charge.line }}</td>
+                    <td>{{ charge.quantity }}</td>
+                    <td>{{ charge.cost }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

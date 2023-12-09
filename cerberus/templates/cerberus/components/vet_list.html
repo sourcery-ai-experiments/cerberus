@@ -1,0 +1,39 @@
+{% load crispy_forms_tags %}
+
+{% url 'vet_list' as pagi_url %}
+
+{% if not request.htmx %}
+  <div class="htmx-container">
+    {% include 'cerberus/components/filters.html' with url=pagi_url target="#vet-list" clear_url=pagi_url %}
+{% endif %}
+<div id="vet-list" {% if vets is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#vet-list" base_url=pagi_url %}
+  <table class="htmx-load-target">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vet in vets %}
+        <tr>
+          <td>{{ vet.name }}</td>
+          <td>{{ vet.phone }}</td>
+          <td>
+            <a href="{% url 'vet_detail' vet.id %}">Details</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No vets found</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#vet-list" base_url=pagi_url %}
+</div>
+{% if not request.htmx %}
+  </div>
+{% endif %}

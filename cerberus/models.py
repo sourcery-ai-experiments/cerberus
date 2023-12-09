@@ -17,9 +17,9 @@ from django.db import models, transaction
 from django.db.models import Count, F, Q, Sum, Value
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
-from django.shortcuts import get_object_or_404, render  # noqa
 from django.template import loader
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
@@ -29,6 +29,7 @@ from django_fsm import FSMField, Transition, transition
 from django_fsm_log.models import StateLog
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
+from humanize import naturaldate
 from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
@@ -163,6 +164,9 @@ class Customer(models.Model):
 
         return bookings
 
+    def get_absolute_url(self) -> str:
+        return reverse("customer_detail", kwargs={"pk": self.pk})
+
 
 @reversion.register()
 class Pet(models.Model):
@@ -221,6 +225,9 @@ class Pet(models.Model):
     def __str__(self) -> str:
         return f"{self.name}"
 
+    def get_absolute_url(self) -> str:
+        return reverse("pet_detail", kwargs={"pk": self.pk})
+
 
 @reversion.register()
 class Vet(models.Model):
@@ -236,6 +243,9 @@ class Vet(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def get_absolute_url(self) -> str:
+        return reverse("vet_detail", kwargs={"pk": self.pk})
 
 
 @reversion.register()
@@ -389,6 +399,7 @@ class Charge(PolymorphicModel):
         return super().save(*args, **kwargs)
 
 
+# self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 class InvoiceManager(models.Manager["Invoice"]):
     def get_queryset(self):
         return (
@@ -397,6 +408,7 @@ class InvoiceManager(models.Manager["Invoice"]):
             .annotate(
                 subtotal=Sum(F("charges__line") * F("charges__quantity")),
                 total=F("adjustment") + F("subtotal"),
+                overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )
         )
 
@@ -457,6 +469,10 @@ class Invoice(models.Model):
     @property
     def overdue(self) -> bool:
         return self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
+
+    @overdue.setter
+    def overdue(self, value):
+        pass
 
     @property
     def state_log(self):
@@ -544,9 +560,9 @@ class Invoice(models.Model):
     def void(self) -> None:
         pass
 
-    def delete(self, using=None, keep_parents=False, force=False) -> None:
+    def delete(self, force=False, *args, **kwargs) -> None:
         if self.state == self.States.DRAFT.value or force:
-            super().delete(using=using, keep_parents=keep_parents)
+            super().delete(*args, **kwargs)
         else:
             self.void()
 
@@ -643,16 +659,33 @@ class Payment(models.Model):
     amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
     invoice = models.ForeignKey(
         "cerberus.Invoice",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
+        related_name="payments",
+        limit_choices_to={"state": Invoice.States.UNPAID.value},
+    )
+
+    customer = models.ForeignKey(
+        "cerberus.Customer",
+        on_delete=models.PROTECT,
         related_name="payments",
     )
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(name="%(app_label)s_%(class)s_gte_0", check=models.Q(amount__gte=0)),
+        ]
+
     def __str__(self) -> str:
         return f"{self.amount} for {self.invoice}"
+
+    def save(self, *args, **kwargs) -> None:
+        if not hasattr(self, "customer") and self.invoice is not None:
+            self.customer = self.invoice.customer
+        return super().save(*args, **kwargs)
 
 
 class BookingSlot(models.Model):
@@ -797,10 +830,14 @@ class Booking(models.Model):
         ordering = ("-created",)
 
     def __str__(self) -> str:
-        return f"{self.start} - {self.end}"
+        return f"{self.name} - {naturaldate(self.start)}"
+
+    @property
+    def length(self):
+        return self.end - self.start
 
     def save(self, *args, **kwargs) -> None:
-        self.name = f"{self.pet.name} {self.service.name}"
+        self.name = f"{self.pet.name}, {self.service.name}"
 
         with transaction.atomic():
             if self.pk is None:
@@ -861,6 +898,13 @@ class Booking(models.Model):
 
         self.save()
         return True
+
+    def move_booking_slot(self, start: datetime) -> bool:
+        if slot := self.booking_slot:
+            length = slot.end - slot.start
+            return slot.move_slot(start, start + length)
+
+        return False
 
     @save_after
     @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)

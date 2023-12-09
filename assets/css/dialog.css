@@ -1,0 +1,15 @@
+dialog {
+  & footer {
+    & form {
+      margin-bottom: 0;
+    }
+
+    & button {
+      display: inline-block;
+      width: auto;
+    }
+    & button + button {
+      margin-left: 0.5em;
+    }
+  }
+}

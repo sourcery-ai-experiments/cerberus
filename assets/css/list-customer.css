@@ -1,0 +1,30 @@
+#customer-list {
+  .customer {
+    display: inline-flex;
+    &.unpaid {
+      &:after {
+        font-size: 0.3rem;
+        margin-left: 0.5em;
+        content: " ";
+        display: inline-block;
+        background: orange;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+      }
+    }
+
+    &.overdue {
+      &:after {
+        font-size: 0.3rem;
+        margin-left: 0.5em;
+        content: " ";
+        display: inline-block;
+        background: var(--overdue);
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+      }
+    }
+  }
+}

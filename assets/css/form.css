@@ -1,0 +1,10 @@
+form {
+  &.inline {
+    gap: 2em;
+    justify-content: space-between;
+
+    & a[role="button"] {
+      height: max-content;
+    }
+  }
+}

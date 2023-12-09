@@ -1,0 +1,26 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block content %}
+    {% if request.htmx %}
+        <dialog open id="delete-modal">
+            <article>
+    {% endif %}
+    <h3>Are you sure you want to delete {{ customer.name }}?</h3>
+    <footer>
+        <form action="{% url 'customer_delete' object.id %}" method="post">
+            {% csrf_token %}
+            {% if request.htmx %}
+                <button x-on:click="document.getElementById('delete-modal').remove()">
+                    No
+                </button>
+            {% else %}
+                <a role="button" href="{% url 'customer_detail' object.id %}">No</a>
+            {% endif %}
+            <button type="submit">Yes</button>
+        </form>
+    </footer>
+    {% if request.htmx %}
+        </article>
+        </dialog>
+    {% endif %}
+{% endblock %}

@@ -1,6 +1,9 @@
 # Django
 from django.contrib import admin
 
+# Third Party
+from fsm_admin2.admin import FSMTransitionMixin
+
 # Locals
 from .models import (
     Address,
@@ -24,70 +27,80 @@ def make_inactive(modeladmin, request, queryset):
     queryset.update(active=False)
 
 
+@admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     readonly_fields = ["state"]
 
 
+@admin.register(BookingSlot)
 class BookingSlotAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Charge)
 class ChargeAdmin(admin.ModelAdmin):
     readonly_fields = ["state"]
 
 
+@admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ("active", "first_name", "last_name", "created")
     actions = (make_inactive,)
 
 
+@admin.register(Pet)
 class PetAdmin(admin.ModelAdmin):
     list_display = ("active", "name", "created")
     actions = (make_inactive,)
 
 
+@admin.register(Vet)
 class VetAdmin(admin.ModelAdmin):
     pass
 
 
-class InvoiceAdmin(admin.ModelAdmin):
-    readonly_fields = ["state"]
+class ChargeInline(admin.TabularInline):
+    model = Charge
+    extra = 3
+
+    readonly_fields = ["state", "paid_on", "customer"]
 
 
+@admin.register(Invoice)
+class InvoiceAdmin(FSMTransitionMixin, admin.ModelAdmin):
+    fsm_fields = ["state"]  # list your fsm fields
+    readonly_fields = ["state", "paid_on", "sent_on"]
+    list_display = ("name", "customer", "state", "total", "due", "paid_on", "sent_on")
+
+    inlines = [ChargeInline]
+    list_filter = ["state", "customer"]
+
+
+@admin.register(InvoiceOpen)
 class InvoiceOpenAdmin(admin.ModelAdmin):
     list_display = ("invoice", "opened")
 
 
+@admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("amount", "invoice", "created")
 
 
+@admin.register(UserSettings)
 class UserSettingsAdmin(admin.ModelAdmin):
     pass
-
-
-admin.site.register(Customer, CustomerAdmin)
-admin.site.register(Pet, PetAdmin)
-admin.site.register(Vet, VetAdmin)
-admin.site.register(Address, AddressAdmin)
-admin.site.register(Service, ServiceAdmin)
-admin.site.register(Booking, BookingAdmin)
-admin.site.register(BookingSlot, BookingSlotAdmin)
-admin.site.register(Charge, ChargeAdmin)
-admin.site.register(Contact, ContactAdmin)
-admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(InvoiceOpen, InvoiceOpenAdmin)
-admin.site.register(Payment, PaymentAdmin)
-admin.site.register(UserSettings, UserSettingsAdmin)

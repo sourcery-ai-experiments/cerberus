@@ -1,21 +1,10 @@
-{% extends 'base.html' %} {% block body %}
-<h1>Customers</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Controls</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for customer in customers %}
-    <tr>
-      <td>{{ customer.name }}</td>
-      <td>
-        <a href="{% url 'customer_edit' customer.id %}">edit</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block subtitle %}
+  <h2>Customers</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% include 'cerberus/components/customer_list.html' with customers=object_list %}
 {% endblock %}

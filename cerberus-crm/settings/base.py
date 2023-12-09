@@ -11,31 +11,11 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 
 # Standard Library
-import contextlib
 import datetime
-import os
 from pathlib import Path
 
-# Third Party
-import dj_database_url
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-env = os.environ.copy()
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-DEBUG = "SECRET_KEY" not in env
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-fn8#(5r4vbabxql*u_*e+-%j#4^7g__nh@o05$$%m^6=asx+s@" if DEBUG else env["SECRET_KEY"]
-
-
-ALLOWED_HOSTS: list[str] = ["stl-cerberus.herokuapp.com", "api.cerberus.co.in"]
-if DEBUG:
-    ALLOWED_HOSTS.append("localhost")
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Application definition
@@ -47,6 +27,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "fsm_admin2",
+    "django_htmx",
+    "crispy_forms",
+    "crispy_bulma",
     "polymorphic",
     "corsheaders",
     "rest_framework",
@@ -65,6 +50,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -78,7 +64,7 @@ ROOT_URLCONF = "cerberus-crm.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [Path(__file__).resolve().parent / "templates", BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -104,9 +90,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-if os.environ.get("DATABASE_URL"):
-    DATABASES["default"] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -150,7 +133,11 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -197,28 +184,27 @@ SIMPLE_JWT = {
 TAGGIT_CASE_INSENSITIVE = True
 
 DEFAULT_CURRENCY = "GBP"
+CURRENCIES = ("GBP",)
+CURRENCY_CHOICES = [
+    ("GBP", "GBP £"),
+]
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "tmp"
 
 
-with contextlib.suppress(KeyError):
-    EMAIL_HOST = env["SMTP_HOST"]
-    EMAIL_HOST_USER = env["SMTP_USER"]
-    EMAIL_HOST_PASSWORD = env["SMTP_PASS"]
-    EMAIL_PORT = env["SMTP_PORT"]
-    EMAIL_USE_TLS = (env["SMTP_TLS"] or "True") != "False"
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
-
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.stretchtheirlegs.co.uk/",
-    "https://*.cerberus.co.in/",
+    "http://127.0.0.1:8000/",
+    "http://localhost:8000/",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://cerberus.stretchtheirlegs.co.uk",
-    "https://api.cerberus.co.in",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("pico",)
+CRISPY_TEMPLATE_PACK = "pico"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "dashboard"

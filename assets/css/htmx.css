@@ -1,0 +1,9 @@
+.htmx-container:has(.htmx-request) {
+  .htmx-load-target {
+    opacity: 0.5;
+  }
+}
+
+.htmx-load-target {
+  transition: opacity 0.2s ease-in-out;
+}

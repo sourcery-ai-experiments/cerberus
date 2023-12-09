@@ -1,3 +1,45 @@
-{% extends 'base.html' %} {% block body %}
-<h1>{{ customer.name }}</h1>
+{% extends 'base.html' %}
+
+{% load field_tags %}
+
+
+{% block content %}
+    <nav>
+        <ul>
+            <li>
+                <details role="list" dir="rtl">
+                    <summary aria-haspopup="listbox" role="link">Menu</summary>
+                    <ul role="listbox">
+                        <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
+                        <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </nav>
+    <div class="details" role="main">
+        <div class="name">{{ customer.name }}</div>
+        <div class="email">{{ customer.invoice_email }}</div>
+        {{ customer.invoice_address|linebreaks }}
+    </div>
+    <h3>Pets</h3>
+    <div class="columns half">
+        {% for pet in customer.active_pets %}
+            {% url 'pet_detail' pet.id as url %}
+            {% include "components/card.html" with url=url title=pet.name type="Pet" description=pet.description %}
+        {% empty %}
+            <p>No pets</p>
+        {% endfor %}
+    </div>
+
+    <h3>Contacts</h3>
+    <div class="columns third">
+        {% for contact in customer.contacts.all %}
+            {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
+        {% empty %}
+            <p>No contacts</p>
+        {% endfor %}
+    </div>
+
+    <a class="fab" data-char="&#43;" href="{% url 'invoice_create' %}"><span>Add an invoice</span></a>
 {% endblock %}

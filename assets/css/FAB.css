@@ -1,0 +1,40 @@
+.fab {
+  background: var(--primary);
+  color: var(--contrast);
+  aspect-ratio: 1;
+
+  position: fixed;
+  display: flex;
+  bottom: 1em;
+  right: 1em;
+  border-radius: 50%;
+  width: 3.5em;
+  height: 3.5em;
+
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--primary-hover);
+    color: var(--contrast-hover);
+    text-decoration: none;
+  }
+
+  &:focus {
+    background: var(--primary-focus);
+    color: var(--contrast-focus);
+    text-decoration: none;
+  }
+
+  &[data-char] {
+    &::after {
+      content: attr(data-char);
+      font-size: 2.5em;
+      display: block;
+    }
+
+    & span {
+      display: none;
+    }
+  }
+}

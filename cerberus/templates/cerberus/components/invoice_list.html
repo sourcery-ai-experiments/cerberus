@@ -1,0 +1,47 @@
+{% load crispy_forms_tags %}
+
+{% url 'invoice_list' as pagi_url %}
+
+{% if not request.htmx %}
+  <div class="htmx-container">
+    {% include 'cerberus/components/filters.html' with url=pagi_url target="#invoice-list" clear_url=pagi_url %}
+{% endif %}
+<div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+  <table class="htmx-load-target">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Customer</th>
+        <th class="right">Total</th>
+        <th>State</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        <tr>
+          <td>{{ invoice.name }}</td>
+          <td>{{ invoice.customer }}</td>
+          <td class="right">{{ invoice.total }}</td>
+          {% if invoice.state == "unpaid" %}
+            <td><span class="{% if invoice.overdue %}overdue{% endif %}">Due {{ invoice.due }}</span></td>
+          {% else %}
+            <td>{{ invoice.state|title }}</td>
+          {% endif %}
+          <td>
+            <a href="{% url 'invoice_detail' invoice.id %}">Details</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6">No invoices found</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
+</div>
+{% if not request.htmx %}
+  </div>
+{% endif %}

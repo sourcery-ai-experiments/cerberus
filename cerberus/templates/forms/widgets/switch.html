@@ -1,0 +1,4 @@
+<div x-data="{ state: '{{ widget.value }}' }">
+    <input x-model="state" type="hidden" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+    <input x-on:click="state = (state == 'True' ? 'False' : 'True')" type="checkbox" role="switch" {% if widget.value == 'True' %}checked{% endif %} />
+</div>

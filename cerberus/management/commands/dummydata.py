@@ -49,6 +49,8 @@ class Command(BaseCommand):
             customer.first_name = name_parts[0]
             customer.last_name = name_parts[-1]
             customer.other_names = " ".join(name_parts[1:-1])
+            customer.invoice_email = fake.email()
+            customer.invoice_address = fake.address()
             customer.save()
 
             self.stdout.write(f"Created customer {customer.name}")

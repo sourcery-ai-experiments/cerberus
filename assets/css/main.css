@@ -1,0 +1,20 @@
+@import "vars.css";
+
+@import "layout.css";
+@import "dialog.css";
+@import "pagination.css";
+@import "typography.css";
+@import "links.css";
+@import "card.css";
+@import "FAB.css";
+
+@import "list.css";
+@import "list-customer.css";
+@import "list-invoice.css";
+
+@import "form.css";
+@import "htmx.css";
+
+body {
+  overflow-y: scroll;
+}

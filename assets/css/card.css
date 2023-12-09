@@ -1,0 +1,11 @@
+article {
+  & header {
+    &:has(hgroup) {
+      display: flex;
+
+      & hgroup {
+        flex: 1;
+      }
+    }
+  }
+}

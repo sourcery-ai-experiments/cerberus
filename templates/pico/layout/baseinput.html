@@ -1,0 +1,8 @@
+<input type="{{ input.input_type }}"
+       name="{% if input.name|wordcount > 1 %}{{ input.name|slugify }}{% else %}{{ input.name }}{% endif %}"
+       value="{{ input.value }}"
+       {% if input.input_type != "hidden" %}
+           id="{{ input.id }}"
+       {% endif %}
+       {{ input.flat_attrs }}
+/>

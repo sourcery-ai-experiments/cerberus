@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %}
+
+
+{% block content %}
+
+  <h2>Edit: {{ object.name }}</h2>
+
+  <form method="post">
+    {{ formset.management_form }} {% for f in formset %}
+      <div class="inline gap" x-data="{ line: '', quantity: '' }">
+        {{ f|crispy }}
+        <div class="field">
+          <label class="label"> Total </label>
+          <div class="control">
+            <input
+              readonly
+              type="number"
+              x-model.number="line * quantity"
+              class="numberinput input"
+            />
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <hr />
+
+    {{ form|crispy }} {% csrf_token %}
+    <input type="submit" class="button" value="Save" />
+  </form>
+{% endblock %}

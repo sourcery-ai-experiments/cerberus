@@ -161,6 +161,14 @@ class BookingSerializer(DynamicFieldsModelSerializer):
         ]
 
 
+class BookingMoveSerializer(serializers.Serializer):
+    to = serializers.DateTimeField()
+
+
+class BookingSlotMoveSerializer(serializers.Serializer):
+    start = serializers.DateTimeField()
+
+
 class AddressSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
 
@@ -176,6 +184,12 @@ class CustomerDetailsOnlySerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = Customer
         fields = "__all__"
+
+
+class PetDropDownSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    customer = serializers.CharField(read_only=True)
 
 
 class PetSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObjectSerializer):

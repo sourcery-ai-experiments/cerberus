@@ -1,0 +1,11 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+
+{% block subtitle %}
+  <h2>Invoices</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% include 'cerberus/components/invoice_list.html' with invoices=object_list %}
+{% endblock %}

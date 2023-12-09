@@ -1,0 +1,26 @@
+{% load paginator_tags %}
+{% load crispy_forms_tags %}
+
+{% page_range paginator page_obj.number as pages %}
+<ol
+  hx-boost="true"
+  hx-target="{{ hx_target }}"
+  hx-swap="outerHTML"
+  role="pagination"
+  aria-label="pagination"
+>
+  {% for i in pages %}
+    <li>
+      {% if i|is_numeric %}
+        <a
+          {% if i == page_obj.number %}class="current"{% endif %}
+          {% if i != page_obj.number %}href="{{ base_url }}?{% querystring page=i %}"{% endif %}
+          aria-label="Goto page {{ i }}"
+        >{{ i }}</a
+          >
+      {% else %}
+        <span>{{ i }}</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>

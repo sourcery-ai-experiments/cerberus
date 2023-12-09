@@ -1,5 +1,6 @@
 # Standard Library
 import random
+from datetime import date, timedelta
 
 # Django
 from django.test import TestCase
@@ -22,6 +23,27 @@ class InvoiceTests(TestCase):
         self.invoice: Invoice = baker.make(Invoice, adjustment=0.0)
         for i in range(3):
             Charge(name=f"line {i}", line=10, quantity=i, invoice=self.invoice)
+
+    def test_overdue(self):
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+        tomorrow = today + timedelta(days=1)
+
+        email = "test@example.com"
+        customer = baker.make(Customer, invoice_email=email)
+        overdue = baker.make(Invoice, customer=customer, due=yesterday)
+        overdue.send()
+        loaded_overdue = Invoice.objects.filter(pk=overdue.pk)[0]
+
+        notdue = baker.make(Invoice, customer=customer, due=tomorrow)
+        notdue.send()
+        loaded_notdue = Invoice.objects.filter(pk=notdue.pk)[0]
+
+        self.assertTrue(loaded_overdue.overdue)
+        self.assertFalse(loaded_notdue.overdue)
+
+        self.assertEqual(loaded_overdue.overdue, overdue.overdue)
+        self.assertEqual(loaded_notdue.overdue, notdue.overdue)
 
     def test_send_requires_customer(self):
         inv = Invoice.objects.create()
