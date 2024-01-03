@@ -48,4 +48,4 @@ class SerializerTests(TestCase):
             "name": customer.name,
         }
 
-        self.assertDictContainsSubset(validation, data)
+        self.assertTrue(validation.items() <= data.items())
