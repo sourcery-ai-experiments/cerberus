@@ -17,6 +17,10 @@ jobs:
 
     steps:
     - checkout
+    - run:
+        name: Install cario
+        command: |
+          sudo apt-get install build-essential libcairo2 libcairo2-dev
     - restore_cache:
         key: v3-deps-{{ checksum "requirements.dev.txt" }}-{{ checksum "requirements.txt" }}
     - python/install-packages:
