@@ -14,7 +14,7 @@ from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.db import models, transaction
-from django.db.models import Count, F, Q, Sum, Value
+from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
 from django.template import loader
@@ -58,7 +58,6 @@ class CustomerManager(models.Manager["Customer"]):
         return (
             super()
             .get_queryset()
-            .annotate(name=Concat("first_name", Value(" "), "last_name"))
             .annotate(
                 invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
                 + Sum(
@@ -92,6 +91,13 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=125)
     last_name = models.CharField(max_length=125)
     other_names = models.CharField(max_length=255, default="", blank=True)
+
+    name = models.GeneratedField(
+        expression=Concat("first_name", models.Value(" "), "last_name"),
+        output_field=models.CharField(max_length=511),
+        db_persist=True,
+    )
+
     invoice_address = models.TextField(default="", blank=True)
     invoice_email = models.EmailField(default="", blank=True)
 
@@ -118,17 +124,6 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ("-created",)
-
-    @property
-    def name(self) -> str:
-        return f"{self.first_name} {self.last_name}"
-
-    @name.setter
-    def name(self, value: str) -> None:
-        # this is annotated for searching and sorting
-        # but has a getter for nested serialization
-        # so it needs a setter to stop attribution error
-        pass
 
     _invoiced_unpaid = None
 
