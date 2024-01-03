@@ -20,6 +20,7 @@ jobs:
     - run:
         name: Install cario
         command: |
+          sudo apt-get update
           sudo apt-get install build-essential libcairo2 libcairo2-dev
     - restore_cache:
         key: v3-deps-{{ checksum "requirements.dev.txt" }}-{{ checksum "requirements.txt" }}
