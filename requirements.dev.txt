@@ -453,9 +453,9 @@ djangorestframework-simplejwt[crypto]==5.3.1 \
 docopt==0.6.2 \
     --hash=sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491
     # via pytest-watch
-drf-spectacular==0.26.5 \
-    --hash=sha256:aee55330a774ba8a9cbdb125714d1c9ee05a8aafd3ce3be8bfd26527649aeb44 \
-    --hash=sha256:c0002a820b11771fdbf37853deb371947caf0159d1afeeffe7598e964bc1db94
+drf-spectacular==0.27.0 \
+    --hash=sha256:18d7ae74b2b5d533fd31f1c591ebaa5cce1447e0976ced927401e3163040dea9 \
+    --hash=sha256:6ab2d20674244e8c940c2883f744b43c34fc68c70ea3aefa802f574108c9699b
     # via Cerberus (pyproject.toml)
 exceptiongroup==1.2.0 \
     --hash=sha256:4bfd3996ac73b41e9b9628b04e079f193850720ea5945fc96a08633c66912f14 \
