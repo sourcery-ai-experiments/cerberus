@@ -1,6 +1,5 @@
 [project]
 name = "Cerberus"
-version = "0.1.0"
 description = "Cerberus, the dog walkers CRM"
 license = { file = "LICENSE" }
 dependencies = [
@@ -34,7 +33,8 @@ dependencies = [
     "xhtml2pdf",
 ]
 authors = [{ name = "Ben Gosney", email = "bengosney@googlemail.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
+dynamic = ["version"]
 readme = "README.rst"
 
 [project.optional-dependencies]
@@ -59,6 +59,7 @@ dev = [
     "pytest-django",
     "pytest-picked",
     "pytest-watch",
+    "setuptools_scm",
 ]
 
 [project.urls]
@@ -66,11 +67,15 @@ homepage = "https://cerberus.stretchtheirlegs.co.uk/"
 repository = "http://www.github.com/bengosney/cerberus"
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools_scm]
 
 [tool.setuptools.package-data]
 cerberus = ["templates/cerberus/*.html", "templates/cerberus/*.svg"]
+
 
 [tool.black]
 line-length = 128
