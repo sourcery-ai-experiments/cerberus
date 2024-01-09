@@ -500,9 +500,9 @@ humanize==4.9.0 \
     --hash=sha256:582a265c931c683a7e9b8ed9559089dea7edcf6cc95be39a3cbc2c5d5ac2bcfa \
     --hash=sha256:ce284a76d5b1377fd8836733b983bfb0b76f1aa1c090de2566fcf008d7f6ab16
     # via Cerberus (pyproject.toml)
-hypothesis==6.92.5 \
-    --hash=sha256:7f45942ae77f7d474ab68b16c0e1e9280c73af9806da33292c3f316c14d6d479 \
-    --hash=sha256:847bd741bbd7a6a54f7c7402e4f6aa395f7a53113f515fe42adebfbe5e1e5efd
+hypothesis==6.92.6 \
+    --hash=sha256:f8af0545a5a504abce9cb1ec1dbf6d737c356f22f002036ffee0421a2119b7e5 \
+    --hash=sha256:fbb69c8e704427eadfd91fa81da8a82f6938dfcc9b4364027e476590bb7d7d8c
     # via Cerberus (pyproject.toml)
 icecream==2.1.3 \
     --hash=sha256:0aa4a7c3374ec36153a1d08f81e3080e83d8ac1eefd97d2f4fe9544e8f9b49de \
