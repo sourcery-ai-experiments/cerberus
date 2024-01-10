@@ -661,9 +661,9 @@ referencing==0.32.1 \
     # via
     #   jsonschema
     #   jsonschema-specifications
-reportlab[pycairo]==4.0.8 \
-    --hash=sha256:169945817a1a7759fb7b7dae528c2f8064fc21d16338d9b572ebdcb756740853 \
-    --hash=sha256:d00693de8ab8761b122e409de883ba976c24839f93867090c0d40b5d5906e847
+reportlab[pycairo]==4.0.9 \
+    --hash=sha256:c9656216321897486e323be138f7aea67851cedc116b8cc35f8ec7f8cc763538 \
+    --hash=sha256:f32bff66a0fda234202e1e33eaf77f25008871a61cb01cd91584a521a04c0047
     # via
     #   Cerberus (pyproject.toml)
     #   svglib
