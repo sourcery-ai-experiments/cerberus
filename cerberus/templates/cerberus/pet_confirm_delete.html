@@ -1,5 +1,9 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
+{% if not request.htmx %}
+    {% block page_title %}Delete {{ object.name }}?{% endblock %}
+{% endif %}
+
 {% block content %}
     {% if request.htmx %}
         <dialog open id="delete-modal">

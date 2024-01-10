@@ -2,6 +2,9 @@
 
 {% load crispy_forms_tags %}
 
+{% block page_title %}
+    {% include 'utils/page_title.html' with object_name="Booking" %}
+{% endblock %}
 
 {% block content %}
     <h2>Edit: {{ object.name }}</h2>

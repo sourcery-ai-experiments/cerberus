@@ -1,5 +1,8 @@
 {% extends 'base.html' %} {% load crispy_forms_tags %}
 
+{% block page_title %}
+  {% include 'utils/page_title.html' with object_name="Invoice" %}
+{% endblock %}
 
 {% block content %}
 

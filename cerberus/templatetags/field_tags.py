@@ -13,3 +13,8 @@ def fields(model):
             yield capfirst(field.verbose_name), value
         except AttributeError:
             yield capfirst(field.name), value
+
+
+@register.filter()
+def class_name(instance):
+    return instance._meta.verbose_name

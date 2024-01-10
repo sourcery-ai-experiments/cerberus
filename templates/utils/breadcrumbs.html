@@ -3,7 +3,7 @@
     {% for crumb in breadcrumbs %}
       <li>
         {% if forloop.last %}
-          {{ crumb.name }}
+          {{ crumb.name|default:"New" }}
         {% else %}
           <a href="{{ crumb.url }}">{{ crumb.name }}</a>
         {% endif %}
