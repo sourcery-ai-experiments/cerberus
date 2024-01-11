@@ -76,11 +76,11 @@ clean: ## Remove all build files
 	rm -f .testmondata
 	rm -rf *.egg-info
 
-cerberus-crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
+cerberus_crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
 	npx lightningcss --minify --bundle --nesting --targets '>= 0.25%' $< -o $@
 	@touch $@
 
-css: cerberus-crm/static/css/main.min.css ## Build the css
+css: cerberus_crm/static/css/main.min.css ## Build the css
 
 watch-css: ## Watch and build the css
 	@echo "Watching scss"
