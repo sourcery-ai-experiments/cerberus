@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn cerberus-crm.wsgi --log-file -
+web: gunicorn cerberus_crm.wsgi --log-file -

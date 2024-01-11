@@ -105,4 +105,4 @@ warn_no_return = true
 
 
 [tool.django-stubs]
-django_settings_module = "cerberus-crm.settings"
+django_settings_module = "cerberus_crm.settings"
