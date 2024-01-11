@@ -89,6 +89,6 @@ watch-css: ## Watch and build the css
 		$(MAKE) css; \
 	done
 
-install: $(PIP_SYNC_PATH) requirements.txt $(REQS) ## Install development requirements (default)
+install: $(PIP_SYNC_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
-	@python -m piptools sync requirements.txt $(REQS)
+	@python -m piptools sync requirements.txt $(filter-out $<,$^)
