@@ -1194,9 +1194,9 @@ whitenoise==6.6.0 \
     --hash=sha256:8998f7370973447fac1e8ef6e8ded2c5209a7b1f67c1012866dbcd09681c3251 \
     --hash=sha256:b1f9db9bf67dc183484d760b99f4080185633136a273a03f6436034a41064146
     # via Cerberus (pyproject.toml)
-xhtml2pdf==0.2.13 \
-    --hash=sha256:8260305e044697a1d0c6d576153a0cc8ba0e89ea2446cf54f41f4a0e54e93e7d \
-    --hash=sha256:ab48cb6482e441a0d117f34ffab605181d2689e56a5e54a24d97f2b9d9a8776b
+xhtml2pdf==0.2.14 \
+    --hash=sha256:4b33a94921898ed5c0431b46701380dc91ff4aae6d28c99679431ea696edd38c \
+    --hash=sha256:dfdd81c5b6fbb06fc7afb1db7af2a313cbaee14e7aa079ead43189a27722b09f
     # via Cerberus (pyproject.toml)
 
 # WARNING: The following packages were not pinned, but pip requires them to be
