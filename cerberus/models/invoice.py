@@ -27,7 +27,7 @@ from ..decorators import save_after
 
 if TYPE_CHECKING:
     # Locals
-    from .charge import Charge
+    from . import Charge, Customer
 
 
 # self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
@@ -57,15 +57,15 @@ class Invoice(models.Model):
 
     details = models.TextField(blank=True, default="")
     due = models.DateField(blank=True, null=True, default=None)
-    adjustment = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
+    adjustment = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
     invoice_address = models.TextField(default="", blank=True)
 
-    state = FSMField(default=States.DRAFT.value, choices=States.choices, protected=True)
-    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
-    sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)
+    state = FSMField(default=States.DRAFT.value, choices=States.choices, protected=True)  # type: ignore
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)  # type: ignore
+    sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)  # type: ignore
 
     send_notes = models.TextField(blank=True, default="", null=True)
 
@@ -74,7 +74,7 @@ class Invoice(models.Model):
 
     _can_edit = False
 
-    customer = models.ForeignKey(
+    customer: models.ForeignKey["Customer|None"] = models.ForeignKey(
         "cerberus.Customer",
         on_delete=models.SET_NULL,
         null=True,
@@ -128,6 +128,8 @@ class Invoice(models.Model):
         conditions=[can_send],
     )
     def send(self, to=None, send_email=True, send_notes=None):
+        if not self.customer:
+            raise Exception("no customer set")
         self._can_edit = True
         self.customer_name = self.customer.name
         self.invoice_address = self.customer.invoice_address
@@ -161,7 +163,7 @@ class Invoice(models.Model):
         )
 
         results = self.get_pdf()
-        if results.err:
+        if hasattr(results, "err"):
             raise Exception(results.err)
 
         email.attach(f"{self.name}.pdf", results.dest.getvalue(), "application/pdf")
@@ -187,7 +189,7 @@ class Invoice(models.Model):
         payment.save()
 
     @save_after
-    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)
+    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)  # type: ignore
     def void(self) -> None:
         pass
 
@@ -208,17 +210,18 @@ class Invoice(models.Model):
     def link_callback(self, uri, rel):
         """Convert HTML URIs to absolute system paths so xhtml2pdf can access
         those resources."""
+
+        sUrl = settings.STATIC_URL
+        sRoot = settings.STATIC_ROOT
+        mUrl = settings.MEDIA_URL
+        mRoot = settings.MEDIA_ROOT
+
         if result := finders.find(uri):
             if not isinstance(result, (list, tuple)):
                 result = [result]
             result = [os.path.realpath(path) for path in result]
             path = result[0]
         else:
-            sUrl = settings.STATIC_URL  # Typically /static/
-            sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
-            mUrl = settings.MEDIA_URL  # Typically /media/
-            mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
-
             if uri.startswith(mUrl):
                 path = os.path.join(mRoot, uri.replace(mUrl, ""))
             elif uri.startswith(sUrl):
@@ -283,12 +286,14 @@ class Invoice(models.Model):
 
 class InvoiceOpen(models.Model):
     opened = models.DateTimeField(auto_now_add=True, editable=False)
-    invoice = models.ForeignKey("cerberus.Invoice", on_delete=models.CASCADE, related_name="opens")
+    invoice: models.ForeignKey["Invoice"] = models.ForeignKey(
+        "cerberus.Invoice", on_delete=models.CASCADE, related_name="opens"
+    )
 
 
 class Payment(models.Model):
-    amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")
-    invoice = models.ForeignKey(
+    amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
+    invoice: models.ForeignKey["Invoice|None"] = models.ForeignKey(
         "cerberus.Invoice",
         on_delete=models.PROTECT,
         null=True,
@@ -296,7 +301,7 @@ class Payment(models.Model):
         limit_choices_to={"state": Invoice.States.UNPAID.value},
     )
 
-    customer = models.ForeignKey(
+    customer: models.ForeignKey["Customer"] = models.ForeignKey(
         "cerberus.Customer",
         on_delete=models.PROTECT,
         related_name="payments",
@@ -314,6 +319,6 @@ class Payment(models.Model):
         return f"{self.amount} for {self.invoice}"
 
     def save(self, *args, **kwargs) -> None:
-        if not hasattr(self, "customer") and self.invoice is not None:
+        if self.customer is None and self.invoice and self.invoice.customer:
             self.customer = self.invoice.customer
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)

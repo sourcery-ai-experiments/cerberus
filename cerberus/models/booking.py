@@ -23,9 +23,7 @@ from .charge import Charge
 
 if TYPE_CHECKING:
     # Locals
-    from .customer import Customer
-    from .pet import Pet
-    from .service import Service
+    from . import Customer, Pet, Service
 
 
 class BookingSlot(models.Model):
@@ -67,7 +65,7 @@ class BookingSlot(models.Model):
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
 
-        return self.__class__.objects.filter(start | end | equal).exclude(pk=self.pk)
+        return self.__class__.objects.filter(start | end | equal).exclude(pk=self.pk)  # type: ignore
 
     def overlaps(self) -> bool:
         others = self.get_overlapping()
@@ -157,7 +155,7 @@ class Booking(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices, protected=True)
+    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices, protected=True)  # type: ignore
 
     # Relationship Fields
     pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
@@ -257,7 +255,7 @@ class Booking(models.Model):
         pass
 
     @save_after
-    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)
+    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)  # type: ignore
     def cancel(self) -> None:
         self.booking_slot = None
 

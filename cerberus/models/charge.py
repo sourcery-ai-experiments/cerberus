@@ -1,5 +1,6 @@
 # Standard Library
 from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING
 
 # Django
 from django.db import models
@@ -14,6 +15,10 @@ from polymorphic.models import PolymorphicModel
 
 # Locals
 from ..decorators import save_after
+
+if TYPE_CHECKING:
+    # Locals
+    from . import Customer, Invoice
 
 
 @reversion.register()
@@ -33,20 +38,20 @@ class Charge(PolymorphicModel):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     name = models.CharField(max_length=255)
-    line = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")
+    line = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
     quantity = models.IntegerField(default=1)
 
-    state = FSMField(default=States.UNPAID.value, choices=States.choices, protected=True)
-    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)
+    state = FSMField(default=States.UNPAID.value, choices=States.choices, protected=True)  # type: ignore
+    paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)  # type: ignore
 
-    customer = models.ForeignKey(
+    customer: models.ForeignKey["Customer|None"] = models.ForeignKey(
         "cerberus.Customer",
         on_delete=models.SET_NULL,
         null=True,
         related_name="charges",
     )
 
-    invoice = models.ForeignKey(
+    invoice: models.ForeignKey["Invoice|None"] = models.ForeignKey(
         "cerberus.Invoice",
         on_delete=models.SET_NULL,
         blank=True,

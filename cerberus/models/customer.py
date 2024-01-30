@@ -16,10 +16,7 @@ from moneyed import Money
 from taggit.managers import TaggableManager
 
 if TYPE_CHECKING:
-    from .pet import Pet
-    from .contact import Contact
-    from .charge import Charge
-    from .booking import Booking
+    from . import Pet, Contact, Charge, Booking, Vet
 
 # Locals
 from .invoice import Invoice
@@ -64,7 +61,7 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=125)
     other_names = models.CharField(max_length=255, default="", blank=True)
 
-    name = models.GeneratedField(
+    name = models.GeneratedField(  # type: ignore
         expression=Concat("first_name", models.Value(" "), "last_name"),
         output_field=models.CharField(max_length=511),
         db_persist=True,
@@ -77,13 +74,12 @@ class Customer(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     active = models.BooleanField(default=True)
 
-    vet = models.ForeignKey(
+    vet: models.ForeignKey["Vet|None"] = models.ForeignKey(
         "cerberus.Vet",
         on_delete=models.SET_NULL,
         related_name="customers",
         blank=True,
         null=True,
-        default=None,
     )
 
     tags = TaggableManager(blank=True)

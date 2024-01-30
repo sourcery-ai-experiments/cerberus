@@ -18,7 +18,7 @@ from ..utils import choice_length
 
 if TYPE_CHECKING:
     # Locals
-    from .booking import Booking
+    from . import Booking
 
 
 @reversion.register()
