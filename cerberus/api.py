@@ -52,18 +52,18 @@ class ActiveMixin:
     @action(detail=True, methods=["put"])
     def deactivate(self, request, pk=None):
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
-        object = self.get_object()
-        object.active = False
-        object.save()
+        _object = self.get_object()
+        _object.active = False
+        _object.save()
 
         return Response({"status": "ok"})
 
     @action(detail=True, methods=["put"])
     def activate(self, request, pk=None):
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
-        object = self.get_object()
-        object.active = True
-        object.save()
+        _object = self.get_object()
+        _object.active = True
+        _object.save()
 
         return Response({"status": "ok"})
 

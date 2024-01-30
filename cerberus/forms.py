@@ -9,7 +9,9 @@ from .models import Booking, Charge, Customer, Invoice, Pet, Vet
 
 
 class SingleMoneyWidget(MoneyWidget):
-    def __init__(self, attrs={}, *args, **kwargs):
+    def __init__(self, attrs=None, *args, **kwargs):
+        if attrs is None:
+            attrs = {}
         super().__init__(
             amount_widget=forms.NumberInput(
                 attrs={

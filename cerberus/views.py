@@ -53,8 +53,7 @@ class FilterableMixin:
         queryset = super().get_queryset()
 
         if filter_class := getattr(self, "filter_class", None):
-            filter = filter_class(self.request.GET, queryset)
-            return filter.qs
+            return filter_class(self.request.GET, queryset).qs
 
         return queryset
 
@@ -63,8 +62,7 @@ class FilterableMixin:
 
         queryset = self.get_queryset()
         if filter_class := getattr(self, "filter_class", None):
-            filter = filter_class(self.request.GET, queryset)
-            context["filter"] = filter
+            context["filter"] = filter_class(self.request.GET, queryset)
 
         return context
 
