@@ -2,20 +2,11 @@
 {% load crispy_forms_tags %}
 
 {% block body %}
-  <section class="hero is-fullheight">
-    <div class="hero-body">
-      <div class="container">
-        <div class="columns is-centered">
-          <div class="column is-5-tablet is-4-desktop is-3-widescreen">
-
-            <form method="post">
-              {{ form|crispy }}
-              {% csrf_token %}
-              <input type="submit" class="button" value="Login">
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+  <section class="login-form">
+    <form method="post">
+      {{ form|crispy }}
+      {% csrf_token %}
+      <input type="submit" class="button" value="Login">
+    </form>
   </section>
 {% endblock %}

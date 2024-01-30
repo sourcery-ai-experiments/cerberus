@@ -42,6 +42,7 @@ dev = [
     "black",
     "django-debug-toolbar",
     "django-debugtools",
+    "django-extensions",
     "django-stubs",
     "django-browser-reload",
     "django-debug-toolbar",

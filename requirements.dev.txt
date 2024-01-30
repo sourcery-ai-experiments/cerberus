@@ -356,6 +356,7 @@ django==5.0.1 \
     #   django-cors-headers
     #   django-crispy-forms
     #   django-debug-toolbar
+    #   django-extensions
     #   django-filter
     #   django-fsm-admin2
     #   django-fsm-log
@@ -396,6 +397,10 @@ django-debug-toolbar==4.2.0 \
 django-debugtools==2.0 \
     --hash=sha256:085f7bc62a3a5c81c7a0d8643dbc7dfd991cfdffabe7a6d6fbecad0e346608ff \
     --hash=sha256:e9b3de4ee0aa1b2b9290bf8a09e1cd52baacfc7a8214abe15e8bfb80f2c2f497
+    # via Cerberus (pyproject.toml)
+django-extensions==3.2.3 \
+    --hash=sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a \
+    --hash=sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401
     # via Cerberus (pyproject.toml)
 django-filter==23.5 \
     --hash=sha256:67583aa43b91fe8c49f74a832d95f4d8442be628fd4c6d65e9f811f5153a4e5c \
@@ -482,20 +487,13 @@ filelock==3.13.1 \
     --hash=sha256:521f5f56c50f8426f5e03ad3b281b490a87ef15bc6c526f168290f0c7148d44e \
     --hash=sha256:57dbda9b35157b05fb3e58ee91448612eb674172fab98ee235ccb0b5bee19a1c
     # via virtualenv
-freetype-py==2.3.0 \
-    --hash=sha256:3a552265b06c2cb3fa54f86ed6fcbf045d8dc8176f9475bedddf9a1b31f5402f \
-    --hash=sha256:89cee8f4e7cf0a37b73a43a08c88703d84e3b9f9243fc665d8dc0b72a5d206a8 \
-    --hash=sha256:b95ccd52ff7e9bef34505f8af724cee114a3c3cc9cf13e0fd406fa0cc92b988a \
-    --hash=sha256:c8f17c3ac35dc7cc9571ac37a00a6daa428a1a6d0fe6926a77d16066865ed5ef \
-    --hash=sha256:ca7155de937af6f26bfd9f9089a6e9b01fa8f9d3040a3ddc0aeb3a53cf88f428 \
-    --hash=sha256:ccdb1616794a8ad48beaa9e29d3494e6643d24d8e925cc39263de21c062ea5a7 \
-    --hash=sha256:f9b64ce3272a5c358dcee824800a32d70997fb872a0965a557adca20fce7a5d0
-    # via
-    #   reportlab
-    #   rlpycairo
 freezegun==1.4.0 \
     --hash=sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b \
     --hash=sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6
+    # via Cerberus (pyproject.toml)
+graphviz==0.20.1 \
+    --hash=sha256:587c58a223b51611c0cf461132da386edd896a029524ca61a1462b880bf97977 \
+    --hash=sha256:8c58f14adaa3b947daf26c19bc1e98c4e0702cdc31cf99153e6f06904d492bf8
     # via Cerberus (pyproject.toml)
 gunicorn==21.2.0 \
     --hash=sha256:3213aa5e8c24949e792bcacfc176fef362e7aac80b76c56f6b5122bf350722f0 \
@@ -802,23 +800,6 @@ py-moneyed==3.0 \
     --hash=sha256:4906f0f02cf2b91edba2e156f2d4e9a78f224059ab8c8fa2ff26230c75d894e8 \
     --hash=sha256:9583a14f99c05b46196193d8185206e9b73c8439fc8a5eee9cfc7e733676d9bb
     # via django-money
-pycairo==1.25.1 \
-    --hash=sha256:109ebbeb5bbc510b726fc31251071264dec241e5084d0668f846d7e17e5af8e0 \
-    --hash=sha256:27011d822952d7817130fc17f490de94328590bc8d45bdbca9ec4a47039fca22 \
-    --hash=sha256:4133ba3ef6d875aa1b16643dc0801846f463b8e78750f5308c41902dfeac5b9a \
-    --hash=sha256:48603ad31616140ad6fa097f13086d0ce8f29ead35ad6a215962f3b0496a5a70 \
-    --hash=sha256:56fee2837a07ecd914f4fbf78ff59445f78becd658fe36125101925dd489eb94 \
-    --hash=sha256:7e2be4fbc3b4536f16db7a11982cbf713e75069a4d73d44fe5a49b68423f5c0c \
-    --hash=sha256:97666c084e9eb1c08c7fd6d306d153767acdf03c0d80349ec55863cecd4138e0 \
-    --hash=sha256:9a7c5ed92fe87f60e9796777d5255f2df2deeb8ab1e3c296e67a1d8c9790808c \
-    --hash=sha256:ac5437d140eccd97af12a618cc1ace0d9a85f1269f29e963751949f132828b21 \
-    --hash=sha256:b10e58a3ce41e487aae15050b630742e880d4135cee7a69cee2c0ea2a0b4bd0a \
-    --hash=sha256:b19269a8bf9ab5e3c617f2699bed00977fd02ff304339a233654456c0236f7c6 \
-    --hash=sha256:bda5d10adbf1f5eba6b524b5a70ccf7f659680b77e691ff94b312f25a6fcc91f \
-    --hash=sha256:cacb5c2abbfdfc79c728ab261ff791511e4957b606c660f9b380975b678b728f \
-    --hash=sha256:fb31eec2c41ec74e23dc0fc9feb4007b4c37f78ec76220ed92530b342e09821a \
-    --hash=sha256:fcf5511b05a652a0ef87f626bf26bfc1b796a67f0d1bd40781c62986fb41c356
-    # via rlpycairo
 pycparser==2.21 \
     --hash=sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9 \
     --hash=sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206
@@ -962,7 +943,7 @@ referencing==0.32.1 \
     # via
     #   jsonschema
     #   jsonschema-specifications
-reportlab[pycairo]==4.0.9 \
+reportlab==4.0.9 \
     --hash=sha256:c9656216321897486e323be138f7aea67851cedc116b8cc35f8ec7f8cc763538 \
     --hash=sha256:f32bff66a0fda234202e1e33eaf77f25008871a61cb01cd91584a521a04c0047
     # via
@@ -979,9 +960,6 @@ rich==13.7.0 \
     --hash=sha256:5cb5123b5cf9ee70584244246816e9114227e0b98ad9176eede6ad54bf5403fa \
     --hash=sha256:6da14c108c4866ee9520bbffa71f6fe3962e193b7da68720583850cd4548e235
     # via pytest-clarity
-rlpycairo==0.3.0 \
-    --hash=sha256:f6ec712a76914f78c1491351e1d79eeb1a40d072accf5d36075e399963c17b17
-    # via reportlab
 rpds-py==0.17.1 \
     --hash=sha256:01f58a7306b64e0a4fe042047dd2b7d411ee82e54240284bab63e325762c1147 \
     --hash=sha256:0210b2668f24c078307260bf88bdac9d6f1093635df5123789bfee4d8d7fc8e7 \

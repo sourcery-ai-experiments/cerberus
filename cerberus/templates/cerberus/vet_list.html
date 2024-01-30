@@ -9,4 +9,5 @@
 
 {% block content %}
   {% include 'cerberus/components/vet_list.html' with vets=object_list %}
+  <a href="{% url 'vet_create' %}" title="New Vet" class="fab">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

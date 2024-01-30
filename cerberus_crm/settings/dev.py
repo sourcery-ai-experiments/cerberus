@@ -19,6 +19,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 INSTALLED_APPS += [
     "django_browser_reload",
     "debug_toolbar",
+    "django_extensions",
 ]
 
 MIDDLEWARE += [

@@ -9,4 +9,5 @@
 
 {% block content %}
   {% include 'cerberus/components/customer_list.html' with customers=object_list %}
+  <a href="{% url 'customer_create' %}" title="New Customer" class="fab">{% include 'icons/plus.svg' %}</a>
 {% endblock %}
