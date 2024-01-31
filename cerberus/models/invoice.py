@@ -118,7 +118,7 @@ class Invoice(models.Model):
         }
         createdLog = StateLog(**created)
 
-        return [createdLog] + list(StateLog.objects.for_(self))
+        return [createdLog] + list(StateLog.objects.for_(self))  # type: ignore
 
     @save_after
     @transition(
@@ -166,7 +166,7 @@ class Invoice(models.Model):
         if (err := getattr(results, "err", 0)) > 0:
             raise Exception(err)
 
-        email.attach(f"{self.name}.pdf", results.dest.getvalue(), "application/pdf")
+        email.attach(f"{self.name}.pdf", getattr(results, "dest").getvalue(), "application/pdf")
         email.attach_alternative(html.render(context), "text/html")
 
         return email.send()
