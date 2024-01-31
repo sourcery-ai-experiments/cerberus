@@ -301,10 +301,11 @@ class Payment(models.Model):
         limit_choices_to={"state": Invoice.States.UNPAID.value},
     )
 
-    customer: models.ForeignKey["Customer"] = models.ForeignKey(
+    customer: models.ForeignKey["Customer|None"] = models.ForeignKey(
         "cerberus.Customer",
         on_delete=models.PROTECT,
         related_name="payments",
+        null=True,
     )
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
