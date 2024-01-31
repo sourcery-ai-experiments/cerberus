@@ -163,8 +163,8 @@ class Invoice(models.Model):
         )
 
         results = self.get_pdf()
-        if hasattr(results, "err"):
-            raise Exception(results.err)
+        if (err := getattr(results, "err", 0)) > 0:
+            raise Exception(err)
 
         email.attach(f"{self.name}.pdf", results.dest.getvalue(), "application/pdf")
         email.attach_alternative(html.render(context), "text/html")
