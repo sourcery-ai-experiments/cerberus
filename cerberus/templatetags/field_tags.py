@@ -15,6 +15,15 @@ def fields(model):
             yield capfirst(field.name), value
 
 
-@register.filter()
-def class_name(instance):
-    return instance._meta.verbose_name
+@register.filter
+def verbose_name(model):
+    if hasattr(model, "_meta"):
+        return model._meta.verbose_name
+    return ""
+
+
+@register.filter
+def verbose_name_plural(model):
+    if hasattr(model, "_meta"):
+        return model._meta.verbose_name_plural
+    return ""

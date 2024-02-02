@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 
 {% load crispy_forms_tags %}
+{% load field_tags %}
 
 {% block page_title %}
     {% include 'utils/page_title.html' with object_name="Pet" %}
 {% endblock %}
 
 {% block content %}
-    <h2>Edit: {{ object.name }}</h2>
+    {% if object.pk is None %}
+        <h2>Create new {{ view.model | verbose_name }}</h2>
+    {% else %}
+        <h2>Edit {{ view.model | verbose_name }}: {{ object.name }}</h2>
+    {% endif %}
 
     <form method="post">
         {{ form|crispy }}
