@@ -43,6 +43,7 @@ class CustomerManager(models.Manager["Customer"]):
                     filter=Q(invoices__state=Invoice.States.UNPAID.value, invoices__due__lt=datetime.today()),
                 )
             )
+            .order_by(*Customer._meta.ordering or list())
         )
 
 
@@ -86,12 +87,12 @@ class Customer(models.Model):
 
     objects = money_manager(CustomerManager())
 
+    class Meta:
+        ordering = ("first_name", "last_name")
+
     @property
     def active_pets(self):
         return self.pets.filter(active=True)
-
-    class Meta:
-        ordering = ("-created",)
 
     _invoiced_unpaid = None
 
