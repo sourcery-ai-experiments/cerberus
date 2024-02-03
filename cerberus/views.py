@@ -134,8 +134,9 @@ class ActionView(View):
             raise Http404(f"{action} is not currently available on {self.model._meta.model_name}")
 
         getattr(model, action)()
+        redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
-        return redirect(model.get_absolute_url())
+        return redirect(redirect_url)
 
 
 class CRUDViews(GenericModelView):
