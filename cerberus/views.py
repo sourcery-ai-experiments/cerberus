@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
 from django.forms import modelformset_factory
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.utils.decorators import classonlymethod
@@ -298,12 +298,4 @@ class InvoiceCRUD(CRUDViews):
 def pdf(request, pk: int):
     invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
-    results = invoice.get_pdf()
-    if results.err:
-        raise Exception(results.err)
-
-    return HttpResponse(
-        content=results.dest.getvalue(),
-        content_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
-    )
+    return invoice.get_pdf_response()

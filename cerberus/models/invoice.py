@@ -10,6 +10,7 @@ from django.contrib.staticfiles import finders
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models import F, Q, Sum
+from django.http import HttpResponse
 from django.template import loader
 from django.template.loader import get_template
 
@@ -21,6 +22,7 @@ from djmoney.models.managers import money_manager
 from model_utils.fields import MonitorField
 from moneyed import Money
 from xhtml2pdf import pisa
+from xhtml2pdf.context import pisaContext
 
 # Locals
 from ..decorators import save_after
@@ -166,7 +168,10 @@ class Invoice(models.Model):
         if (err := getattr(results, "err", 0)) > 0:
             raise Exception(err)
 
-        email.attach(f"{self.name}.pdf", getattr(results, "dest").getvalue(), "application/pdf")
+        if (dest := getattr(results, "dest", None)) is None:
+            raise Exception("No destination found")
+
+        email.attach(f"{self.name}.pdf", dest, "application/pdf")
         email.attach_alternative(html.render(context), "text/html")
 
         return email.send()
@@ -250,7 +255,7 @@ class Invoice(models.Model):
     def total(self, value):
         pass
 
-    def get_pdf(self, renderTo=None):
+    def get_pdf(self, renderTo=None) -> pisaContext:
         template_path = "cerberus/invoice.html"
         context = {
             "invoice": self,
@@ -259,7 +264,22 @@ class Invoice(models.Model):
         template = get_template(template_path)
         html = template.render(context)
 
-        return pisa.CreatePDF(html, dest=renderTo, link_callback=self.link_callback)
+        pdf = pisa.CreatePDF(html, dest=renderTo, link_callback=self.link_callback)
+
+        if not isinstance(pdf, pisaContext) or pdf.err > 0:
+            raise Exception("Unable to create PDF")
+
+        return pdf
+
+    def get_pdf_response(self) -> HttpResponse:
+        response = HttpResponse(
+            content_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{self.name}.pdf"'},
+        )
+
+        self.get_pdf(renderTo=response)
+
+        return response
 
     def add_open(self):
         o = InvoiceOpen(invoice=self)

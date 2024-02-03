@@ -228,15 +228,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def pdf(self, request, pk=None):
         invoice: Invoice = self.get_object()
 
-        results = invoice.get_pdf()
-        if results.err:
-            raise Exception(results.err)
-
-        return HttpResponse(
-            content=results.dest.getvalue(),
-            content_type="application/pdf",
-            headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
-        )
+        return invoice.get_pdf_response()
 
     @action(detail=True, methods=["get"])
     def logo(self, request, pk=None):
