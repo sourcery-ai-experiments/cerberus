@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
 from django.forms import modelformset_factory
-from django.http import Http404
+from django.http import Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
+from django.urls.resolvers import URLPattern
 from django.utils.decorators import classonlymethod
 from django.views import View
 
@@ -118,7 +119,7 @@ class BreadcrumbMixin(GenericModelView):
         return context
 
 
-class ActionView(View):
+class TransitionView(View):
     model = Model
     field = str
 
@@ -137,6 +138,21 @@ class ActionView(View):
         redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
         return redirect(redirect_url)
+
+
+def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwargs):
+    methods = ["get"] if methods is None else methods
+    methods = [method.lower() for method in methods]
+
+    def decorator(func):
+        func.methods = methods
+        func.detail = detail
+        func.url_path = url_path if url_path else func.__name__.replace("_", "-")
+        func.url_name = url_name
+
+        return func
+
+    return decorator
 
 
 class CRUDViews(GenericModelView):
@@ -188,7 +204,9 @@ class CRUDViews(GenericModelView):
 
     @classonlymethod
     def get_urls(cls):
-        model_name = cls.model._meta.model_name
+        model_name = cls.model._meta.model_name or cls.model.__class__.__name__.lower()
+
+        extra_views = cls.extra_views(model_name)
 
         return [
             path(
@@ -197,7 +215,7 @@ class CRUDViews(GenericModelView):
                 name=f"{model_name}_{Actions.LIST.value}",
             ),
             path(
-                f"{model_name}/new/",
+                f"{model_name}/create/",
                 cls.as_view(action=Actions.CREATE),
                 name=f"{model_name}_{Actions.CREATE.value}",
             ),
@@ -216,7 +234,28 @@ class CRUDViews(GenericModelView):
                 cls.as_view(action=Actions.DELETE),
                 name=f"{model_name}_{Actions.DELETE.value}",
             ),
-        ]
+        ] + extra_views
+
+    @classmethod
+    def extra_views(cls, model_name: str) -> list[URLPattern]:
+        views: list[URLPattern] = []
+        for name in dir(cls):
+            view = getattr(cls, name)
+            if all(hasattr(view, attr) for attr in ["methods", "detail", "url_path", "url_name"]):
+                if view.detail:
+                    route = f"{model_name}/<int:pk>/{view.url_path}/"
+                else:
+                    route = f"{model_name}/{view.url_path}/"
+
+                url_name = view.url_name or f"{model_name}_{view.__name__}"
+                view_name = name
+
+                def view_func(request, *args, **kwargs):
+                    return getattr(cls(), view_name)(request, *args, **kwargs)
+
+                views.append(path(route, view_func, name=url_name))
+
+        return views
 
 
 class CustomerCRUD(CRUDViews):
@@ -242,7 +281,7 @@ class BookingCRUD(CRUDViews):
     form_class = BookingForm
 
 
-class BookingStateActions(ActionView):
+class BookingStateActions(TransitionView):
     model = Booking
     field = "state"
 
@@ -294,9 +333,19 @@ class InvoiceCRUD(CRUDViews):
             case _:
                 return super().get_view_class(action)
 
+    @extra_view(detail=True, methods=["get"])
+    def email(self, request, pk):
+        invoice = get_object_or_404(Invoice, pk=pk)
+        try:
+            invoice.resend_email()
+        except AssertionError as e:
+            return HttpResponseNotAllowed(f"Email not sent: {e}")
 
-@login_required
-def pdf(request, pk: int):
-    invoice: Invoice = get_object_or_404(Invoice, pk=pk)
+        return redirect("invoice_detail", pk=pk)
 
-    return invoice.get_pdf_response()
+    @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
+    @login_required
+    def download(request, pk: int):
+        invoice: Invoice = get_object_or_404(Invoice, pk=pk)
+
+        return invoice.get_pdf_response()

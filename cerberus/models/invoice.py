@@ -1,4 +1,5 @@
 # Standard Library
+import io
 import os
 from collections.abc import Callable, Iterable
 from datetime import date, timedelta
@@ -144,6 +145,11 @@ class Invoice(models.Model):
             self.sent_to = to or self.customer.invoice_email
             self.send_email([f"{self.customer.name} <{self.customer.invoice_email}>"])
 
+    def resend_email(self):
+        assert self.state == self.States.UNPAID.value, "Invoice must be unpaid to resend"
+        assert self.sent_to, "No email address to send to"
+        return self.send_email([self.sent_to])
+
     def send_email(self, to: list[str]):
         assert self.can_send(), "Unable to send email"
 
@@ -164,14 +170,12 @@ class Invoice(models.Model):
             to=to,
         )
 
-        results = self.get_pdf()
+        dest = io.BytesIO()
+        results = self.get_pdf(renderTo=dest)
         if (err := getattr(results, "err", 0)) > 0:
             raise Exception(err)
 
-        if (dest := getattr(results, "dest", None)) is None:
-            raise Exception("No destination found")
-
-        email.attach(f"{self.name}.pdf", dest, "application/pdf")
+        email.attach(f"{self.name}.pdf", dest.getvalue(), "application/pdf")
         email.attach_alternative(html.render(context), "text/html")
 
         return email.send()
