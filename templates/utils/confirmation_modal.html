@@ -1,0 +1,22 @@
+{% if request.htmx %}
+    <dialog open id="confirmation-modal">
+        <article>
+{% endif %}
+<h3>Are you sure you want to {{ question }} '{{ object.name }}'?</h3>
+<footer>
+    <form action="{% url action object.id %}" method="post">
+        {% csrf_token %}
+        {% if request.htmx %}
+            <button x-on:click="document.getElementById('confirmation-modal').remove()">
+                No
+            </button>
+        {% else %}
+            <a role="button" href="{% url cancel object.id %}">No</a>
+        {% endif %}
+        <button type="submit">Yes</button>
+    </form>
+</footer>
+{% if request.htmx %}
+    </article>
+    </dialog>
+{% endif %}

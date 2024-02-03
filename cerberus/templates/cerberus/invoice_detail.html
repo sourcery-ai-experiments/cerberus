@@ -16,7 +16,7 @@
                             <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
                         {% endif %}
                         <li><a href="{% url 'invoice_pdf' invoice.id %}">Download</a></li>
-                        <li><a href="{% url 'invoice_email' invoice.id %}">Resend Email</a></li>
+                        <li><a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">Resend Email</a></li>
                     </ul>
                 </details>
             </li>

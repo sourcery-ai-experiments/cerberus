@@ -333,15 +333,18 @@ class InvoiceCRUD(CRUDViews):
             case _:
                 return super().get_view_class(action)
 
-    @extra_view(detail=True, methods=["get"])
+    @extra_view(detail=True, methods=["get", "post"])
     def email(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
-        try:
-            invoice.resend_email()
-        except AssertionError as e:
-            return HttpResponseNotAllowed(f"Email not sent: {e}")
+        if request.method == "POST":
+            try:
+                invoice.resend_email()
+            except AssertionError as e:
+                return HttpResponseNotAllowed(f"Email not sent: {e}")
 
-        return redirect("invoice_detail", pk=pk)
+            return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
+        else:
+            return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
 
     @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
     @login_required
