@@ -20,6 +20,7 @@ from django_fsm import FSMField, Transition, transition
 from django_fsm_log.models import StateLog
 from djmoney.models.fields import MoneyField
 from djmoney.models.managers import money_manager
+from mjml import mjml2html
 from model_utils.fields import MonitorField
 from moneyed import Money
 from xhtml2pdf import pisa
@@ -153,7 +154,7 @@ class Invoice(models.Model):
     def send_email(self, to: list[str]):
         assert self.can_send(), "Unable to send email"
 
-        html = loader.get_template("emails/invoice.html")
+        html = loader.get_template("emails/invoice.mjml")
         txt = loader.get_template("emails/invoice.txt")
 
         context = {
@@ -176,7 +177,7 @@ class Invoice(models.Model):
             raise Exception(err)
 
         email.attach(f"{self.name}.pdf", dest.getvalue(), "application/pdf")
-        email.attach_alternative(html.render(context), "text/html")
+        email.attach_alternative(mjml2html(html.render(context)), "text/html")
 
         return email.send()
 

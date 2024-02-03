@@ -25,6 +25,7 @@ dependencies = [
     "gunicorn",
     "humanize",
     "markdown",
+    "mjml-python",
     "psycopg2",
     "reportlab",
     "uritemplate",
