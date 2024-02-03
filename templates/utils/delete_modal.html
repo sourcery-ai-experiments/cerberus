@@ -2,7 +2,7 @@
     <dialog open id="delete-modal">
         <article>
 {% endif %}
-<h3>Are you sure you want to delete {{ object.name }}?</h3>
+<h3>Are you sure you want to delete '{{ object.name }}'?</h3>
 <footer>
     <form action="{% url action object.id %}" method="post">
         {% csrf_token %}

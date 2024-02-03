@@ -13,7 +13,7 @@
                     <summary aria-haspopup="listbox" role="link">Menu</summary>
                     <ul role="listbox">
                         <li><a href="{% url 'vet_update' vet.id %}">Edit</a></li>
-                        <li><a hx-get="{% url 'vet_delete' vet.id %}" hx-swap="afterend" href="{% url 'vet_delete' vet.id %}">Delete</a></li>
+                        <li><a hx-get="{% url 'vet_delete' vet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'vet_delete' vet.id %}">Delete</a></li>
                     </ul>
                 </details>
             </li>
