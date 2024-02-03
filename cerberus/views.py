@@ -1,5 +1,4 @@
 # Standard Library
-import functools
 from collections import namedtuple
 from enum import Enum
 from typing import Any
@@ -43,7 +42,8 @@ Crumb = namedtuple("Crumb", ["name", "url"])
 
 class DefaultTemplateMixin(GenericModelView):
     def get_template_names(self):
-        return super().get_template_names() + [f"{self.model._meta.app_label}/default{self.template_name_suffix}.html"]
+        defaults = [f"{self.model._meta.app_label}/default{self.template_name_suffix}.html"] if self.model else []
+        return super().get_template_names() + defaults
 
 
 class FilterableMixin(GenericModelView):
@@ -70,43 +70,32 @@ class FilterableMixin(GenericModelView):
         return context
 
 
-def suppress(func):
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception:
-            return None
-
-    return wrapped
-
-
 class BreadcrumbMixin(GenericModelView):
     def get_breadcrumbs(self):
         crumbs = [
             Crumb("Dashboard", reverse_lazy("dashboard")),
         ]
 
-        model_name = self.model._meta.model_name
+        model_name = self.model._meta.model_name if self.model else ""
+        verbose_name_plural = self.model._meta.verbose_name_plural.title() if self.model else ""
+
+        obj = getattr(self, "object", None)
+        obj_id = getattr(obj, "id", 0)
 
         def list_crumb():
-            return Crumb(self.model._meta.verbose_name_plural.title(), reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
+            return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
-        @suppress
         def detail_crumb():
-            return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": self.object.id}))
+            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def update_crumb():
-            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def create_crumb():
-            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def delete_crumb():
-            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
 
         match self.__class__.__name__.split("_"):
             case _, Actions.LIST.value:
@@ -120,7 +109,7 @@ class BreadcrumbMixin(GenericModelView):
             case _, Actions.DELETE.value:
                 crumbs += [list_crumb(), detail_crumb(), delete_crumb()]
 
-        return crumbs
+        return list(filter(lambda crumb: crumb is not None, crumbs))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
