@@ -17,9 +17,7 @@ from django.views import View
 
 # Third Party
 from django_filters import FilterSet
-from vanilla import CreateView
-from vanilla import DeleteView as DeleteView
-from vanilla import DetailView, GenericModelView, ListView, UpdateView
+from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
 from .filters import CustomerFilter, InvoiceFilter, PetFilter, VetFilter
@@ -43,7 +41,12 @@ class Actions(Enum):
 Crumb = namedtuple("Crumb", ["name", "url"])
 
 
-class FilterableMixin:
+class DefaultTemplateMixin(GenericModelView):
+    def get_template_names(self):
+        return super().get_template_names() + [f"{self.model._meta.app_label}/default{self.template_name_suffix}.html"]
+
+
+class FilterableMixin(GenericModelView):
     filter_class: FilterSet | None
 
     def get_filter(self):
@@ -78,7 +81,7 @@ def suppress(func):
     return wrapped
 
 
-class BreadcrumbMixin:
+class BreadcrumbMixin(GenericModelView):
     def get_breadcrumbs(self):
         crumbs = [
             Crumb("Dashboard", reverse_lazy("dashboard")),
@@ -187,6 +190,7 @@ class CRUDViews(GenericModelView):
                 LoginRequiredMixin,
                 BreadcrumbMixin,
                 FilterableMixin,
+                DefaultTemplateMixin,
                 actionClass,
             ),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
