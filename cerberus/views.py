@@ -12,7 +12,7 @@ from django.http import Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.urls.resolvers import URLPattern
-from django.utils.decorators import classonlymethod
+from django.utils.decorators import classonlymethod, method_decorator
 from django.views import View
 
 # Third Party
@@ -330,6 +330,7 @@ class InvoiceCRUD(CRUDViews):
                 return super().get_view_class(action)
 
     @extra_view(detail=True, methods=["get", "post"])
+    @method_decorator(login_required)
     def email(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
         if request.method == "POST":
@@ -343,8 +344,8 @@ class InvoiceCRUD(CRUDViews):
             return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
 
     @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
-    @login_required
-    def download(request, pk: int):
+    @method_decorator(login_required)
+    def download(self, request, pk: int):
         invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
         return invoice.get_pdf_response()
