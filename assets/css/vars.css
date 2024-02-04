@@ -1,3 +1,51 @@
+/* Deep-purple Light scheme (Default) */
+/* Can be forced with data-theme="light" */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --primary: #5e35b1;
+  --primary-hover: #512da8;
+  --primary-focus: rgba(94, 53, 177, 0.125);
+  --primary-inverse: #fff;
+}
+
+/* Deep-purple Dark scheme (Auto) */
+/* Automatically enabled if user has Dark mode enabled */
+@media only screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --primary: #5e35b1;
+    --primary-hover: #673ab7;
+    --primary-focus: rgba(94, 53, 177, 0.25);
+    --primary-inverse: #fff;
+  }
+}
+
+/* Deep-purple Dark scheme (Forced) */
+/* Enabled if forced with data-theme="dark" */
+[data-theme="dark"] {
+  --primary: #5e35b1;
+  --primary-hover: #673ab7;
+  --primary-focus: rgba(94, 53, 177, 0.25);
+  --primary-inverse: #fff;
+}
+
+/* Deep-purple (Common styles) */
+:root {
+  --form-element-active-border-color: var(--primary);
+  --form-element-focus-color: var(--primary-focus);
+  --switch-color: var(--primary-inverse);
+  --switch-checked-background-color: var(--primary);
+}
+
+:root {
+  --form-element-spacing-vertical: calc(
+    var(--form-element-spacing-horizontal) / 2
+  );
+}
+
 :root {
   --overdue: var(--del-color);
+  --positive: #2e7d32;
+  --positive-hover: #25972b;
+  --negative: #b71c1c;
+  --negative-hover: #bd2420;
 }

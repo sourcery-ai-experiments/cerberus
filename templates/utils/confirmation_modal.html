@@ -6,14 +6,10 @@
 <footer>
     <form action="{% url action object.id %}" method="post">
         {% csrf_token %}
-        {% if request.htmx %}
-            <button x-on:click="document.getElementById('confirmation-modal').remove()">
-                No
-            </button>
-        {% else %}
-            <a role="button" href="{% url cancel object.id %}">No</a>
-        {% endif %}
-        <button type="submit">Yes</button>
+        <div class="button-row">
+            <a class="negative" role="button" href="{% url cancel object.id %}" x-on:click.prevent="document.getElementById('confirmation-modal').remove()">No</a>
+            <button class="positive" type="submit">Yes</button>
+        </div>
     </form>
 </footer>
 {% if request.htmx %}

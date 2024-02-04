@@ -1,5 +1,7 @@
 @import "vars.css";
 
+@import "buttons.css";
+
 @import "layout.css";
 @import "dialog.css";
 @import "pagination.css";
