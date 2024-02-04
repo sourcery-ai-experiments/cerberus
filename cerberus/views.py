@@ -170,6 +170,8 @@ class CRUDViews(GenericModelView):
         Actions.LIST: "",
     }
 
+    extra_mixins: list = []
+
     @classonlymethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
         defaults: dict[str, Any] = {
@@ -209,7 +211,8 @@ class CRUDViews(GenericModelView):
                     FilterableMixin,
                     DefaultTemplateMixin,
                     view,
-                ],
+                ]
+                + cls.extra_mixins,
             )
         )
 
