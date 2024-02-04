@@ -161,6 +161,15 @@ class CRUDViews(GenericModelView):
     requires_login: bool = True
     extra_requires_login: bool | None = None
 
+    url_lookup: str = "<int:pk>"
+    url_parts: dict[Actions, str] = {
+        Actions.CREATE: "create",
+        Actions.DETAIL: f"{url_lookup}",
+        Actions.UPDATE: f"{url_lookup}/edit",
+        Actions.DELETE: f"{url_lookup}/delete",
+        Actions.LIST: "",
+    }
+
     @classonlymethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
         defaults: dict[str, Any] = {
@@ -221,27 +230,27 @@ class CRUDViews(GenericModelView):
 
         return [
             path(
-                f"{model_name}/",
+                f"{model_name}/{cls.url_parts[Actions.LIST]}",
                 cls.as_view(action=Actions.LIST),
                 name=f"{model_name}_{Actions.LIST.value}",
             ),
             path(
-                f"{model_name}/create/",
+                f"{model_name}/{cls.url_parts[Actions.CREATE]}",
                 cls.as_view(action=Actions.CREATE),
                 name=f"{model_name}_{Actions.CREATE.value}",
             ),
             path(
-                f"{model_name}/<int:pk>/",
+                f"{model_name}/{cls.url_parts[Actions.DETAIL]}",
                 cls.as_view(action=Actions.DETAIL),
                 name=f"{model_name}_{Actions.DETAIL.value}",
             ),
             path(
-                f"{model_name}/<int:pk>/edit/",
+                f"{model_name}/{cls.url_parts[Actions.UPDATE]}",
                 cls.as_view(action=Actions.UPDATE),
                 name=f"{model_name}_{Actions.UPDATE.value}",
             ),
             path(
-                f"{model_name}/<int:pk>/delete/",
+                f"{model_name}/{cls.url_parts[Actions.DELETE]}",
                 cls.as_view(action=Actions.DELETE),
                 name=f"{model_name}_{Actions.DELETE.value}",
             ),
