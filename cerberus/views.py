@@ -42,9 +42,23 @@ Crumb = namedtuple("Crumb", ["name", "url"])
 
 
 class DefaultTemplateMixin(GenericModelView):
+    model_name: str
+
+    @classmethod
+    def create_class(cls, model_name: str) -> type:
+        return type(f"{model_name.capitalize()}{cls.__name__}", (cls,), {"model_name": model_name})
+
     def get_template_names(self):
         defaults = [f"{self.model._meta.app_label}/default{self.template_name_suffix}.html"] if self.model else []
         return super().get_template_names() + defaults
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["model_name"] = self.model_name
+        context["route_names"] = {a.value: f"{self.model_name}_{a.value}" for a in Actions}
+
+        return context
 
 
 class FilterableMixin(GenericModelView):
@@ -209,7 +223,7 @@ class CRUDViews(GenericModelView):
                     LoginRequiredMixin if cls.requires_login else None,
                     BreadcrumbMixin,
                     FilterableMixin,
-                    DefaultTemplateMixin,
+                    DefaultTemplateMixin.create_class(cls.model_name()),
                     view,
                 ]
                 + cls.extra_mixins,
@@ -226,8 +240,12 @@ class CRUDViews(GenericModelView):
         ).as_view()
 
     @classonlymethod
+    def model_name(cls):
+        return cls.model._meta.model_name or cls.model.__class__.__name__.lower()
+
+    @classonlymethod
     def get_urls(cls):
-        model_name = cls.model._meta.model_name or cls.model.__class__.__name__.lower()
+        model_name = cls.model_name()
 
         paths = []
         for action in Actions:
