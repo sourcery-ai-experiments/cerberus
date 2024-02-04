@@ -248,12 +248,8 @@ class CRUDViews(GenericModelView):
                     route = f"{model_name}/{view.url_path}/"
 
                 url_name = view.url_name or f"{model_name}_{view.__name__}"
-                view_name = name
 
-                def view_func(request, *args, **kwargs):
-                    return getattr(cls(), view_name)(request, *args, **kwargs)
-
-                views.append(path(route, view_func, name=url_name))
+                views.append(path(route, getattr(cls(), name), name=url_name))
 
         return views
 
