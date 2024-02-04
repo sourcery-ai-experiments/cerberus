@@ -12,7 +12,7 @@ from django.http import Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.urls.resolvers import URLPattern
-from django.utils.decorators import classonlymethod, method_decorator
+from django.utils.decorators import classonlymethod
 from django.views import View
 
 # Third Party
@@ -158,6 +158,8 @@ def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwarg
 class CRUDViews(GenericModelView):
     model = Model
     delete_success_url: str | None = None
+    requires_login: bool = True
+    extra_requires_login: bool | None = None
 
     @classonlymethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
@@ -188,17 +190,26 @@ class CRUDViews(GenericModelView):
                 raise Exception(f"Unhandled action {action}")
 
     @classonlymethod
+    def _get_class_basses(cls, view):
+        return tuple(
+            filter(
+                lambda m: m is not None,
+                [
+                    LoginRequiredMixin if cls.requires_login else None,
+                    BreadcrumbMixin,
+                    FilterableMixin,
+                    DefaultTemplateMixin,
+                    view,
+                ],
+            )
+        )
+
+    @classonlymethod
     def as_view(cls, action: Actions):
         actionClass = cls.get_view_class(action)
         return type(
             f"{cls.model._meta.model_name}_{action.value}",
-            (
-                LoginRequiredMixin,
-                BreadcrumbMixin,
-                FilterableMixin,
-                DefaultTemplateMixin,
-                actionClass,
-            ),
+            cls._get_class_basses(actionClass),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
         ).as_view()
 
@@ -236,6 +247,12 @@ class CRUDViews(GenericModelView):
             ),
         ] + extra_views
 
+    @classonlymethod
+    def _extra_requires_login(cls):
+        if cls.extra_requires_login is None:
+            return cls.requires_login
+        return cls.extra_requires_login
+
     @classmethod
     def extra_views(cls, model_name: str) -> list[URLPattern]:
         views: list[URLPattern] = []
@@ -248,8 +265,11 @@ class CRUDViews(GenericModelView):
                     route = f"{model_name}/{view.url_path}/"
 
                 url_name = view.url_name or f"{model_name}_{view.__name__}"
+                view_func = getattr(cls(), name)
+                if cls._extra_requires_login():
+                    view_func = login_required(view_func)
 
-                views.append(path(route, getattr(cls(), name), name=url_name))
+                views.append(path(route, view_func, name=url_name))  # type: ignore
 
         return views
 
@@ -330,7 +350,6 @@ class InvoiceCRUD(CRUDViews):
                 return super().get_view_class(action)
 
     @extra_view(detail=True, methods=["get", "post"])
-    @method_decorator(login_required)
     def email(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
         if request.method == "POST":
@@ -344,7 +363,6 @@ class InvoiceCRUD(CRUDViews):
             return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
 
     @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
-    @method_decorator(login_required)
     def download(self, request, pk: int):
         invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
