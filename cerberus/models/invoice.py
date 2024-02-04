@@ -93,6 +93,9 @@ class Invoice(models.Model):
     def can_send(self) -> bool:
         return self.customer is not None and len(self.customer.issues) == 0
 
+    def can_resend_email(self) -> bool:
+        return self.can_send() and self.sent_to is not None
+
     @property
     def can_edit(self) -> bool:
         return self.state == self.States.DRAFT.value or self._can_edit
