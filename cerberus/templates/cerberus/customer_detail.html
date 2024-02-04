@@ -42,5 +42,5 @@
         {% endfor %}
     </div>
 
-    <a class="fab" data-char="&#43;" href="{% url 'invoice_create' %}"><span>Add an invoice</span></a>
+    <a class="fab" href="{% url 'invoice_create' %}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

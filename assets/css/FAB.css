@@ -4,16 +4,19 @@
   aspect-ratio: 1;
 
   box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
 
   position: fixed;
   display: flex;
   bottom: 1em;
   right: 1em;
   border-radius: 50%;
-  width: 3em;
-  height: 3em;
+  width: var(--fab-size);
+  height: var(--fab-size);
 
   align-items: center;
   justify-content: center;
@@ -25,16 +28,24 @@
   }
 
   &:focus {
-    background: var(--primary-focus);
-    color: var(--contrast-focus);
+    background: var(--primary-hover);
+    color: var(--contrast-hover);
     text-decoration: none;
+    box-shadow:
+      rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+      rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
   }
 
   &[data-char] {
-    &::after {
+    display: block;
+    &::before {
       content: attr(data-char);
       font-size: 2.5em;
       display: block;
+      width: var(--fab-size);
+      height: var(--fab-size);
+      line-height: var(--fab-size);
+      text-align: center;
     }
 
     & span {
@@ -43,7 +54,7 @@
   }
 
   svg {
-    width: 2em;
-    height: 2em;
+    width: calc(var(--fab-size) / 1.5);
+    height: calc(var(--fab-size) / 1.5);
   }
 }
