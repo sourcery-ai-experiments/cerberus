@@ -59,7 +59,10 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         exclude = ["paid_on", "sent_on", "state", "sent_to", "created", "last_updated"]
-        widgets = {"adjustment": SingleMoneyWidget()}
+        widgets = {
+            "adjustment": SingleMoneyWidget(),
+            "due": forms.DateInput(attrs={"type": "date"}),
+        }
 
 
 class ChargeForm(forms.ModelForm):
