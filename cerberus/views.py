@@ -229,35 +229,17 @@ class CRUDViews(GenericModelView):
     def get_urls(cls):
         model_name = cls.model._meta.model_name or cls.model.__class__.__name__.lower()
 
-        extra_views = cls.extra_views(model_name)
+        paths = []
+        for action in Actions:
+            paths.append(
+                path(
+                    f"{model_name}/{cls.url_parts[action]}",
+                    cls.as_view(action),
+                    name=f"{model_name}_{action.value}",
+                )
+            )
 
-        return [
-            path(
-                f"{model_name}/{cls.url_parts[Actions.LIST]}",
-                cls.as_view(action=Actions.LIST),
-                name=f"{model_name}_{Actions.LIST.value}",
-            ),
-            path(
-                f"{model_name}/{cls.url_parts[Actions.CREATE]}",
-                cls.as_view(action=Actions.CREATE),
-                name=f"{model_name}_{Actions.CREATE.value}",
-            ),
-            path(
-                f"{model_name}/{cls.url_parts[Actions.DETAIL]}",
-                cls.as_view(action=Actions.DETAIL),
-                name=f"{model_name}_{Actions.DETAIL.value}",
-            ),
-            path(
-                f"{model_name}/{cls.url_parts[Actions.UPDATE]}",
-                cls.as_view(action=Actions.UPDATE),
-                name=f"{model_name}_{Actions.UPDATE.value}",
-            ),
-            path(
-                f"{model_name}/{cls.url_parts[Actions.DELETE]}",
-                cls.as_view(action=Actions.DELETE),
-                name=f"{model_name}_{Actions.DELETE.value}",
-            ),
-        ] + extra_views
+        return paths + cls.extra_views(model_name)
 
     @classonlymethod
     def _extra_requires_login(cls):
