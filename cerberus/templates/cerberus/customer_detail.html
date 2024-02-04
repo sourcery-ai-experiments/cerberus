@@ -42,5 +42,5 @@
         {% endfor %}
     </div>
 
-    <a class="fab" href="{% url 'invoice_create' %}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
+    <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

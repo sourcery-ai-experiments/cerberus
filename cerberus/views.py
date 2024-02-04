@@ -314,12 +314,7 @@ class BookingStateActions(TransitionView):
     field = "state"
 
 
-class InvoiceList(ListView):
-    def get_queryset(self):
-        return super().get_queryset()
-
-
-class InvoiceUpdate(UpdateView):
+class InvoiceUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy("invoice_detail", kwargs={"pk": self.object.id})
 
@@ -348,6 +343,13 @@ class InvoiceUpdate(UpdateView):
         return self.form_invalid(form)
 
 
+class InvoiceCreateView(CreateView):
+    def get(self, request, *args, **kwargs):
+        form = self.get_form(initial={k: str(v) for k, v in request.GET.items()})
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+
 class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
@@ -357,7 +359,9 @@ class InvoiceCRUD(CRUDViews):
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.UPDATE:
-                return InvoiceUpdate
+                return InvoiceUpdateView
+            case Actions.CREATE:
+                return InvoiceCreateView
             case _:
                 return super().get_view_class(action)
 

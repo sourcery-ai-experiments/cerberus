@@ -20,7 +20,7 @@ class SingleMoneyWidget(MoneyWidget):
                     },
                     **attrs,
                 }
-            ),
+            ),  # type: ignore
             currency_widget=forms.HiddenInput(),
             *args,
             **kwargs,
