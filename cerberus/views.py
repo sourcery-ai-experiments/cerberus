@@ -247,16 +247,14 @@ class CRUDViews(GenericModelView):
     def get_urls(cls):
         model_name = cls.model_name()
 
-        paths = []
-        for action in Actions:
-            paths.append(
-                path(
-                    f"{model_name}/{cls.url_parts[action]}",
-                    cls.as_view(action),
-                    name=f"{model_name}_{action.value}",
-                )
+        paths = [
+            path(
+                f"{model_name}/{cls.url_parts[action]}",
+                cls.as_view(action),
+                name=f"{model_name}_{action.value}",
             )
-
+            for action in Actions
+        ]
         return paths + cls.extra_views(model_name)
 
     @classonlymethod
@@ -368,15 +366,14 @@ class InvoiceCRUD(CRUDViews):
     @extra_view(detail=True, methods=["get", "post"])
     def email(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
-        if request.method == "POST":
-            try:
-                invoice.resend_email()
-            except AssertionError as e:
-                return HttpResponseNotAllowed(f"Email not sent: {e}")
-
-            return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
-        else:
+        if request.method != "POST":
             return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
+        try:
+            invoice.resend_email()
+        except AssertionError as e:
+            return HttpResponseNotAllowed(f"Email not sent: {e}")
+
+        return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
 
     @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
     def download(self, request, pk: int):
