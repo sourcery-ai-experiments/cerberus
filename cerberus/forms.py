@@ -9,7 +9,9 @@ from .models import Booking, Charge, Customer, Invoice, Pet, Vet
 
 
 class SingleMoneyWidget(MoneyWidget):
-    def __init__(self, attrs={}, *args, **kwargs):
+    def __init__(self, attrs=None, *args, **kwargs):
+        if attrs is None:
+            attrs = {}
         super().__init__(
             amount_widget=forms.NumberInput(
                 attrs={
@@ -18,7 +20,7 @@ class SingleMoneyWidget(MoneyWidget):
                     },
                     **attrs,
                 }
-            ),
+            ),  # type: ignore
             currency_widget=forms.HiddenInput(),
             *args,
             **kwargs,
@@ -57,7 +59,10 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         exclude = ["paid_on", "sent_on", "state", "sent_to", "created", "last_updated"]
-        widgets = {"adjustment": SingleMoneyWidget()}
+        widgets = {
+            "adjustment": SingleMoneyWidget(),
+            "due": forms.DateInput(attrs={"type": "date"}),
+        }
 
 
 class ChargeForm(forms.ModelForm):

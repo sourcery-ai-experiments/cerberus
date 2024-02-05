@@ -1,0 +1,14 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load field_tags %}
+
+{% if not request.htmx %}
+    {% block page_title %}Sent Invoice {{ invoice.name }}{% endblock %}
+{% endif %}
+
+{% block content %}
+    <h1>Sent Invoice {{ invoice.name }}</h1>
+    <p>Invoice sent to {{ invoice.customer }}.</p>
+    <p><a href="{% url 'invoice_detail' invoice.id %}">Back to invoice</a></p>
+    <p><a href="{% url 'invoice_list' %}">View invoice list</a></p>
+{% endblock %}

@@ -1,7 +1,4 @@
 {
-  "dependencies": {
-    "mjml": "^4.13.0"
-  },
   "name": "cerberus",
   "description": "======== Cerberus ========",
   "version": "1.0.0",

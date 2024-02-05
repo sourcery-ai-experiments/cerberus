@@ -25,6 +25,7 @@ dependencies = [
     "gunicorn",
     "humanize",
     "markdown",
+    "mjml-python",
     "psycopg2",
     "reportlab",
     "uritemplate",
@@ -42,6 +43,7 @@ dev = [
     "black",
     "django-debug-toolbar",
     "django-debugtools",
+    "django-extensions",
     "django-stubs",
     "django-browser-reload",
     "django-debug-toolbar",
@@ -60,6 +62,7 @@ dev = [
     "pytest-picked",
     "pytest-watch",
     "setuptools_scm",
+    "sourcery-cli",
     "graphviz",
 ]
 

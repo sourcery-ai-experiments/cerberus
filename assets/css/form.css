@@ -8,3 +8,37 @@ form {
     }
   }
 }
+
+#logout-form {
+  margin-bottom: 0;
+}
+
+form {
+  .button-row {
+    display: flex;
+    gap: var(--form-element-spacing-horizontal);
+
+    & > * {
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: 10px;
+    }
+
+    [role="button"],
+    button,
+    input[type="button"],
+    input[type="reset"],
+    input[type="submit"] {
+      &
+        + :is(
+          [role="button"],
+          button,
+          input[type="button"],
+          input[type="reset"],
+          input[type="submit"]
+        ) {
+        margin-left: 0em;
+      }
+    }
+  }
+}

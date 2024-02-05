@@ -20,13 +20,6 @@ class Switch(forms.widgets.Input):
     input_type = "checkbox"
 
 
-class CustomerMixin:
-    def customer_name_filter(self, queryset, name, value):
-        return queryset.annotate(customer__name=Concat("customer__first_name", Value(" "), "customer__last_name")).filter(
-            customer__name__contains=value
-        )
-
-
 class FilterDefaults(filters.FilterSet):
     default_filters = {}
 
@@ -40,10 +33,10 @@ class FilterDefaults(filters.FilterSet):
         super().__init__(data, *args, **kwargs)
 
 
-class PetFilter(FilterDefaults, CustomerMixin):
+class PetFilter(FilterDefaults):
     active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool, widget=Switch)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
-    customer = filters.CharFilter(method="customer_name_filter")
+    customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
 
     default_filters = {
         "active": True,
@@ -78,9 +71,9 @@ class BookingFilter(filters.FilterSet):
         fields = []
 
 
-class InvoiceFilter(filters.FilterSet, CustomerMixin):
+class InvoiceFilter(filters.FilterSet):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices, widget=forms.CheckboxSelectMultiple)
-    customer = filters.CharFilter(method="customer_name_filter")
+    customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
 
     class Meta:
         model = Invoice
@@ -89,8 +82,8 @@ class InvoiceFilter(filters.FilterSet, CustomerMixin):
         ]
 
 
-class VetFilter(filters.FilterSet, CustomerMixin):
-    customer = filters.CharFilter(method="customer_name_filter", label="Customer")
+class VetFilter(filters.FilterSet):
+    customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
 

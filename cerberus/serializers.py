@@ -62,7 +62,7 @@ class NestedObjectSerializer:
         except (AttributeError, KeyError):
             pass
         except ObjectDoesNotExist as e:
-            raise serializers.ValidationError({id_name: [str(e)]})
+            raise serializers.ValidationError({id_name: [str(e)]}) from e
 
         try:
             del attrs[id_name]

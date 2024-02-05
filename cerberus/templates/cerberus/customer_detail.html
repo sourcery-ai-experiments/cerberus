@@ -12,7 +12,7 @@
                     <summary aria-haspopup="listbox" role="link">Menu</summary>
                     <ul role="listbox">
                         <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
-                        <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
+                        <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
                     </ul>
                 </details>
             </li>
@@ -42,5 +42,5 @@
         {% endfor %}
     </div>
 
-    <a class="fab" data-char="&#43;" href="{% url 'invoice_create' %}"><span>Add an invoice</span></a>
+    <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

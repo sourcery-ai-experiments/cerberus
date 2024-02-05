@@ -1,15 +1,22 @@
 .fab {
   background: var(--primary);
-  color: var(--contrast);
+  color: var(--primary-inverse);
   aspect-ratio: 1;
+
+  box-shadow:
+    rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
 
   position: fixed;
   display: flex;
   bottom: 1em;
   right: 1em;
   border-radius: 50%;
-  width: 3.5em;
-  height: 3.5em;
+  width: var(--fab-size);
+  height: var(--fab-size);
 
   align-items: center;
   justify-content: center;
@@ -21,20 +28,33 @@
   }
 
   &:focus {
-    background: var(--primary-focus);
-    color: var(--contrast-focus);
+    background: var(--primary-hover);
+    color: var(--contrast-hover);
     text-decoration: none;
+    box-shadow:
+      rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+      rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
   }
 
   &[data-char] {
-    &::after {
+    display: block;
+    &::before {
       content: attr(data-char);
       font-size: 2.5em;
       display: block;
+      width: var(--fab-size);
+      height: var(--fab-size);
+      line-height: var(--fab-size);
+      text-align: center;
     }
 
     & span {
       display: none;
     }
+  }
+
+  svg {
+    width: calc(var(--fab-size) / 1.5);
+    height: calc(var(--fab-size) / 1.5);
   }
 }

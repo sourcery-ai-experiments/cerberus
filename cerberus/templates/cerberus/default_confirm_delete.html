@@ -5,5 +5,5 @@
 {% endif %}
 
 {% block content %}
-    {% include "utils/delete_modal.html" with action='vet_delete' cancel='vet_detail' %}
+    {% include "utils/delete_modal.html" with action=route_names.delete cancel=route_names.detail %}
 {% endblock %}

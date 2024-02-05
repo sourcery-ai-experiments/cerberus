@@ -52,18 +52,18 @@ class ActiveMixin:
     @action(detail=True, methods=["put"])
     def deactivate(self, request, pk=None):
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
-        object = self.get_object()
-        object.active = False
-        object.save()
+        _object = self.get_object()
+        _object.active = False
+        _object.save()
 
         return Response({"status": "ok"})
 
     @action(detail=True, methods=["put"])
     def activate(self, request, pk=None):
         assert isinstance(self, viewsets.ModelViewSet), "Can only be used on ModelViewSet"
-        object = self.get_object()
-        object.active = True
-        object.save()
+        _object = self.get_object()
+        _object.active = True
+        _object.save()
 
         return Response({"status": "ok"})
 
@@ -228,15 +228,7 @@ class InvoiceViewSet(ChangeStateMixin, viewsets.ModelViewSet):
     def pdf(self, request, pk=None):
         invoice: Invoice = self.get_object()
 
-        results = invoice.get_pdf()
-        if results.err:
-            raise Exception(results.err)
-
-        return HttpResponse(
-            content=results.dest.getvalue(),
-            content_type="application/pdf",
-            headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
-        )
+        return invoice.get_pdf_response()
 
     @action(detail=True, methods=["get"])
     def logo(self, request, pk=None):

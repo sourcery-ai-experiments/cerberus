@@ -1,5 +1,4 @@
 # Standard Library
-import functools
 from collections import namedtuple
 from enum import Enum
 from typing import Any
@@ -9,17 +8,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Model
 from django.forms import modelformset_factory
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
+from django.urls.resolvers import URLPattern
 from django.utils.decorators import classonlymethod
 from django.views import View
 
 # Third Party
 from django_filters import FilterSet
-from vanilla import CreateView
-from vanilla import DeleteView as DeleteView
-from vanilla import DetailView, GenericModelView, ListView, UpdateView
+from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
 from .filters import CustomerFilter, InvoiceFilter, PetFilter, VetFilter
@@ -43,7 +41,27 @@ class Actions(Enum):
 Crumb = namedtuple("Crumb", ["name", "url"])
 
 
-class FilterableMixin:
+class DefaultTemplateMixin(GenericModelView):
+    model_name: str
+
+    @classmethod
+    def create_class(cls, model_name: str) -> type:
+        return type(f"{model_name.capitalize()}{cls.__name__}", (cls,), {"model_name": model_name})
+
+    def get_template_names(self):
+        defaults = [f"{self.model._meta.app_label}/default{self.template_name_suffix}.html"] if self.model else []
+        return super().get_template_names() + defaults
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["model_name"] = self.model_name
+        context["route_names"] = {a.value: f"{self.model_name}_{a.value}" for a in Actions}
+
+        return context
+
+
+class FilterableMixin(GenericModelView):
     filter_class: FilterSet | None
 
     def get_filter(self):
@@ -53,8 +71,7 @@ class FilterableMixin:
         queryset = super().get_queryset()
 
         if filter_class := getattr(self, "filter_class", None):
-            filter = filter_class(self.request.GET, queryset)
-            return filter.qs
+            return filter_class(self.request.GET, queryset).qs
 
         return queryset
 
@@ -63,49 +80,37 @@ class FilterableMixin:
 
         queryset = self.get_queryset()
         if filter_class := getattr(self, "filter_class", None):
-            filter = filter_class(self.request.GET, queryset)
-            context["filter"] = filter
+            context["filter"] = filter_class(self.request.GET, queryset)
 
         return context
 
 
-def suppress(func):
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception:
-            return None
-
-    return wrapped
-
-
-class BreadcrumbMixin:
+class BreadcrumbMixin(GenericModelView):
     def get_breadcrumbs(self):
         crumbs = [
             Crumb("Dashboard", reverse_lazy("dashboard")),
         ]
 
-        model_name = self.model._meta.model_name
+        model_name = self.model._meta.model_name if self.model else ""
+        verbose_name_plural = self.model._meta.verbose_name_plural.title() if self.model else ""
+
+        obj = getattr(self, "object", None)
+        obj_id = getattr(obj, "id", 0)
 
         def list_crumb():
-            return Crumb(self.model._meta.verbose_name_plural.title(), reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
+            return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
-        @suppress
         def detail_crumb():
-            return Crumb(str(self.object), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": self.object.id}))
+            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def update_crumb():
-            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def create_crumb():
-            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
 
-        @suppress
         def delete_crumb():
-            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": self.object.id}))
+            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
 
         match self.__class__.__name__.split("_"):
             case _, Actions.LIST.value:
@@ -119,7 +124,7 @@ class BreadcrumbMixin:
             case _, Actions.DELETE.value:
                 crumbs += [list_crumb(), detail_crumb(), delete_crumb()]
 
-        return crumbs
+        return list(filter(lambda crumb: crumb is not None, crumbs))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -128,7 +133,7 @@ class BreadcrumbMixin:
         return context
 
 
-class ActionView(View):
+class TransitionView(View):
     model = Model
     field = str
 
@@ -144,13 +149,42 @@ class ActionView(View):
             raise Http404(f"{action} is not currently available on {self.model._meta.model_name}")
 
         getattr(model, action)()
+        redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
-        return redirect(model.get_absolute_url())
+        return redirect(redirect_url)
+
+
+def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwargs):
+    methods = ["get"] if methods is None else methods
+    methods = [method.lower() for method in methods]
+
+    def decorator(func):
+        func.methods = methods
+        func.detail = detail
+        func.url_path = url_path if url_path else func.__name__.replace("_", "-")
+        func.url_name = url_name
+
+        return func
+
+    return decorator
 
 
 class CRUDViews(GenericModelView):
     model = Model
     delete_success_url: str | None = None
+    requires_login: bool = True
+    extra_requires_login: bool | None = None
+
+    url_lookup: str = "<int:pk>"
+    url_parts: dict[Actions, str] = {
+        Actions.CREATE: "create",
+        Actions.DETAIL: f"{url_lookup}",
+        Actions.UPDATE: f"{url_lookup}/edit",
+        Actions.DELETE: f"{url_lookup}/delete",
+        Actions.LIST: "",
+    }
+
+    extra_mixins: list = []
 
     @classonlymethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
@@ -181,50 +215,75 @@ class CRUDViews(GenericModelView):
                 raise Exception(f"Unhandled action {action}")
 
     @classonlymethod
+    def _get_class_basses(cls, view):
+        return tuple(
+            filter(
+                lambda m: m is not None,
+                [
+                    LoginRequiredMixin if cls.requires_login else None,
+                    BreadcrumbMixin,
+                    FilterableMixin,
+                    DefaultTemplateMixin.create_class(cls.model_name()),
+                    view,
+                ]
+                + cls.extra_mixins,
+            )
+        )
+
+    @classonlymethod
     def as_view(cls, action: Actions):
         actionClass = cls.get_view_class(action)
         return type(
             f"{cls.model._meta.model_name}_{action.value}",
-            (
-                LoginRequiredMixin,
-                BreadcrumbMixin,
-                FilterableMixin,
-                actionClass,
-            ),
+            cls._get_class_basses(actionClass),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
         ).as_view()
 
     @classonlymethod
-    def get_urls(cls):
-        model_name = cls.model._meta.model_name
+    def model_name(cls):
+        return cls.model._meta.model_name or cls.model.__class__.__name__.lower()
 
-        return [
-            path(
-                f"{model_name}/",
-                cls.as_view(action=Actions.LIST),
-                name=f"{model_name}_{Actions.LIST.value}",
-            ),
-            path(
-                f"{model_name}/new/",
-                cls.as_view(action=Actions.CREATE),
-                name=f"{model_name}_{Actions.CREATE.value}",
-            ),
-            path(
-                f"{model_name}/<int:pk>/",
-                cls.as_view(action=Actions.DETAIL),
-                name=f"{model_name}_{Actions.DETAIL.value}",
-            ),
-            path(
-                f"{model_name}/<int:pk>/edit/",
-                cls.as_view(action=Actions.UPDATE),
-                name=f"{model_name}_{Actions.UPDATE.value}",
-            ),
-            path(
-                f"{model_name}/<int:pk>/delete/",
-                cls.as_view(action=Actions.DELETE),
-                name=f"{model_name}_{Actions.DELETE.value}",
-            ),
-        ]
+    @classonlymethod
+    def get_urls(cls):
+        model_name = cls.model_name()
+
+        paths = []
+        for action in Actions:
+            paths.append(
+                path(
+                    f"{model_name}/{cls.url_parts[action]}",
+                    cls.as_view(action),
+                    name=f"{model_name}_{action.value}",
+                )
+            )
+
+        return paths + cls.extra_views(model_name)
+
+    @classonlymethod
+    def _extra_requires_login(cls):
+        if cls.extra_requires_login is None:
+            return cls.requires_login
+        return cls.extra_requires_login
+
+    @classmethod
+    def extra_views(cls, model_name: str) -> list[URLPattern]:
+        views: list[URLPattern] = []
+        for name in dir(cls):
+            view = getattr(cls, name)
+            if all(hasattr(view, attr) for attr in ["methods", "detail", "url_path", "url_name"]):
+                if view.detail:
+                    route = f"{model_name}/<int:pk>/{view.url_path}/"
+                else:
+                    route = f"{model_name}/{view.url_path}/"
+
+                url_name = view.url_name or f"{model_name}_{view.__name__}"
+                view_func = getattr(cls(), name)
+                if cls._extra_requires_login():
+                    view_func = login_required(view_func)
+
+                views.append(path(route, view_func, name=url_name))  # type: ignore
+
+        return views
 
 
 class CustomerCRUD(CRUDViews):
@@ -250,17 +309,12 @@ class BookingCRUD(CRUDViews):
     form_class = BookingForm
 
 
-class BookingStateActions(ActionView):
+class BookingStateActions(TransitionView):
     model = Booking
     field = "state"
 
 
-class InvoiceList(ListView):
-    def get_queryset(self):
-        return super().get_queryset()
-
-
-class InvoiceUpdate(UpdateView):
+class InvoiceUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy("invoice_detail", kwargs={"pk": self.object.id})
 
@@ -289,6 +343,13 @@ class InvoiceUpdate(UpdateView):
         return self.form_invalid(form)
 
 
+class InvoiceCreateView(CreateView):
+    def get(self, request, *args, **kwargs):
+        form = self.get_form(initial={k: str(v) for k, v in request.GET.items()})
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+
 class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
@@ -298,21 +359,27 @@ class InvoiceCRUD(CRUDViews):
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.UPDATE:
-                return InvoiceUpdate
+                return InvoiceUpdateView
+            case Actions.CREATE:
+                return InvoiceCreateView
             case _:
                 return super().get_view_class(action)
 
+    @extra_view(detail=True, methods=["get", "post"])
+    def email(self, request, pk):
+        invoice = get_object_or_404(Invoice, pk=pk)
+        if request.method == "POST":
+            try:
+                invoice.resend_email()
+            except AssertionError as e:
+                return HttpResponseNotAllowed(f"Email not sent: {e}")
 
-@login_required
-def pdf(request, pk: int):
-    invoice: Invoice = get_object_or_404(Invoice, pk=pk)
+            return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
+        else:
+            return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
 
-    results = invoice.get_pdf()
-    if results.err:
-        raise Exception(results.err)
+    @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
+    def download(self, request, pk: int):
+        invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
-    return HttpResponse(
-        content=results.dest.getvalue(),
-        content_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{invoice.name}.pdf"'},
-    )
+        return invoice.get_pdf_response()

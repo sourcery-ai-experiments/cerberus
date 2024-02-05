@@ -1,0 +1,17 @@
+[role="button"],
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  &.positive {
+    --primary-focus: color-mix(in srgb, var(--positive), transparent 80%);
+    --primary: var(--positive);
+    --primary-hover: var(--positive-hover);
+  }
+
+  &.negative {
+    --primary-focus: color-mix(in srgb, var(--negative), transparent 80%);
+    --primary: var(--negative);
+    --primary-hover: var(--negative-hover);
+  }
+}
