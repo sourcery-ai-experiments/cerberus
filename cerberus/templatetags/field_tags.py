@@ -17,13 +17,9 @@ def fields(model):
 
 @register.filter
 def verbose_name(model):
-    if hasattr(model, "_meta"):
-        return model._meta.verbose_name
-    return ""
+    return model._meta.verbose_name if hasattr(model, "_meta") else ""
 
 
 @register.filter
 def verbose_name_plural(model):
-    if hasattr(model, "_meta"):
-        return model._meta.verbose_name_plural
-    return ""
+    return model._meta.verbose_name_plural if hasattr(model, "_meta") else ""

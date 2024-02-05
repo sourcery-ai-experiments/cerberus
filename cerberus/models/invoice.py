@@ -234,13 +234,12 @@ class Invoice(models.Model):
                 result = [result]
             result = [os.path.realpath(path) for path in result]
             path = result[0]
+        elif uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
         else:
-            if uri.startswith(mUrl):
-                path = os.path.join(mRoot, uri.replace(mUrl, ""))
-            elif uri.startswith(sUrl):
-                path = os.path.join(sRoot, uri.replace(sUrl, ""))
-            else:
-                return uri
+            return uri
 
         # make sure that file exists
         if not os.path.isfile(path):
