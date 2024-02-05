@@ -1109,9 +1109,9 @@ tinycss2==1.2.1 \
     # via
     #   cssselect2
     #   svglib
-types-pytz==2023.4.0.20240130 \
-    --hash=sha256:33676a90bf04b19f92c33eec8581136bea2f35ddd12759e579a624a006fd387a \
-    --hash=sha256:6ce76a9f8fd22bd39b01a59c35bfa2db39b60d11a2f77145e97b730de7e64fe0
+types-pytz==2024.1.0.20240203 \
+    --hash=sha256:9679eef0365db3af91ef7722c199dbb75ee5c1b67e3c4dd7bfbeb1b8a71c21a3 \
+    --hash=sha256:c93751ee20dfc6e054a0148f8f5227b9a00b79c90a4d3c9f464711a73179c89e
     # via django-stubs
 types-pyyaml==6.0.12.12 \
     --hash=sha256:334373d392fde0fdf95af5c3f1661885fa10c52167b14593eb856289e1855062 \
