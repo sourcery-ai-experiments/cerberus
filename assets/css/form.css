@@ -5,7 +5,7 @@ form {
       gap: 2em;
       justify-content: space-between;
 
-      & > div:not(:has(label)) {
+      & > *:not(:has(label)) {
         display: flex;
         align-items: flex-end;
       }
@@ -24,7 +24,8 @@ form {
 
       & input:not([type="checkbox"], [type="radio"]),
       & select,
-      & textarea {
+      & textarea,
+      & button {
         margin-bottom: 0;
       }
 
