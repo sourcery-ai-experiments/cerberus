@@ -98,6 +98,15 @@ class SortableViewMixin(GenericModelView):
 
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["sortable_fields"] = self.sortable_fields
+        context["sort"] = self.request.GET.get("sort")
+        context["sort_order"] = self.request.GET.get("sort_order")
+
+        return context
+
 
 class BreadcrumbMixin(GenericModelView):
     def get_breadcrumbs(self):
