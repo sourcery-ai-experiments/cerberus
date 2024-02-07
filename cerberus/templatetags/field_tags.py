@@ -1,6 +1,5 @@
 # Django
 from django import template
-from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 
 register = template.Library()
@@ -24,10 +23,3 @@ def verbose_name(model):
 @register.filter
 def verbose_name_plural(model):
     return model._meta.verbose_name_plural if hasattr(model, "_meta") else ""
-
-
-@register.simple_tag
-def filter_code(field_name):
-    return mark_safe(
-        f"x-on:click=\"sort_order = sort_order == 'desc' || sort != '{field_name}' ? 'asc' : 'desc';sort = '{field_name}';$nextTick(() => {{htmx.trigger('.filter-form', 'change');}})\""  # noqa: E501
-    )

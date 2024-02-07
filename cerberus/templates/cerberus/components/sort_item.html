@@ -1,0 +1,9 @@
+<label class="sort-item" x-on:click="sort_order = sort_order == 'desc' || sort != '{{field_name}}' ? 'asc' : 'desc';sort = '{{field_name}}';$nextTick(() => {htmx.trigger('.filter-form', 'change');})">
+    <span>{{ field_label }}<span>
+        <span class="sort-icon" x-show="sort == '{{field_name}}' && sort_order == 'asc'" >
+            {% include "icons/chevron-up.svg" %}
+        </span>
+        <span class="sort-icon" x-show="sort == '{{field_name}}' && sort_order == 'desc'" >
+            {% include "icons/chevron-down.svg" %}
+        </span>
+    </label>
