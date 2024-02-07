@@ -91,7 +91,7 @@ class SortableViewMixin(GenericModelView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        if (sort := self.request.GET.get("sort")) in self.sortable_fields or True:
+        if (sort := self.request.GET.get("sort")) in self.sortable_fields:
             sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
             if sort:
                 queryset = queryset.order_by(f"{sort_order}{sort}")
