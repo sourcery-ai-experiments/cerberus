@@ -104,6 +104,7 @@ class SortableViewMixin(GenericModelView):
         context["sortable_fields"] = self.sortable_fields
         context["sort"] = self.request.GET.get("sort")
         context["sort_order"] = self.request.GET.get("sort_order")
+        context["alt_sort_order"] = "asc" if context["sort_order"] == "desc" else "desc"
 
         return context
 
@@ -318,6 +319,7 @@ class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
     filter_class = PetFilter
+    sortable_fields = ["name", "customer"]
 
 
 class VetCRUD(CRUDViews):

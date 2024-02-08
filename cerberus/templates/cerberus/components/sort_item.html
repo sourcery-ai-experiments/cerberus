@@ -1,4 +1,9 @@
-<label class="sort-item" :class="sort == '{{field_name}}' ? 'sorting' : ''" x-on:click="sort_order = sort_order == 'desc' || sort != '{{field_name}}' ? 'asc' : 'desc';sort = '{{field_name}}';$nextTick(() => {htmx.trigger('.filter-form', 'change');})">
+{% load paginator_tags %}
+<a
+    href="{{ base_url }}?{% querystring sort=field_name sort_order=alt_sort_order %}"
+    class="sort-item" :class="sort == '{{field_name}}' ? 'sorting' : ''"
+    x-on:click="sort_order = sort_order == 'desc' || sort != '{{field_name}}' ? 'asc' : 'desc';sort = '{{field_name}}';$nextTick(() => {htmx.trigger('.filter-form', 'change');})"
+>
     <span>{{ field_label }}</span>
     <template class="sort-icon" x-if="sort == '{{field_name}}' && sort_order == 'asc'" >
         {% include "icons/chevron-up.svg" %}
@@ -6,4 +11,4 @@
     <template class="sort-icon" x-if="sort == '{{field_name}}' && sort_order == 'desc'" >
         {% include "icons/chevron-down.svg" %}
     </template>
-</label>
+</a>
