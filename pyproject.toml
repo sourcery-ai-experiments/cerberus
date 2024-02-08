@@ -59,6 +59,7 @@ dev = [
     "pytest-clarity",
     "pytest-cov",
     "pytest-django",
+    "pytest-django-queries",
     "pytest-picked",
     "pytest-watch",
     "setuptools_scm",
