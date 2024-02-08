@@ -185,7 +185,7 @@ def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwarg
     def decorator(func):
         func.methods = methods
         func.detail = detail
-        func.url_path = url_path if url_path else func.__name__.replace("_", "-")
+        func.url_path = url_path or func.__name__.replace("_", "-")
         func.url_name = url_name
 
         return func
