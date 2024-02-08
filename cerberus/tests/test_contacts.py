@@ -35,10 +35,10 @@ def test_mobile_type(number):
 
 def emails():
     yield "blueberry1234@example.com"
-    yield "sunflower_87@mail.com"
-    yield "pineapplemaster456@hotmail.com"
-    yield "techwizard789@gmail.com"
-    yield "rainbowsparkle22@yahoo.com"
+    yield "sunflower_87@mail.co.uk"
+    yield "pineapplemaster456@hotmail.fr"
+    yield "techwizard789@gmail.net"
+    yield "rainbowsparkle22@yahoo.co.jp"
 
 
 @pytest.mark.parametrize("email", emails())
