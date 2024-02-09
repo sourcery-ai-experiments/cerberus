@@ -1,35 +1,34 @@
-# Django
-from django.test import TestCase
+# Third Party
+import pytest
 
 # Locals
 from ..models import Charge
 
 
-class ChargeTests(TestCase):
-    def test_str(self):
-        charge = Charge(name="Test Charge", line=10)
+def test_str():
+    charge = Charge(name="Test Charge", line=10)
+    assert f"{charge}" == "Test Charge - £10.00"
 
-        self.assertEqual(f"{charge}", "Test Charge - £10.00")
 
-    def test_transitions(self):
-        charge = Charge(name="Test Charge", line=1000)
-        transitions = list(charge.get_all_state_transitions())
+def test_transitions():
+    charge = Charge(name="Test Charge", line=1000)
+    transitions = list(charge.get_all_state_transitions())
 
-        valid_transitions = [
-            ("unpaid", "paid"),
-            ("unpaid", "void"),
-            ("paid", "refunded"),
-        ]
+    valid_transitions = {
+        ("unpaid", "paid"),
+        ("unpaid", "void"),
+        ("paid", "refunded"),
+    }
 
-        for t in transitions:
-            self.assertIn((t.source, t.target), valid_transitions)
+    assert {(t.source, t.target) for t in transitions} == valid_transitions
+    assert len(valid_transitions) == len(transitions)
 
-        self.assertEqual(len(valid_transitions), len(transitions))
 
-    def test_paid(self):
-        charge = Charge(name="Test Charge", line=1000)
-        charge.save()
+@pytest.mark.django_db
+def test_paid():
+    charge = Charge(name="Test Charge", line=1000)
+    charge.save()
 
-        charge.pay()
+    charge.pay()
 
-        self.assertEqual(charge.state, Charge.States.PAID.value)
+    assert charge.state == Charge.States.PAID.value
