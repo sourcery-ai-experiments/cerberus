@@ -1,4 +1,5 @@
-# Django
+# Standard Library
+from itertools import product
 
 # Third Party
 import pytest
@@ -33,15 +34,24 @@ def test_mobile_type(number):
     assert contact.type == Contact.Type.MOBILE
 
 
-def emails():
-    yield "blueberry1234@example.com"
-    yield "sunflower_87@mail.co.uk"
-    yield "pineapplemaster456@hotmail.fr"
-    yield "techwizard789@gmail.net"
-    yield "rainbowsparkle22@yahoo.co.jp"
+def email_name():
+    yield "blueberry1234"
+    yield "sunflower_87"
+    yield "pineapplemaster456"
+    yield "techwizard789"
+    yield "rainbowsparkle22"
 
 
-@pytest.mark.parametrize("email", emails())
-def test_email_type(email):
+def email_domains():
+    yield "example.com"
+    yield "mail.co.uk"
+    yield "hotmail.fr"
+    yield "gmail.net"
+    yield "yahoo.co.jp"
+
+
+@pytest.mark.parametrize("name, domains", product(email_name(), email_domains()))
+def test_email_type(name, domains):
+    email = f"{name}@{domains}"
     contact = Contact(details=email)
     assert contact.type == Contact.Type.EMAIL
