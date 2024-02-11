@@ -210,3 +210,5 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 
 SERIALIZATION_MODULES = {"json": "djmoney.serializers"}
+
+SITE_ID = 1

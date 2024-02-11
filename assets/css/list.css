@@ -10,3 +10,23 @@ th {
     text-align: center;
   }
 }
+
+.sort-item {
+  display: inline-block;
+  cursor: pointer;
+
+  &::after {
+    content: " ";
+    display: inline-block;
+    width: 1em;
+  }
+  &.sorting {
+    &::after {
+      display: none;
+    }
+  }
+
+  svg {
+    width: 1em;
+  }
+}

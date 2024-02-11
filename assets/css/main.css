@@ -24,3 +24,7 @@
 body {
   overflow-y: scroll;
 }
+
+[x-cloak] {
+  display: none !important;
+}

@@ -61,7 +61,7 @@ class CustomerFilter(FilterDefaults):
         fields = ["active"]
 
 
-class BookingFilter(filters.FilterSet):
+class BookingFilter(FilterDefaults):
     from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
     to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
     on_date = filters.DateFilter(field_name="start", lookup_expr="date")
@@ -71,7 +71,7 @@ class BookingFilter(filters.FilterSet):
         fields = []
 
 
-class InvoiceFilter(filters.FilterSet):
+class InvoiceFilter(FilterDefaults):
     state = filters.MultipleChoiceFilter(choices=Invoice.States.choices, widget=forms.CheckboxSelectMultiple)
     customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
 
@@ -82,7 +82,7 @@ class InvoiceFilter(filters.FilterSet):
         ]
 
 
-class VetFilter(filters.FilterSet):
+class VetFilter(FilterDefaults):
     customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
     name = filters.CharFilter(lookup_expr="icontains", label="Name")

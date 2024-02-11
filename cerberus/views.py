@@ -85,6 +85,30 @@ class FilterableMixin(GenericModelView):
         return context
 
 
+class SortableViewMixin(GenericModelView):
+    sortable_fields: list[str] = []
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if (sort := self.request.GET.get("sort")) in self.sortable_fields:
+            sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
+            if sort:
+                queryset = queryset.order_by(f"{sort_order}{sort}")
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["sortable_fields"] = self.sortable_fields
+        context["sort"] = self.request.GET.get("sort")
+        context["sort_order"] = self.request.GET.get("sort_order")
+        context["alt_sort_order"] = "asc" if context["sort_order"] == "desc" else "desc"
+
+        return context
+
+
 class BreadcrumbMixin(GenericModelView):
     def get_breadcrumbs(self):
         crumbs = [
@@ -161,7 +185,7 @@ def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwarg
     def decorator(func):
         func.methods = methods
         func.detail = detail
-        func.url_path = url_path if url_path else func.__name__.replace("_", "-")
+        func.url_path = url_path or func.__name__.replace("_", "-")
         func.url_name = url_name
 
         return func
@@ -215,14 +239,15 @@ class CRUDViews(GenericModelView):
                 raise Exception(f"Unhandled action {action}")
 
     @classonlymethod
-    def _get_class_basses(cls, view):
+    def _get_class_basses(cls, view, action: Actions):
         return tuple(
             filter(
                 lambda m: m is not None,
                 [
                     LoginRequiredMixin if cls.requires_login else None,
                     BreadcrumbMixin,
-                    FilterableMixin,
+                    FilterableMixin if action == Actions.LIST else None,
+                    SortableViewMixin if action == Actions.LIST else None,
                     DefaultTemplateMixin.create_class(cls.model_name()),
                     view,
                 ]
@@ -235,7 +260,7 @@ class CRUDViews(GenericModelView):
         actionClass = cls.get_view_class(action)
         return type(
             f"{cls.model._meta.model_name}_{action.value}",
-            cls._get_class_basses(actionClass),
+            cls._get_class_basses(actionClass, action),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
         ).as_view()
 
@@ -294,6 +319,7 @@ class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
     filter_class = PetFilter
+    sortable_fields = ["name", "customer"]
 
 
 class VetCRUD(CRUDViews):
@@ -352,6 +378,7 @@ class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
     filter_class = InvoiceFilter
+    sortable_fields = ["total"]
 
     @classonlymethod
     def get_view_class(cls, action: Actions):

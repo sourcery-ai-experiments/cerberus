@@ -1,10 +1,37 @@
 form {
   &.inline {
-    gap: 2em;
-    justify-content: space-between;
+    & > div {
+      display: flex;
+      gap: 2em;
+      justify-content: space-between;
 
-    & a[role="button"] {
-      height: max-content;
+      & > *:not(:has(label)) {
+        display: flex;
+        align-items: flex-end;
+      }
+
+      & > div:has(.controls) {
+        display: flex;
+        flex-direction: column;
+
+        & .controls {
+          flex: 1;
+          flex-direction: column;
+          display: flex;
+          justify-content: center;
+        }
+      }
+
+      & input:not([type="checkbox"], [type="radio"]),
+      & select,
+      & textarea,
+      & button {
+        margin-bottom: 0;
+      }
+
+      & a[role="button"] {
+        height: max-content;
+      }
     }
   }
 }

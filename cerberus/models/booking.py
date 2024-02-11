@@ -160,7 +160,8 @@ class Booking(models.Model):
     # Relationship Fields
     pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
     service = models.ForeignKey("cerberus.Service", on_delete=models.PROTECT, related_name="bookings")
-    booking_slot = models.ForeignKey("cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
+    _booking_slot = models.ForeignKey("cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
+    _booking_slot_id: int | None
 
     charges = GenericRelation(Charge)
 
@@ -174,15 +175,27 @@ class Booking(models.Model):
     def length(self):
         return self.end - self.start
 
+    @property
+    def booking_slot(self) -> BookingSlot:
+        if self._booking_slot is None:
+            if self.state == self.States.CANCELED.value:
+                raise (BookingSlot.DoesNotExist("Booking has been canceled"))
+            self._booking_slot = self._get_new_booking_slot()
+        return self._booking_slot
+
+    @booking_slot.setter
+    def booking_slot(self, value: BookingSlot) -> None:
+        self._booking_slot = value
+
     def save(self, *args, **kwargs) -> None:
         self.name = f"{self.pet.name}, {self.service.name}"
 
         with transaction.atomic():
-            if self.pk is None:
-                self.booking_slot = self._get_new_booking_slot()
+            if self.pk is None and not self._booking_slot_id:
+                self._booking_slot = self._get_new_booking_slot()
 
-            if self.booking_slot is not None:
-                self.booking_slot.save()
+            if self._booking_slot is not None:
+                self._booking_slot.save()
 
             super().save(*args, **kwargs)
 
@@ -232,13 +245,13 @@ class Booking(models.Model):
         self.start -= delta
         self.end -= delta
 
-        self.booking_slot = self._get_new_booking_slot()
+        self._booking_slot = self._get_new_booking_slot()
 
         self.save()
         return True
 
     def move_booking_slot(self, start: datetime) -> bool:
-        if slot := self.booking_slot:
+        if slot := self._booking_slot:
             length = slot.end - slot.start
             return slot.move_slot(start, start + length)
 
@@ -257,12 +270,12 @@ class Booking(models.Model):
     @save_after
     @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)  # type: ignore
     def cancel(self) -> None:
-        self.booking_slot = None
+        self._booking_slot = None
 
     @save_after
     @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
     def reopen(self) -> None:
-        self.booking_slot = self._get_new_booking_slot()
+        self._booking_slot = self._get_new_booking_slot()
 
     @save_after
     @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])

@@ -1,18 +1,14 @@
 # Standard Library
-import random
 
 # Django
 from django.test import TestCase
 
 # Third Party
 from model_bakery import baker
-from moneyed import Money
 
 # Locals
 from ..models import Address, Contact, Customer, Pet
 from ..serializers import ContactSerializer, CustomerSerializer
-
-baker.generators.add("djmoney.models.fields.MoneyField", lambda: Money(random.uniform(1.0, 100.0), "GBP"))
 
 
 class SerializerTests(TestCase):

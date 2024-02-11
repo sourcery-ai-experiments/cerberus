@@ -1,5 +1,4 @@
 # Standard Library
-import random
 from datetime import date, timedelta
 
 # Django
@@ -13,8 +12,6 @@ from xhtml2pdf.context import pisaContext
 
 # Locals
 from ..models import Charge, Customer, Invoice, Payment
-
-baker.generators.add("djmoney.models.fields.MoneyField", lambda: Money(random.uniform(1.0, 100.0), "GBP"))
 
 
 class InvoiceTests(TestCase):
