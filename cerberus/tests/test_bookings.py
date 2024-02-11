@@ -1,4 +1,5 @@
 # Standard Library
+from collections.abc import Callable
 from datetime import datetime, timedelta
 
 # Django
@@ -6,6 +7,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 
 # Third Party
+import pytest
 from model_bakery import baker
 
 # Locals
@@ -13,162 +15,202 @@ from ..exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
 from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
 
 
-class BookingSlotsTests(TestCase):
-    def setUp(self) -> None:
-        self.walk_service = Service.objects.create(
-            name="Walk", length=timedelta(minutes=60), booked_length=timedelta(minutes=120), cost=12, max_pet=4, max_customer=4
-        )
+@pytest.fixture
+def walk_service() -> Service:
+    return Service.objects.create(
+        name="Walk",
+        length=timedelta(minutes=60),
+        booked_length=timedelta(minutes=120),
+        cost=12,
+        max_pet=4,
+        max_customer=4,
+    )
 
-        self.customer = Customer.objects.create(name="Test Customer")
-        self.pet1 = Pet.objects.create(name="Test Pet 1", customer=self.customer)
-        self.pet2 = Pet.objects.create(name="Test Pet 2", customer=self.customer)
 
-        self.customer.save()
-        self.pet1.save()
-        self.pet2.save()
+@pytest.fixture
+def customer() -> Customer:
+    customer = Customer.objects.create(name="Test Customer")
+    customer.save()
+    return customer
 
-    def test_start_before_end(self):
-        slot = BookingSlot(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
-        )
 
-        self.assertTrue(slot._valid_dates())
+@pytest.fixture
+def make_pet(customer) -> Callable[[], Pet]:
+    def _make_pet():
+        _make_pet.pet_count += 1
+        pet = Pet.objects.create(name=f"Test Pet {_make_pet.pet_count}", customer=customer)
+        pet.save()
+        return pet
 
-    def test_end_before_start(self):
-        slot = BookingSlot(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-        )
+    _make_pet.pet_count = 0
+    return _make_pet
 
-        self.assertFalse(slot._valid_dates())
 
-    def test_has_overlap(self):
-        Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
+def test_start_before_end():
+    slot = BookingSlot(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
+    )
 
-        slot = BookingSlot(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
-        )
+    assert slot._valid_dates() is True
 
-        self.assertTrue(slot.overlaps())
 
-    def test_doesnt_have_overlap(self):
-        Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
+def test_end_before_start():
+    slot = BookingSlot(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
+    )
 
-        slot = BookingSlot(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-        )
+    assert slot._valid_dates() is False
 
-        self.assertFalse(slot.overlaps())
 
-    def test_get_existing_slot(self):
-        slot = BookingSlot.objects.create(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        )
-        sameSlot = BookingSlot.get_slot(start=slot.start, end=slot.end)
+@pytest.mark.django_db
+def test_has_overlap(walk_service, make_pet):
+    Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+        service=walk_service,
+        pet=make_pet(),
+    )
 
-        self.assertEqual(sameSlot.id, slot.id)
+    slot = BookingSlot(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
+    )
 
-    def test_no_duplicates(self):
-        slot = BookingSlot.objects.create(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        )
+    assert slot.overlaps() is True
 
-        with self.assertRaises(IntegrityError):
-            emptySlot = BookingSlot(start=slot.start, end=slot.end)
 
-            emptySlot.save()
+@pytest.mark.django_db
+def test_does_not_have_overlap(walk_service, make_pet):
+    Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+        service=walk_service,
+        pet=make_pet(),
+    )
 
-    def test_pet_count(self):
-        booking1 = Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
+    slot = BookingSlot(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+    )
 
-        Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet2,
-        )
+    assert slot.overlaps() is False
 
-        self.assertEqual(booking1.booking_slot.pet_count, 2)
 
-    def test_customer_count(self):
-        booking1 = Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
-        booking1.save()
+@pytest.mark.django_db
+def test_get_existing_slot():
+    slot = BookingSlot.objects.create(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+    )
+    sameSlot = BookingSlot.get_slot(start=slot.start, end=slot.end)
 
-        Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet2,
-        ).save()
+    assert sameSlot.id == slot.id
 
-        self.assertEqual(booking1.booking_slot.customer_count, 1)
 
-    def test_no_pet_count(self):
-        slot = BookingSlot.objects.create(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        )
-        self.assertEqual(slot.pet_count, 0)
+@pytest.mark.django_db
+def test_no_duplicates():
+    slot = BookingSlot.objects.create(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+    )
 
-    def test_no_customer_count(self):
-        slot = BookingSlot.objects.create(
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        )
-        self.assertEqual(slot.customer_count, 0)
+    with pytest.raises(IntegrityError):
+        emptySlot = BookingSlot(start=slot.start, end=slot.end)
 
-    def test_customer_list(self):
-        booking = Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
+        emptySlot.save()
 
-        self.assertIn(self.customer, booking.booking_slot.customers)
 
-    def test_pet_list(self):
-        booking = Booking.objects.create(
-            cost=0,
-            start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
-            end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-            service=self.walk_service,
-            pet=self.pet1,
-        )
+@pytest.mark.django_db
+def test_pet_count(walk_service, make_pet):
+    booking1 = Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=make_pet(),
+    )
 
-        self.assertIn(self.pet1, booking.booking_slot.pets)
+    Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=make_pet(),
+    )
+
+    assert booking1.get_booking_slot().pet_count == 2
+
+
+@pytest.mark.django_db
+def test_customer_count(walk_service, make_pet):
+    booking1 = Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=make_pet(),
+    )
+    booking1.save()
+
+    Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=make_pet(),
+    ).save()
+
+    assert booking1.get_booking_slot().customer_count == 1
+
+
+@pytest.mark.django_db
+def test_no_pet_count():
+    slot = BookingSlot.objects.create(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+    )
+    assert slot.pet_count == 0
+
+
+@pytest.mark.django_db
+def test_no_customer_count():
+    slot = BookingSlot.objects.create(
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
+    )
+    assert slot.customer_count == 0
+
+
+@pytest.mark.django_db
+def test_customer_list(walk_service, make_pet):
+    pet = make_pet()
+    booking = Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=pet,
+    )
+
+    assert pet.customer in booking.get_booking_slot().customers
+
+
+@pytest.mark.django_db
+def test_pet_list(walk_service, make_pet):
+    pet = make_pet()
+    booking = Booking.objects.create(
+        cost=0,
+        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
+        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
+        service=walk_service,
+        pet=pet,
+    )
+
+    assert pet in booking.get_booking_slot().pets
 
 
 class BookingSlotCreation(TestCase):

@@ -161,6 +161,7 @@ class Booking(models.Model):
     pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
     service = models.ForeignKey("cerberus.Service", on_delete=models.PROTECT, related_name="bookings")
     booking_slot = models.ForeignKey("cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
+    booking_slot_id: int | None
 
     charges = GenericRelation(Charge)
 
@@ -185,7 +186,7 @@ class Booking(models.Model):
         self.name = f"{self.pet.name}, {self.service.name}"
 
         with transaction.atomic():
-            if self.pk is None and self.booking_slot is None:
+            if self.pk is None and not self.booking_slot_id:  # type: ignore
                 self.booking_slot = self._get_new_booking_slot()
 
             if self.booking_slot is not None:
