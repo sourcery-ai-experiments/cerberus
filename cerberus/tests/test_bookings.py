@@ -142,7 +142,7 @@ def test_pet_count(walk_service, make_pet):
         pet=make_pet(),
     )
 
-    assert booking1.get_booking_slot().pet_count == 2
+    assert booking1.booking_slot.pet_count == 2
 
 
 @pytest.mark.django_db
@@ -164,7 +164,7 @@ def test_customer_count(walk_service, make_pet):
         pet=make_pet(),
     ).save()
 
-    assert booking1.get_booking_slot().customer_count == 1
+    assert booking1.booking_slot.customer_count == 1
 
 
 @pytest.mark.django_db
@@ -196,7 +196,7 @@ def test_customer_list(walk_service, make_pet):
         pet=pet,
     )
 
-    assert pet.customer in booking.get_booking_slot().customers
+    assert pet.customer in booking.booking_slot.customers
 
 
 @pytest.mark.django_db
@@ -210,7 +210,7 @@ def test_pet_list(walk_service, make_pet):
         pet=pet,
     )
 
-    assert pet in booking.get_booking_slot().pets
+    assert pet in booking.booking_slot.pets
 
 
 class BookingSlotCreation(TestCase):
