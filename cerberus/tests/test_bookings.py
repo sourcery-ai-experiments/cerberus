@@ -31,6 +31,11 @@ def make_pet(customer: Customer) -> Generator[Callable[[], Pet], None, None]:
     yield partial(baker.make, Pet, customer=customer)
 
 
+@pytest.fixture
+def booking() -> Generator[Booking, None, None]:
+    yield baker.make(Booking)
+
+
 def test_start_before_end():
     slot = BookingSlot(
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
@@ -249,44 +254,38 @@ class BookingSlotCreation(TestCase):
             self.create_booking(pet=pet)
 
 
-class test_booking_states(TestCase):
-    def setUp(self) -> None:
-        # self.service = baker.make(Service, name="Test Service")
+@pytest.mark.django_db
+def test_transitions(booking):
+    transitions = list(booking.get_all_state_transitions())
 
-        return super().setUp()
+    valid_transitions = [
+        ("enquiry", "canceled"),
+        ("preliminary", "canceled"),
+        ("confirmed", "canceled"),
+        ("confirmed", "completed"),
+        ("preliminary", "confirmed"),
+        ("enquiry", "preliminary"),
+        ("canceled", "enquiry"),
+    ]
 
-    def test_transitions(self):
-        booking = Booking()
-        transitions = list(booking.get_all_state_transitions())
+    assert all((t.source, t.target) in valid_transitions for t in transitions)
+    assert len(valid_transitions) == len(transitions)
 
-        valid_transitions = [
-            ("enquiry", "canceled"),
-            ("preliminary", "canceled"),
-            ("confirmed", "canceled"),
-            ("confirmed", "completed"),
-            ("preliminary", "confirmed"),
-            ("enquiry", "preliminary"),
-            ("canceled", "enquiry"),
-        ]
 
-        for t in transitions:
-            self.assertIn((t.source, t.target), valid_transitions)
+@pytest.mark.django_db
+def test_complete():
+    booking: Booking = baker.make(Booking)
+    booking.save()
+    booking.confirm()
 
-        self.assertEqual(len(valid_transitions), len(transitions))
+    before_count = len(Charge.objects.all())
+    booking.complete()
 
-    def test_complete(self):
-        booking: Booking = baker.make(Booking)
-        booking.save()
-        booking.confirm()
+    charges = Charge.objects.all().reverse()
+    assert len(charges) == before_count + 1
 
-        before_count = len(Charge.objects.all())
-        booking.complete()
+    charge = charges[0]
 
-        charges = Charge.objects.all().reverse()
-        self.assertEqual(len(charges), before_count + 1)
-
-        charge = charges[0]
-
-        self.assertEqual(booking, charge.booking)
-        self.assertEqual(booking.pet.customer, charge.customer)
-        self.assertEqual(booking.cost, charge.cost)
+    assert booking == charge.booking
+    assert booking.pet.customer == charge.customer
+    assert booking.cost == charge.cost
