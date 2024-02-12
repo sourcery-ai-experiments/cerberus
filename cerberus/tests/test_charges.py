@@ -1,8 +1,17 @@
+# Standard Library
+from collections.abc import Generator
+
 # Third Party
 import pytest
+from model_bakery import baker
 
 # Locals
 from ..models import Charge
+
+
+@pytest.fixture
+def charge() -> Generator[Charge, None, None]:
+    yield baker.make(Charge)
 
 
 def test_str():
@@ -25,10 +34,7 @@ def test_transitions():
 
 
 @pytest.mark.django_db
-def test_paid():
-    charge = Charge(name="Test Charge", line=1000)
-    charge.save()
-
+def test_paid(charge: Charge):
     charge.pay()
 
     assert charge.state == Charge.States.PAID.value

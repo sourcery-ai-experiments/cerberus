@@ -1,6 +1,7 @@
 # Standard Library
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from datetime import datetime, timedelta
+from functools import partial
 
 # Django
 from django.db.utils import IntegrityError
@@ -16,34 +17,18 @@ from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
 
 
 @pytest.fixture
-def walk_service() -> Service:
-    return Service.objects.create(
-        name="Walk",
-        length=timedelta(minutes=60),
-        booked_length=timedelta(minutes=120),
-        cost=12,
-        max_pet=4,
-        max_customer=4,
-    )
+def walk_service() -> Generator[Service, None, None]:
+    yield baker.make(Service, max_pet=4, max_customer=4)
 
 
 @pytest.fixture
-def customer() -> Customer:
-    customer = Customer.objects.create(name="Test Customer")
-    customer.save()
-    return customer
+def customer() -> Generator[Customer, None, None]:
+    yield baker.make(Customer)
 
 
 @pytest.fixture
-def make_pet(customer) -> Callable[[], Pet]:
-    def _make_pet():
-        _make_pet.pet_count += 1
-        pet = Pet.objects.create(name=f"Test Pet {_make_pet.pet_count}", customer=customer)
-        pet.save()
-        return pet
-
-    _make_pet.pet_count = 0
-    return _make_pet
+def make_pet(customer: Customer) -> Generator[Callable[[], Pet], None, None]:
+    yield partial(baker.make, Pet, customer=customer)
 
 
 def test_start_before_end():
