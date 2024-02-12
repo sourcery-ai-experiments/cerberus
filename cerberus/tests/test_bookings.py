@@ -5,7 +5,6 @@ from functools import partial
 
 # Django
 from django.db.utils import IntegrityError
-from django.test import TestCase
 
 # Third Party
 import pytest
@@ -18,7 +17,7 @@ from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
 
 @pytest.fixture
 def walk_service() -> Generator[Service, None, None]:
-    yield baker.make(Service, max_pet=4, max_customer=4)
+    yield baker.make(Service, max_pet=4, max_customer=1)
 
 
 @pytest.fixture
@@ -203,55 +202,45 @@ def test_pet_list(walk_service, make_pet):
     assert pet in booking.booking_slot.pets
 
 
-class BookingSlotCreation(TestCase):
-    def setUp(self) -> None:
-        self.walk_service = Service.objects.create(
-            name="Walk", length=timedelta(minutes=60), booked_length=timedelta(minutes=120), cost=12, max_pet=4, max_customer=1
+@pytest.fixture
+def now() -> Generator[datetime, None, None]:
+    yield datetime.now()
+
+
+@pytest.fixture
+def make_booking(make_pet, walk_service, now) -> Generator[Callable[[Pet | None], Booking], None, None]:
+    def _make_booking(pet: Pet | None = None):
+        booking = Booking.objects.create(
+            cost=0,
+            pet=pet or make_pet(),
+            service=walk_service,
+            start=BookingSlot.round_date_time(now + timedelta(hours=1)),
+            end=BookingSlot.round_date_time(now + timedelta(hours=2)),
         )
+        booking.save()
+        return booking
 
-        self.customer = Customer.objects.create(name="Test Customer")
+    yield _make_booking
 
-        self.pet0 = Pet.objects.create(name="Test Pet 0", customer=self.customer)
-        self.pet1 = Pet.objects.create(name="Test Pet 1", customer=self.customer)
-        self.pet2 = Pet.objects.create(name="Test Pet 2", customer=self.customer)
-        self.pet3 = Pet.objects.create(name="Test Pet 3", customer=self.customer)
-        self.pet4 = Pet.objects.create(name="Test Pet 4", customer=self.customer)
 
-        self.now = datetime.now()
+@pytest.mark.django_db
+@pytest.mark.freeze_time("2017-05-21")
+def test_max_pet_booking(make_booking):
+    for _ in range(4):
+        make_booking()
 
-    def create_booking(self, start_offset=5, end_offset=6, **kwargs) -> Booking:
-        args = {
-            **{
-                "cost": 0,
-                "start": BookingSlot.round_date_time(self.now + timedelta(hours=start_offset)),
-                "end": BookingSlot.round_date_time(self.now + timedelta(hours=end_offset)),
-                "service": self.walk_service,
-                "pet": self.pet1,
-            },
-            **kwargs,
-        }
+    with pytest.raises(BookingSlotMaxPets):
+        make_booking()
 
-        return Booking.objects.create(**args)
 
-    def test_max_pet_booking(self):
-        for i in range(4):
-            booking = self.create_booking(pet=getattr(self, f"pet{i}"))
-            booking.save()
+@pytest.mark.django_db
+@pytest.mark.freeze_time("2017-05-21")
+def test_max_customer_booking(make_booking):
+    for i in range(2):
+        make_booking()
 
-        with self.assertRaises(BookingSlotMaxPets):
-            self.create_booking(pet=self.pet4)
-
-    def test_max_customer_booking(self):
-        for i in range(2):
-            booking = self.create_booking(pet=getattr(self, f"pet{i}"))
-            booking.save()
-
-        customer = Customer.objects.create(name="test customer 2")
-
-        pet = Pet.objects.create(name="Test Pet customer 2", customer=customer)
-
-        with self.assertRaises(BookingSlotMaxCustomers):
-            self.create_booking(pet=pet)
+    with pytest.raises(BookingSlotMaxCustomers):
+        make_booking(pet=baker.make(Pet))
 
 
 @pytest.mark.django_db

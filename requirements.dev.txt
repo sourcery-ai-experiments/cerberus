@@ -499,7 +499,9 @@ filelock==3.13.1 \
 freezegun==1.4.0 \
     --hash=sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b \
     --hash=sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6
-    # via Cerberus (pyproject.toml)
+    # via
+    #   Cerberus (pyproject.toml)
+    #   pytest-freezegun
 graphviz==0.20.1 \
     --hash=sha256:587c58a223b51611c0cf461132da386edd896a029524ca61a1462b880bf97977 \
     --hash=sha256:8c58f14adaa3b947daf26c19bc1e98c4e0702cdc31cf99153e6f06904d492bf8
@@ -928,6 +930,7 @@ pytest==8.0.0 \
     #   pytest-cov
     #   pytest-django
     #   pytest-django-queries
+    #   pytest-freezegun
     #   pytest-picked
     #   pytest-watch
 pytest-clarity==1.0.1 \
@@ -943,6 +946,10 @@ pytest-django==4.8.0 \
     # via Cerberus (pyproject.toml)
 pytest-django-queries==1.2.0 \
     --hash=sha256:7d683d06af711c4f3ac049b3a7035070ce3888a3575ce8ae4b8a41b7b7869f1c
+    # via Cerberus (pyproject.toml)
+pytest-freezegun==0.4.2 \
+    --hash=sha256:19c82d5633751bf3ec92caa481fb5cffaac1787bd485f0df6436fd6242176949 \
+    --hash=sha256:5318a6bfb8ba4b709c8471c94d0033113877b3ee02da5bfcd917c1889cde99a7
     # via Cerberus (pyproject.toml)
 pytest-picked==0.5.0 \
     --hash=sha256:6d22771a857a2cd8691fc0802f3e1371fe4063fa1ecbd216d9584bbe089fcfd3 \

@@ -60,6 +60,7 @@ dev = [
     "pytest-cov",
     "pytest-django",
     "pytest-django-queries",
+    "pytest-freezegun",
     "pytest-picked",
     "pytest-watch",
     "setuptools_scm",
