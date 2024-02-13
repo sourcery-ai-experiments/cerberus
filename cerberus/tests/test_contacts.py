@@ -1,4 +1,5 @@
 # Standard Library
+from collections.abc import Generator
 from itertools import product
 
 # Third Party
@@ -8,7 +9,7 @@ import pytest
 from ..models import Contact
 
 
-def numbers():
+def numbers() -> Generator[str, None, None]:
     yield "+441234567890"
     yield "01234567890"
     yield "(01234)567890"
@@ -16,12 +17,12 @@ def numbers():
 
 
 @pytest.mark.parametrize("number", numbers())
-def test_phone_type(number):
+def test_phone_type(number: str):
     contact = Contact(details=number)
     assert contact.type == Contact.Type.PHONE
 
 
-def mobile_numbers():
+def mobile_numbers() -> Generator[str, None, None]:
     yield "+447234567890"
     yield "07234567890"
     yield "(07234)567890"
@@ -29,12 +30,12 @@ def mobile_numbers():
 
 
 @pytest.mark.parametrize("number", mobile_numbers())
-def test_mobile_type(number):
+def test_mobile_type(number: str):
     contact = Contact(details=number)
     assert contact.type == Contact.Type.MOBILE
 
 
-def email_name():
+def email_name() -> Generator[str, None, None]:
     yield "blueberry1234"
     yield "sunflower_87"
     yield "pineapplemaster456"
@@ -42,7 +43,7 @@ def email_name():
     yield "rainbowsparkle22"
 
 
-def email_domains():
+def email_domains() -> Generator[str, None, None]:
     yield "example.com"
     yield "mail.co.uk"
     yield "hotmail.fr"
@@ -51,7 +52,7 @@ def email_domains():
 
 
 @pytest.mark.parametrize("name, domains", product(email_name(), email_domains()))
-def test_email_type(name, domains):
+def test_email_type(name: str, domains: str):
     email = f"{name}@{domains}"
     contact = Contact(details=email)
     assert contact.type == Contact.Type.EMAIL

@@ -1,9 +1,5 @@
-# Standard Library
-
-# Django
-from django.test import TestCase
-
 # Third Party
+import pytest
 from model_bakery import baker
 
 # Locals
@@ -11,37 +7,39 @@ from ..models import Address, Contact, Customer, Pet
 from ..serializers import ContactSerializer, CustomerSerializer
 
 
-class SerializerTests(TestCase):
-    def test_contact(self):
-        contact: Contact = baker.make(Contact)
-        data = ContactSerializer(instance=contact).data
+@pytest.mark.django_db
+def test_contact():
+    contact: Contact = baker.make(Contact)
+    data = ContactSerializer(instance=contact).data
 
-        validation = {
-            "id": contact.pk,
-            "type": contact.type.value,
-            "name": contact.name,
-            "details": contact.details,
-        }
+    validation = {
+        "id": contact.pk,
+        "type": contact.type.value,
+        "name": contact.name,
+        "details": contact.details,
+    }
 
-        self.assertDictEqual(data, validation)
+    assert data == validation
 
-    def test_customer(self):
-        pets: list[Pet] = baker.make(Pet, _quantity=3)
-        addresses: list[Address] = baker.make(Address, _quantity=3)
-        contacts: list[Contact] = baker.make(Contact, _quantity=3)
 
-        customer: Customer = baker.make(Customer, pets=pets, addresses=addresses, contacts=contacts)
+@pytest.mark.django_db
+def test_customer():
+    pets: list[Pet] = baker.make(Pet, _quantity=3)
+    addresses: list[Address] = baker.make(Address, _quantity=3)
+    contacts: list[Contact] = baker.make(Contact, _quantity=3)
 
-        try:
-            data = CustomerSerializer(instance=customer).data
-        except Exception as E:
-            self.fail(f"Exception raised: {E}")
+    customer: Customer = baker.make(Customer, pets=pets, addresses=addresses, contacts=contacts)
 
-        validation = {
-            "id": customer.pk,
-            "first_name": customer.first_name,
-            "last_name": customer.last_name,
-            "name": customer.name,
-        }
+    try:
+        data = dict(CustomerSerializer(instance=customer).data)
+    except Exception as E:
+        pytest.fail(f"Exception raised: {E}")
 
-        self.assertTrue(validation.items() <= data.items())
+    validation = {
+        "id": customer.pk,
+        "first_name": customer.first_name,
+        "last_name": customer.last_name,
+        "name": customer.name,
+    }
+
+    assert validation.items() <= data.items()
