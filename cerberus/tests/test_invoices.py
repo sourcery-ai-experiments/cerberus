@@ -1,10 +1,9 @@
 # Standard Library
+from collections.abc import Generator
 from datetime import date, timedelta
 
-# Django
-from django.test import TestCase
-
 # Third Party
+import pytest
 from django_fsm import TransitionNotAllowed
 from model_bakery import baker
 from moneyed import Money
@@ -14,191 +13,172 @@ from xhtml2pdf.context import pisaContext
 from ..models import Charge, Customer, Invoice, Payment
 
 
-class InvoiceTests(TestCase):
-    def setUp(self) -> None:
-        self.customer: Customer = baker.make(Customer, invoice_email="test@example.com")
-        self.invoice: Invoice = baker.make(Invoice, adjustment=0.0)
-        for i in range(3):
-            Charge(name=f"line {i}", line=10, quantity=i, invoice=self.invoice)
+@pytest.fixture
+def customer() -> Generator[Customer, None, None]:
+    yield baker.make(Customer, invoice_email="test@example.com")
 
-    def test_overdue(self):
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-        tomorrow = today + timedelta(days=1)
 
-        email = "test@example.com"
-        customer = baker.make(Customer, invoice_email=email)
-        overdue = baker.make(Invoice, customer=customer, due=yesterday)
-        overdue.send()
-        loaded_overdue = Invoice.objects.filter(pk=overdue.pk)[0]
+@pytest.fixture
+def invoice(customer) -> Generator[Invoice, None, None]:
+    invoice: Invoice = baker.make(Invoice, customer=customer, adjustment=0.0)
+    for i in range(3):
+        baker.make(Charge, name=f"line {i}", line=10, quantity=i, invoice=invoice)
+    yield invoice
 
-        notdue = baker.make(Invoice, customer=customer, due=tomorrow)
-        notdue.send()
-        loaded_notdue = Invoice.objects.filter(pk=notdue.pk)[0]
 
-        self.assertTrue(loaded_overdue.overdue)
-        self.assertFalse(loaded_notdue.overdue)
+@pytest.mark.django_db
+def test_overdue(customer):
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
 
-        self.assertEqual(loaded_overdue.overdue, overdue.overdue)
-        self.assertEqual(loaded_notdue.overdue, notdue.overdue)
+    overdue = baker.make(Invoice, customer=customer, due=yesterday)
+    overdue.send()
+    loaded_overdue = Invoice.objects.filter(pk=overdue.pk)[0]
 
-    def test_send_requires_customer(self):
-        inv = Invoice.objects.create()
+    not_due = baker.make(Invoice, customer=customer, due=tomorrow)
+    not_due.send()
+    loaded_not_due = Invoice.objects.filter(pk=not_due.pk)[0]
 
-        with self.assertRaises(TransitionNotAllowed):
-            inv.send()
+    assert loaded_overdue.overdue is True
+    assert loaded_not_due.overdue is False
 
-    def test_send_requires_invoice_email(self):
-        customer = baker.make(Customer)
-        inv = Invoice.objects.create(customer=customer)
+    assert loaded_overdue.overdue == overdue.overdue
+    assert loaded_not_due.overdue == not_due.overdue
 
-        with self.assertRaises(TransitionNotAllowed):
-            inv.send()
 
-    def test_can_send(self):
-        email = "test@example.com"
-        customer = baker.make(Customer, invoice_email=email)
-        inv = baker.make(Invoice, customer=customer)
+@pytest.mark.django_db
+def test_send_requires_customer():
+    inv = Invoice.objects.create()
 
+    with pytest.raises(TransitionNotAllowed):
         inv.send()
 
-        self.assertEqual(inv.sent_to, email)
 
-    def test_cant_update(self):
-        email = "test@example.com"
-        customer = baker.make(Customer, invoice_email=email)
-        inv = baker.make(Invoice, customer=customer)
+@pytest.mark.django_db
+def test_send_requires_invoice_email(customer: Customer):
+    customer.invoice_email = ""
+    inv = Invoice.objects.create(customer=customer)
 
+    with pytest.raises(TransitionNotAllowed):
         inv.send()
-        inv.sent_to = None
-        inv.save()
 
-        loaded = Invoice.objects.get(pk=inv.pk)
 
-        self.assertEqual(loaded.sent_to, email)
+@pytest.mark.django_db
+def test_can_send(customer: Customer):
+    inv = baker.make(Invoice, customer=customer)
+    inv.send()
 
-    def test_pdf(self):
-        pdf = self.invoice.get_pdf()
-        self.assertIsInstance(pdf, pisaContext)
+    assert inv.sent_to == customer.invoice_email
 
-    def test_change_charges(self):
-        base_invoice = Invoice.objects.create(customer=self.customer)
-        base_invoice.save()
-        invoice_pk = base_invoice.pk
 
-        charge = Charge.objects.create(name="test charge 1", customer=self.customer, line=12.00, invoice=base_invoice)
-        charge.save()
+@pytest.mark.django_db
+def test_cant_update(customer: Customer, invoice: Invoice):
+    invoice.send()
+    invoice.sent_to = None
+    invoice.save()
 
-        invoice: Invoice = Invoice.objects.get(pk=invoice_pk)
-        self.assertIn(charge, invoice.charges.all())
+    loaded = Invoice.objects.get(pk=invoice.pk)
 
-        invoice.send()
-        self.assertEqual(invoice.state, Invoice.States.UNPAID.value)
+    assert loaded.sent_to == customer.invoice_email
 
-        invoice.pay()
-        self.assertEqual(invoice.state, Invoice.States.PAID.value)
 
-        self.assertTrue(all(c.state == Charge.States.PAID.value for c in invoice.charges.all()))
+@pytest.mark.django_db
+def test_pdf(invoice: Invoice):
+    pdf = invoice.get_pdf()
+    assert isinstance(pdf, pisaContext)
 
-    def test_available_state_transitions(self):
-        invoice = Invoice.objects.create(customer=self.customer)
-        invoice.save()
 
-        available_state_transitions = invoice.available_state_transitions
-        expected_state_transitions = ["send", "void"]
-        self.assertEqual(sorted(available_state_transitions), sorted(expected_state_transitions))
+@pytest.mark.django_db
+def test_change_charges(invoice: Invoice):
+    invoice.send()
+    assert invoice.state == Invoice.States.UNPAID.value
 
-    def create_invoice(self, charge_count=2, charge_amount=10, adjustment=0) -> Invoice:
-        invoice = Invoice.objects.create(customer=self.customer, adjustment=adjustment)
-        invoice.save()
+    invoice.pay()
+    assert invoice.state == Invoice.States.PAID.value
 
-        for _ in range(charge_count):
-            charge = Charge(line=charge_amount, quantity=1, name="Service", invoice=invoice)
-            charge.save()
+    assert all(c.state == Charge.States.PAID.value for c in invoice.charges.all())
 
-        return invoice
 
-    def test_loaded_total(self):
-        invoice = self.create_invoice()
+@pytest.mark.django_db
+def test_loaded_total(invoice):
+    loaded_invoice = Invoice.objects.get(pk=invoice.pk)
+    assert loaded_invoice.total.amount == invoice.total.amount
 
-        loadedInv = Invoice.objects.get(pk=invoice.pk)
-        self.assertEqual(loadedInv.total.amount, 20)
 
-    def test_loaded_total_with_adjustment(self):
-        invoice = self.create_invoice(adjustment=10)
+@pytest.mark.django_db
+def test_available_state_transitions(invoice: Invoice):
+    available_state_transitions = invoice.available_state_transitions
+    expected_state_transitions = ["send", "void"]
+    assert available_state_transitions == expected_state_transitions
 
-        loadedInv = Invoice.objects.get(pk=invoice.pk)
-        self.assertEqual(loadedInv.total.amount, 30)
 
-    def test_total(self):
-        invoice = self.create_invoice()
+@pytest.mark.django_db
+def test_loaded_total_with_adjustment(invoice: Invoice):
+    invoice.adjustment = 10
+    invoice.save()
+    loaded_invoice = Invoice.objects.get(pk=invoice.pk)
+    assert loaded_invoice.total.amount == invoice.total.amount
 
-        invoice = Invoice.objects.get(pk=invoice.pk)
-        self.assertEqual(invoice.total.amount, 20)
 
-    def test_create_payment(self):
-        invoice = self.create_invoice()
+@pytest.mark.django_db
+def test_total(invoice: Invoice):
+    loaded_invoice = Invoice.objects.get(pk=invoice.pk)
+    assert loaded_invoice.total.amount == invoice.total.amount
+
+
+@pytest.mark.django_db
+def test_create_payment(invoice: Invoice):
+    invoice.send()
+    invoice.pay()
+    payments = sum(p.amount for p in invoice.payments.all())
+    assert invoice.total == payments
+
+
+@pytest.mark.django_db
+def test_invoice_paid(invoice: Invoice):
+    Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
+    Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
+
+    payments = sum(p.amount for p in invoice.payments.all())
+
+    assert payments == invoice.paid
+
+
+@pytest.mark.django_db
+def test_create_partial_payments(invoice: Invoice):
+    invoice.send(send_email=False)
+
+    Payment.objects.create(invoice=invoice, amount=invoice.total / 2)
+
+    assert invoice.paid > Money(0, "GBP")
+    assert invoice.paid < invoice.total
+
+    invoice.pay()
+
+    assert invoice.paid == invoice.total
+
+
+@pytest.mark.django_db
+def test_totals_match():
+    customers = []
+    for _ in range(10):
+        customers.append(baker.make(Customer, invoice_email="bob@example.com"))
+
+    for i in range(20):
+        invoice: Invoice = baker.make(Invoice, customer=customers[i % len(customers)])
+        for _ in range(3):
+            baker.make(Charge, invoice=invoice)
 
         invoice.send(send_email=False)
-        invoice.pay()
 
-        payments = sum(p.amount for p in invoice.payments.all())
-        self.assertEqual(invoice.total, payments)
+    total_totals = Money(0, "GBP")
+    for customer in Customer.objects.all():
+        total = Money(0, "GBP")
+        for invoice in customer.invoices.all():
+            total += invoice.total
 
-    def test_invoice_paid(self):
-        invoice = self.create_invoice()
+        assert customer.invoiced_unpaid == total
+        total_totals += total
 
-        Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
-        Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
-
-        payments = sum(p.amount for p in invoice.payments.all())
-
-        self.assertEqual(payments, invoice.paid)
-
-    def test_create_partial_payments(self):
-        invoice = self.create_invoice()
-        invoice.send(send_email=False)
-
-        Payment.objects.create(invoice=invoice, amount=invoice.total / 2)
-
-        self.assertGreater(invoice.paid, Money(0, "GBP"))
-        self.assertLess(invoice.paid, invoice.total)
-
-        invoice.pay()
-
-        self.assertEqual(invoice.paid, invoice.total)
-
-    def test_complex_totals(self):
-        invoice: Invoice = Invoice.objects.create(customer=self.customer)
-        invoice.save()
-
-        Charge.objects.create(line=15, quantity=2, invoice=invoice)
-        Charge.objects.create(line=10, quantity=3, invoice=invoice)
-
-        invoice.send(send_email=False)
-
-        self.assertEqual(invoice.total, Money(60, "GBP"))
-
-    def test_totals_match(self):
-        customers = []
-        for _ in range(10):
-            customer: Customer = baker.make(Customer, invoice_email="bob@example.com")
-            customers.append(customer)
-
-        for i in range(20):
-            invoice: Invoice = baker.make(Invoice, customer=customers[i % len(customers)])
-            for _ in range(3):
-                baker.make(Charge, invoice=invoice)
-
-            invoice.send(send_email=False)
-
-        total_totals = Money(0, "GBP")
-        for customer in Customer.objects.all():
-            total = Money(0, "GBP")
-            for invoice in customer.invoices.all():
-                total += invoice.total
-
-            self.assertEqual(customer.invoiced_unpaid, total)
-            total_totals += total
-
-        self.assertGreater(total_totals, Money(0, "GBP"))
+    assert total_totals > Money(0, "GBP")
