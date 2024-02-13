@@ -4,7 +4,6 @@ pull_request_rules:
   - and:
     - author~=^bengosney$
     - check-success=workflow
-    - check-success=Sourcery
   actions:
     merge:
       method: merge
