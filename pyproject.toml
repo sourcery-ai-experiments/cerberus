@@ -47,7 +47,7 @@ dev = [
     "django-stubs",
     "django-browser-reload",
     "django-debug-toolbar",
-    "hypothesis",
+    "hypothesis[django]",
     "icecream",
     "mypy",
     "pip-tools",

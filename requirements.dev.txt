@@ -379,6 +379,7 @@ django==5.0.2 \
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-spectacular
+    #   hypothesis
     #   model-bakery
     #   pytest-django-queries
 django-appconf==1.0.6 \
@@ -518,7 +519,7 @@ humanize==4.9.0 \
     --hash=sha256:582a265c931c683a7e9b8ed9559089dea7edcf6cc95be39a3cbc2c5d5ac2bcfa \
     --hash=sha256:ce284a76d5b1377fd8836733b983bfb0b76f1aa1c090de2566fcf008d7f6ab16
     # via Cerberus (pyproject.toml)
-hypothesis==6.98.6 \
+hypothesis[django]==6.98.6 \
     --hash=sha256:2d80f64c58f58a60e035c665e94a36f77c3f8fe057b55053d06b2c82dcefc507 \
     --hash=sha256:6d94e748311e331d1bc975550bece652d961b3f5218d77a2d450eb541a94cbae
     # via Cerberus (pyproject.toml)

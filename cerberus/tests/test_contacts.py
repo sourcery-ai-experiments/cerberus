@@ -4,6 +4,8 @@ from itertools import product
 
 # Third Party
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 # Locals
 from ..models import Contact
@@ -54,5 +56,11 @@ def email_domains() -> Generator[str, None, None]:
 @pytest.mark.parametrize("name, domains", product(email_name(), email_domains()))
 def test_email_type(name: str, domains: str):
     email = f"{name}@{domains}"
+    contact = Contact(details=email)
+    assert contact.type == Contact.Type.EMAIL
+
+
+@given(st.emails())
+def test_more_email_type(email: str):
     contact = Contact(details=email)
     assert contact.type == Contact.Type.EMAIL
