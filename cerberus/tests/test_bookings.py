@@ -36,7 +36,8 @@ def booking() -> Generator[Booking, None, None]:
 
 
 def test_start_before_end():
-    slot = BookingSlot(
+    slot = baker.prepare(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
     )
@@ -45,7 +46,8 @@ def test_start_before_end():
 
 
 def test_end_before_start():
-    slot = BookingSlot(
+    slot = baker.prepare(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
     )
@@ -54,16 +56,17 @@ def test_end_before_start():
 
 
 @pytest.mark.django_db
-def test_has_overlap(walk_service, make_pet):
-    Booking.objects.create(
-        cost=0,
+@pytest.mark.freeze_time("2017-05-21")
+def test_has_overlap():
+    baker.make(
+        Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        service=walk_service,
-        pet=make_pet(),
+        _booking_slot=None,
     )
 
-    slot = BookingSlot(
+    slot = baker.make(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
     )
@@ -73,15 +76,15 @@ def test_has_overlap(walk_service, make_pet):
 
 @pytest.mark.django_db
 def test_does_not_have_overlap(walk_service, make_pet):
-    Booking.objects.create(
-        cost=0,
+    baker.make(
+        Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
-        service=walk_service,
-        pet=make_pet(),
+        _booking_slot=None,
     )
 
-    slot = BookingSlot(
+    slot = baker.make(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
     )
@@ -91,7 +94,8 @@ def test_does_not_have_overlap(walk_service, make_pet):
 
 @pytest.mark.django_db
 def test_get_existing_slot():
-    slot = BookingSlot.objects.create(
+    slot = baker.make(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
     )
@@ -102,14 +106,14 @@ def test_get_existing_slot():
 
 @pytest.mark.django_db
 def test_no_duplicates():
-    slot = BookingSlot.objects.create(
+    slot = baker.make(
+        BookingSlot,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
     )
 
     with pytest.raises(IntegrityError):
         emptySlot = BookingSlot(start=slot.start, end=slot.end)
-
         emptySlot.save()
 
 
