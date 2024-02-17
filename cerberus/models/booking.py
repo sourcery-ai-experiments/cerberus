@@ -1,7 +1,7 @@
 # Standard Library
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Self
 
 # Django
 from django.contrib.contenttypes.fields import GenericRelation
@@ -39,7 +39,7 @@ class BookingSlot(models.Model):
         unique_together = [["start", "end"]]
 
     @classmethod
-    def get_slot(cls, start: datetime, end: datetime) -> "BookingSlot":
+    def get_slot(cls, start: datetime, end: datetime) -> Self:
         try:
             slot = cls.objects.get(start=start, end=end)
         except cls.DoesNotExist:
@@ -60,7 +60,7 @@ class BookingSlot(models.Model):
     def _valid_dates(self) -> bool:
         return self.end > self.start
 
-    def get_overlapping(self) -> "QuerySet[BookingSlot]":
+    def get_overlapping(self) -> QuerySet[Self]:
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
@@ -104,18 +104,18 @@ class BookingSlot(models.Model):
         return all(id in ids for id in bookingIDs)
 
     @classmethod
-    def clean_empty_slots(cls):
+    def clean_empty_slots(cls) -> None:
         cls.objects.filter(bookings__isnull=True).delete()
 
     @property
-    def service(self) -> Optional["Service"]:
+    def service(self) -> Service | None:
         try:
             return self.bookings.all()[0].service
         except IndexError:
             return None
 
     @property
-    def pets(self) -> set["Pet"]:
+    def pets(self) -> set[Pet]:
         return {b.pet for b in self.bookings.all()}
 
     @property
@@ -123,7 +123,7 @@ class BookingSlot(models.Model):
         return len(self.pets)
 
     @property
-    def customers(self) -> set["Customer"]:
+    def customers(self) -> set[Customer]:
         return {b.pet.customer for b in self.bookings.all()}
 
     @property
@@ -172,7 +172,7 @@ class Booking(models.Model):
         return f"{self.name} - {naturaldate(self.start)}"
 
     @property
-    def length(self):
+    def length(self) -> timedelta:
         return self.end - self.start
 
     @property
