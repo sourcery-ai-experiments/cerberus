@@ -6,6 +6,7 @@ from itertools import product
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+from model_bakery import baker
 
 # Locals
 from ..models import Contact
@@ -20,7 +21,7 @@ def numbers() -> Generator[str, None, None]:
 
 @pytest.mark.parametrize("number", numbers())
 def test_phone_type(number: str):
-    contact = Contact(details=number)
+    contact = baker.prepare(Contact, details=number)
     assert contact.type == Contact.Type.PHONE
 
 
@@ -33,7 +34,7 @@ def mobile_numbers() -> Generator[str, None, None]:
 
 @pytest.mark.parametrize("number", mobile_numbers())
 def test_mobile_type(number: str):
-    contact = Contact(details=number)
+    contact = baker.prepare(Contact, details=number)
     assert contact.type == Contact.Type.MOBILE
 
 
@@ -56,11 +57,11 @@ def email_domains() -> Generator[str, None, None]:
 @pytest.mark.parametrize("name, domains", product(email_name(), email_domains()))
 def test_email_type(name: str, domains: str):
     email = f"{name}@{domains}"
-    contact = Contact(details=email)
+    contact = baker.prepare(Contact, details=email)
     assert contact.type == Contact.Type.EMAIL
 
 
 @given(st.emails())
 def test_more_email_type(email: str):
-    contact = Contact(details=email)
+    contact = baker.prepare(Contact, details=email)
     assert contact.type == Contact.Type.EMAIL
