@@ -191,7 +191,7 @@ class Booking(models.Model):
         self.name = f"{self.pet.name}, {self.service.name}"
 
         with transaction.atomic():
-            if self.pk is None and not self._booking_slot_id:
+            if self.pk is None and getattr(self, "_booking_slot", None) is None:
                 self._booking_slot = self._get_new_booking_slot()
 
             if self._booking_slot is not None:

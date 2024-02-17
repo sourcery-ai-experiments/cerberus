@@ -49,7 +49,7 @@ def test_overdue(customer):
 
 @pytest.mark.django_db
 def test_send_requires_customer():
-    inv = Invoice.objects.create()
+    inv = baker.make(Invoice)
 
     with pytest.raises(TransitionNotAllowed):
         inv.send()
@@ -58,7 +58,7 @@ def test_send_requires_customer():
 @pytest.mark.django_db
 def test_send_requires_invoice_email(customer: Customer):
     customer.invoice_email = ""
-    inv = Invoice.objects.create(customer=customer)
+    inv = baker.make(Invoice, customer=customer)
 
     with pytest.raises(TransitionNotAllowed):
         inv.send()
@@ -137,8 +137,8 @@ def test_create_payment(invoice: Invoice):
 
 @pytest.mark.django_db
 def test_invoice_paid(invoice: Invoice):
-    Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
-    Payment.objects.create(invoice=invoice, amount=invoice.total / 4)
+    baker.make(Payment, invoice=invoice, amount=invoice.total / 4)
+    baker.make(Payment, invoice=invoice, amount=invoice.total / 4)
 
     payments = sum(p.amount for p in invoice.payments.all())
 
@@ -149,7 +149,7 @@ def test_invoice_paid(invoice: Invoice):
 def test_create_partial_payments(invoice: Invoice):
     invoice.send(send_email=False)
 
-    Payment.objects.create(invoice=invoice, amount=invoice.total / 2)
+    baker.make(Payment, invoice=invoice, amount=invoice.total / 2)
 
     assert invoice.paid > Money(0, "GBP")
     assert invoice.paid < invoice.total
