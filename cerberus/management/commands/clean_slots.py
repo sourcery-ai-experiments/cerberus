@@ -5,7 +5,7 @@ from contextlib import suppress
 from django.core.management.base import BaseCommand
 from django.db.models import ProtectedError
 
-# First Party
+# Internals
 from cerberus.models import BookingSlot
 
 

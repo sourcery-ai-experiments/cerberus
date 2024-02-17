@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 # Third Party
 from faker import Faker
 
-# First Party
+# Internals
 from cerberus.models import Customer
 
 

@@ -8,9 +8,9 @@ from hypothesis.extra.django import from_model, register_field_strategy
 from hypothesis.strategies import just
 from model_bakery import baker
 
-# Locals
-from ..models import Address, Contact, Customer, Pet
-from ..serializers import ContactSerializer, CustomerSerializer
+# Internals
+from cerberus.models import Address, Contact, Customer, Pet
+from cerberus.serializers import ContactSerializer, CustomerSerializer
 
 register_field_strategy(GeneratedField, just(None))
 

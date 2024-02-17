@@ -4,7 +4,7 @@ from collections import Counter
 # Django
 from django.core.management.base import BaseCommand
 
-# First Party
+# Internals
 from cerberus.exceptions import InvalidEmail
 from cerberus.models import Contact, Customer
 

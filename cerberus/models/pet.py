@@ -13,12 +13,12 @@ from django.utils.translation import gettext_lazy as _
 import reversion
 from taggit.managers import TaggableManager
 
-# Locals
-from ..utils import choice_length
+# Internals
+from cerberus.utils import choice_length
 
 if TYPE_CHECKING:
-    # Locals
-    from . import Booking
+    # Internals
+    from cerberus.models import Booking
 
 
 @reversion.register()

@@ -7,7 +7,7 @@ from django.urls import path
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# First Party
+# Internals
 from cerberus.models import Invoice
 
 

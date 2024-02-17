@@ -17,10 +17,10 @@ from moneyed import Money
 from taggit.managers import TaggableManager
 
 if TYPE_CHECKING:
-    from . import Pet, Contact, Charge, Booking, Vet
+    from cerberus.models import Pet, Contact, Charge, Booking, Vet
 
-# Locals
-from .invoice import Invoice
+# Internals
+from cerberus.models.invoice import Invoice
 
 
 class CustomerManager(models.Manager["Customer"]):

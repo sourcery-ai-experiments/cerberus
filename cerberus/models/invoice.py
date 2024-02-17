@@ -26,12 +26,12 @@ from moneyed import Money
 from xhtml2pdf import pisa
 from xhtml2pdf.context import pisaContext
 
-# Locals
-from ..decorators import save_after
+# Internals
+from cerberus.decorators import save_after
 
 if TYPE_CHECKING:
-    # Locals
-    from . import Charge, Customer
+    # Internals
+    from cerberus.models import Charge, Customer
 
 
 # self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()

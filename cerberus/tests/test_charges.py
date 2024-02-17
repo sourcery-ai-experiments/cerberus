@@ -1,12 +1,14 @@
 # Standard Library
 from collections.abc import Generator
+from decimal import Decimal
 
 # Third Party
 import pytest
 from model_bakery import baker
 
-# Locals
-from ..models import Charge, ChargeRefundError
+# Internals
+from cerberus.exceptions import ChargeRefundError
+from cerberus.models import Charge
 
 
 @pytest.fixture
@@ -51,7 +53,7 @@ def test_full_refund(charge: Charge):
 @pytest.mark.django_db
 def test_partial_refund(charge: Charge):
     charge.pay()
-    refund_charge = charge.refund(charge.amount / 2)
+    refund_charge = charge.refund(charge.amount / Decimal(2))
 
     assert refund_charge.state == Charge.States.REFUND.value
     assert -refund_charge.amount == charge.amount / 2

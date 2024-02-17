@@ -14,13 +14,13 @@ from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
 
-# Locals
-from ..decorators import save_after
-from ..exceptions import ChargeRefundError
+# Internals
+from cerberus.decorators import save_after
+from cerberus.exceptions import ChargeRefundError
 
 if TYPE_CHECKING:
-    # Locals
-    from . import Customer, Invoice
+    # Internals
+    from cerberus.models import Customer, Invoice
 
 
 @reversion.register()
@@ -117,7 +117,7 @@ class Charge(PolymorphicModel):
             state=self.States.REFUND.value,
         )
 
-    def delete(self) -> None:
+    def delete(self, using=None, keep_parents=False) -> None:
         return self.void()
 
     def save(self, *args, **kwargs):

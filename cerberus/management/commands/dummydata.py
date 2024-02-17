@@ -12,7 +12,7 @@ from django.utils.timezone import make_aware
 # Third Party
 from faker import Faker
 
-# First Party
+# Internals
 from cerberus.models import Charge, Contact, Customer, Invoice, Pet, Vet
 
 try:

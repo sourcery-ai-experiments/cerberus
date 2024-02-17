@@ -8,8 +8,8 @@ from hypothesis import given
 from hypothesis import strategies as st
 from model_bakery import baker
 
-# Locals
-from ..models import Contact
+# Internals
+from cerberus.models import Contact
 
 
 def numbers() -> Generator[str, None, None]:

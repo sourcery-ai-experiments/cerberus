@@ -1,8 +1,8 @@
 # Django
 from django.db import models
 
-# Locals
-from ..utils import choice_length
+# Internals
+from cerberus.utils import choice_length
 
 
 def test_max_length():

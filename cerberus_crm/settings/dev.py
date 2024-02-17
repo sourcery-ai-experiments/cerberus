@@ -1,8 +1,8 @@
 # Standard Library
 
-# Locals
-from .base import *  # noqa
-from .base import INSTALLED_APPS, MIDDLEWARE
+# Internals
+from cerberus_crm.settings.base import *  # noqa
+from cerberus_crm.settings.base import INSTALLED_APPS, MIDDLEWARE
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

@@ -16,14 +16,14 @@ import reversion
 from django_fsm import FSMField, Transition, transition
 from humanize import naturaldate
 
-# Locals
-from ..decorators import save_after
-from ..exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from .charge import Charge, QuantityChargeMixin
+# Internals
+from cerberus.decorators import save_after
+from cerberus.exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from cerberus.models.charge import Charge, QuantityChargeMixin
 
 if TYPE_CHECKING:
-    # Locals
-    from . import Customer, Pet, Service
+    # Internals
+    from cerberus.models import Customer, Pet, Service
 
 
 class BookingSlot(models.Model):
@@ -140,8 +140,8 @@ class Booking(models.Model):
         CANCELED = "canceled"
         COMPLETED = "completed"
 
-    STATES_MOVEABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
-    STATES_CANCELABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_MOVEABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_CANCELABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
 
     id: int
     get_all_state_transitions: Callable[[], Iterable[Transition]]

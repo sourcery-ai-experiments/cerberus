@@ -13,8 +13,8 @@ from model_bakery import baker
 from moneyed import Money
 from xhtml2pdf.context import pisaContext
 
-# Locals
-from ..models import Charge, Customer, Invoice, Payment
+# Internals
+from cerberus.models import Charge, Customer, Invoice, Payment
 
 
 @pytest.fixture
