@@ -31,7 +31,7 @@
         <div>Cost</div><div>{% money_localize booking.cost 'GBP' %}</div>
         <div>Charges</div><div>
             {% for charge in booking.charges.objects %}
-                <div>{{ charge.line }} - {{ charge.state }}</div>
+                <div>{{ charge.amount }} - {{ charge.state }}</div>
             {% empty %}
                 <div>None</div>
             {% endfor %}

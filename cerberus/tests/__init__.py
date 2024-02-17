@@ -1,8 +1,8 @@
 # Standard Library
 from decimal import Decimal
-from random import random
+from random import randint
 
 # Third Party
 from model_bakery import baker
 
-baker.generators.add("djmoney.models.fields.MoneyField", lambda: Decimal((random() * 10) + 5))
+baker.generators.add("djmoney.models.fields.MoneyField", lambda: Decimal(randint(100, 9999) / 100))

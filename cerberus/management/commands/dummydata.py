@@ -123,7 +123,7 @@ class Command(BaseCommand):
                         for _ in range(random.randrange(1, 5)):
                             service = random.choice(services)
                             charge = Charge(
-                                line=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
+                                amount=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
                             )
                             charge.save()
 

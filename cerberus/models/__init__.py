@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 # Locals
 from .address import Address
 from .booking import Booking, BookingCharge, BookingSlot
-from .charge import Charge
+from .charge import Charge, ChargeRefundError, QuantityChargeMixin
 from .contact import Contact
 from .customer import Customer
 from .invoice import Invoice, InvoiceOpen, Payment
@@ -24,6 +24,8 @@ __all__ = [
     "BookingSlot",
     "BookingCharge",
     "Charge",
+    "QuantityChargeMixin",
+    "ChargeRefundError",
     "Contact",
     "Customer",
     "Invoice",

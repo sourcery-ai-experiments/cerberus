@@ -20,3 +20,7 @@ class BookingSlotOverlaps(BookingSlotException):
 
 class InvalidEmail(Exception):
     pass
+
+
+class ChargeRefundError(Exception):
+    pass
