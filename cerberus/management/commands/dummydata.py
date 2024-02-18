@@ -12,8 +12,8 @@ from django.utils.timezone import make_aware
 # Third Party
 from faker import Faker
 
-# First Party
-from cerberus.models import Charge, Contact, Customer, Invoice, Pet, Vet
+# Locals
+from ...models import Charge, Contact, Customer, Invoice, Pet, Vet
 
 try:
     # Third Party
@@ -123,7 +123,7 @@ class Command(BaseCommand):
                         for _ in range(random.randrange(1, 5)):
                             service = random.choice(services)
                             charge = Charge(
-                                line=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
+                                amount=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
                             )
                             charge.save()
 

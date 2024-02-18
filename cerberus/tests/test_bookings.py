@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 # Third Party
 import pytest
 from model_bakery import baker
+from moneyed import Money
 
 # Locals
 from ..exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
@@ -286,4 +287,4 @@ def test_complete():
 
     assert booking == charge.booking
     assert booking.pet.customer == charge.customer
-    assert booking.cost == charge.cost
+    assert Money(booking.cost, charge.amount_currency) == charge.amount

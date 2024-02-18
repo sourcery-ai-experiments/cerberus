@@ -1,7 +1,7 @@
 # Standard Library
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Self
 
 # Django
 from django.contrib.contenttypes.fields import GenericRelation
@@ -19,7 +19,7 @@ from humanize import naturaldate
 # Locals
 from ..decorators import save_after
 from ..exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from .charge import Charge
+from .charge import Charge, QuantityChargeMixin
 
 if TYPE_CHECKING:
     # Locals
@@ -39,7 +39,7 @@ class BookingSlot(models.Model):
         unique_together = [["start", "end"]]
 
     @classmethod
-    def get_slot(cls, start: datetime, end: datetime) -> "BookingSlot":
+    def get_slot(cls, start: datetime, end: datetime) -> Self:
         try:
             slot = cls.objects.get(start=start, end=end)
         except cls.DoesNotExist:
@@ -60,7 +60,7 @@ class BookingSlot(models.Model):
     def _valid_dates(self) -> bool:
         return self.end > self.start
 
-    def get_overlapping(self) -> "QuerySet[BookingSlot]":
+    def get_overlapping(self) -> QuerySet[Self]:
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
@@ -104,11 +104,11 @@ class BookingSlot(models.Model):
         return all(id in ids for id in bookingIDs)
 
     @classmethod
-    def clean_empty_slots(cls):
+    def clean_empty_slots(cls) -> None:
         cls.objects.filter(bookings__isnull=True).delete()
 
     @property
-    def service(self) -> Optional["Service"]:
+    def service(self) -> "Service | None":
         try:
             return self.bookings.all()[0].service
         except IndexError:
@@ -140,8 +140,8 @@ class Booking(models.Model):
         CANCELED = "canceled"
         COMPLETED = "completed"
 
-    STATES_MOVEABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
-    STATES_CANCELABLE = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_MOVEABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_CANCELABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
 
     id: int
     get_all_state_transitions: Callable[[], Iterable[Transition]]
@@ -172,7 +172,7 @@ class Booking(models.Model):
         return f"{self.name} - {naturaldate(self.start)}"
 
     @property
-    def length(self):
+    def length(self) -> timedelta:
         return self.end - self.start
 
     @property
@@ -202,7 +202,7 @@ class Booking(models.Model):
     def create_charge(self) -> Charge:
         charge = BookingCharge(
             name=f"Charge for {self.name}"[:255],
-            line=self.cost,
+            amount=self.cost,
             booking=self,
             customer=self.pet.customer,
         )
@@ -287,5 +287,5 @@ class Booking(models.Model):
         return [i.name for i in self.get_available_state_transitions()]
 
 
-class BookingCharge(Charge):
+class BookingCharge(Charge, QuantityChargeMixin):
     booking = models.ForeignKey(Booking, on_delete=models.PROTECT)

@@ -9,10 +9,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-
 # Standard Library
 import datetime
 from pathlib import Path
+
+# Third Party
+from moneyed import GBP
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -183,11 +185,12 @@ SIMPLE_JWT = {
 
 TAGGIT_CASE_INSENSITIVE = True
 
-DEFAULT_CURRENCY = "GBP"
-CURRENCIES = ("GBP",)
+DEFAULT_CURRENCY = GBP
+CURRENCIES = (GBP,)
 CURRENCY_CHOICES = [
     ("GBP", "GBP £"),
 ]
+CURRENCY_DECIMAL_PLACES = 2
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "tmp"

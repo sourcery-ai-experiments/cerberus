@@ -41,7 +41,7 @@ class InvoiceManager(models.Manager["Invoice"]):
             super()
             .get_queryset()
             .annotate(
-                subtotal=Sum(F("charges__line") * F("charges__quantity")),
+                subtotal=Sum(F("charges__amount")),
                 total=F("adjustment") + F("subtotal"),
                 overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )
@@ -61,7 +61,7 @@ class Invoice(models.Model):
 
     details = models.TextField(blank=True, default="")
     due = models.DateField(blank=True, null=True, default=None)
-    adjustment = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
+    adjustment = MoneyField(max_digits=14, default=0.0)
 
     customer_name = models.CharField(max_length=255, blank=True, null=True)
     sent_to = models.CharField(max_length=255, blank=True, null=True)
@@ -248,7 +248,7 @@ class Invoice(models.Model):
 
     @property
     def subtotal(self) -> Money:
-        return Money(0, "GBP") + sum(c.total_money for c in self.charges.all())
+        return settings.DEFAULT_CURRENCY.zero + sum(c.amount for c in self.charges.all())
 
     @subtotal.setter
     def subtotal(self, value):
@@ -319,7 +319,7 @@ class InvoiceOpen(models.Model):
 
 
 class Payment(models.Model):
-    amount = MoneyField(default=0.0, max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
+    amount = MoneyField(max_digits=14, default=0.0)
     invoice: models.ForeignKey["Invoice|None"] = models.ForeignKey(
         "cerberus.Invoice",
         on_delete=models.PROTECT,
