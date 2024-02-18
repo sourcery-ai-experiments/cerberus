@@ -49,9 +49,9 @@
             {% for charge in invoice.charges.all %}
                 <tr>
                     <td>{{ charge.name }}</td>
-                    <td>{{ charge.line }}</td>
-                    <td>{{ charge.quantity }}</td>
-                    <td>{{ charge.cost }}</td>
+                    <td>{{ charge.line|default:charge.amount }}</td>
+                    <td>{{ charge.quantity|default:1 }}</td>
+                    <td>{{ charge.amount }}</td>
                 </tr>
             {% endfor %}
         </tbody>
