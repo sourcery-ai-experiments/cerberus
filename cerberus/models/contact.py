@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 # Third Party
 import reversion
 
-# Internals
-from cerberus.exceptions import InvalidEmail
+# Locals
+from ..exceptions import InvalidEmail
 
 
 @reversion.register()

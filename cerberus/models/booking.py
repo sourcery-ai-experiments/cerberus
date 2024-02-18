@@ -16,14 +16,14 @@ import reversion
 from django_fsm import FSMField, Transition, transition
 from humanize import naturaldate
 
-# Internals
-from cerberus.decorators import save_after
-from cerberus.exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from cerberus.models.charge import Charge, QuantityChargeMixin
+# Locals
+from ..decorators import save_after
+from ..exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from .charge import Charge, QuantityChargeMixin
 
 if TYPE_CHECKING:
-    # Internals
-    from cerberus.models import Customer, Pet, Service
+    # Locals
+    from . import Customer, Pet, Service
 
 
 class BookingSlot(models.Model):

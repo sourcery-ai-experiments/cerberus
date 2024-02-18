@@ -1,8 +1,8 @@
 # Django
 from django.urls import path
 
-# Internals
-from cerberus import views
+# Locals
+from .. import views
 
 urlpatterns = (
     [

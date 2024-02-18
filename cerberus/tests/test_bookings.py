@@ -11,9 +11,9 @@ import pytest
 from model_bakery import baker
 from moneyed import Money
 
-# Internals
-from cerberus.exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
-from cerberus.models import Booking, BookingSlot, Charge, Customer, Pet, Service
+# Locals
+from ..exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
+from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
 
 
 @pytest.fixture

@@ -6,8 +6,8 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-# Internals
-from cerberus import api, reports
+# Locals
+from .. import api, reports
 
 urlpatterns = [
     path("reports/", include(reports.urls)),

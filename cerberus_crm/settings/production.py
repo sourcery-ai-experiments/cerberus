@@ -5,9 +5,9 @@ import os
 # Third Party
 import dj_database_url
 
-# Internals
-from cerberus_crm.settings.base import *  # noqa
-from cerberus_crm.settings.base import DATABASES, MIDDLEWARE
+# Locals
+from .base import *  # noqa
+from .base import DATABASES, MIDDLEWARE
 
 DEBUG = False
 

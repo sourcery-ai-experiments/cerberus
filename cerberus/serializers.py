@@ -11,8 +11,8 @@ from djmoney.contrib.django_rest_framework import MoneyField
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
-# Internals
-from cerberus.models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
+# Locals
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
 
 default_read_only = [
     "id",

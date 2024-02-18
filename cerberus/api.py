@@ -22,11 +22,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from taggit.models import Tag
 
-# Internals
-from cerberus.filters import BookingFilter, CustomerFilter, InvoiceFilter, PetFilter
-from cerberus.models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
-from cerberus.permissions import IsUsers
-from cerberus.serializers import (
+# Locals
+from .filters import BookingFilter, CustomerFilter, InvoiceFilter, PetFilter
+from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, Invoice, Pet, Service, UserSettings, Vet
+from .permissions import IsUsers
+from .serializers import (
     AddressSerializer,
     BookingMoveSerializer,
     BookingSerializer,

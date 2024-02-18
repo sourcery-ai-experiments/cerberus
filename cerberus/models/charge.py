@@ -14,13 +14,13 @@ from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
 
-# Internals
-from cerberus.decorators import save_after
-from cerberus.exceptions import ChargeRefundError
+# Locals
+from ..decorators import save_after
+from ..exceptions import ChargeRefundError
 
 if TYPE_CHECKING:
-    # Internals
-    from cerberus.models import Customer, Invoice
+    # Locals
+    from . import Customer, Invoice
 
 
 @reversion.register()

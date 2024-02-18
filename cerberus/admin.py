@@ -4,8 +4,8 @@ from django.contrib import admin
 # Third Party
 from fsm_admin2.admin import FSMTransitionMixin
 
-# Internals
-from cerberus.models import (
+# Locals
+from .models import (
     Address,
     Booking,
     BookingSlot,

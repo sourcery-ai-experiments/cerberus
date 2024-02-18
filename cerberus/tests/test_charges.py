@@ -6,9 +6,9 @@ from decimal import Decimal
 import pytest
 from model_bakery import baker
 
-# Internals
-from cerberus.exceptions import ChargeRefundError
-from cerberus.models import Charge
+# Locals
+from ..exceptions import ChargeRefundError
+from ..models import Charge
 
 
 @pytest.fixture

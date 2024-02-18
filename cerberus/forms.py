@@ -4,8 +4,8 @@ from django import forms
 # Third Party
 from djmoney.forms import MoneyWidget
 
-# Internals
-from cerberus.models import Booking, BookingCharge, Customer, Invoice, Pet, Vet
+# Locals
+from .models import Booking, BookingCharge, Customer, Invoice, Pet, Vet
 
 
 class SingleMoneyWidget(MoneyWidget):

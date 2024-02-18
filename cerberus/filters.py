@@ -9,8 +9,8 @@ from django.db.models.functions import Concat
 # Third Party
 from django_filters import rest_framework as filters
 
-# Internals
-from cerberus.models import Booking, Customer, Invoice, Pet, Vet
+# Locals
+from .models import Booking, Customer, Invoice, Pet, Vet
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 

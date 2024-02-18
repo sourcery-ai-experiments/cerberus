@@ -7,8 +7,8 @@ from collections.abc import Generator
 import pytest
 from model_bakery import baker
 
-# Internals
-from cerberus.models import Customer
+# Locals
+from ..models import Customer
 
 
 @pytest.fixture

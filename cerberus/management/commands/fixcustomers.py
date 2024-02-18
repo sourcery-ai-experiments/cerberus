@@ -4,9 +4,9 @@ from collections import Counter
 # Django
 from django.core.management.base import BaseCommand
 
-# Internals
-from cerberus.exceptions import InvalidEmail
-from cerberus.models import Contact, Customer
+# Locals
+from ...exceptions import InvalidEmail
+from ...models import Contact, Customer
 
 
 class Command(BaseCommand):

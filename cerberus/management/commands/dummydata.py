@@ -12,8 +12,8 @@ from django.utils.timezone import make_aware
 # Third Party
 from faker import Faker
 
-# Internals
-from cerberus.models import Charge, Contact, Customer, Invoice, Pet, Vet
+# Locals
+from ...models import Charge, Contact, Customer, Invoice, Pet, Vet
 
 try:
     # Third Party
