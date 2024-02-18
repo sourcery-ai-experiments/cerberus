@@ -108,14 +108,14 @@ class BookingSlot(models.Model):
         cls.objects.filter(bookings__isnull=True).delete()
 
     @property
-    def service(self) -> Service | None:
+    def service(self) -> "Service | None":
         try:
             return self.bookings.all()[0].service
         except IndexError:
             return None
 
     @property
-    def pets(self) -> set[Pet]:
+    def pets(self) -> set["Pet"]:
         return {b.pet for b in self.bookings.all()}
 
     @property
@@ -123,7 +123,7 @@ class BookingSlot(models.Model):
         return len(self.pets)
 
     @property
-    def customers(self) -> set[Customer]:
+    def customers(self) -> set["Customer"]:
         return {b.pet.customer for b in self.bookings.all()}
 
     @property
