@@ -117,15 +117,18 @@ class Command(BaseCommand):
                             customer.save()
 
                         adjustment = random.choice([0, 0, 0, 0, 0, random.choice([2, 10, 12.5, 20])])
-                        invoice: Invoice = Invoice.objects.create(customer=customer, adjustment=adjustment)
-                        invoice.save()
+                        invoice: Invoice = Invoice.objects.create(
+                            customer=customer,
+                            adjustment=adjustment,
+                        )
 
                         for _ in range(random.randrange(1, 5)):
                             service = random.choice(services)
-                            charge = Charge(
-                                amount=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
+                            Charge.objects.create(
+                                amount=service["cost"],
+                                name=service["name"],
+                                invoice=invoice,
                             )
-                            charge.save()
 
                         stage = random.randrange(1, 5)
                         if stage >= 1:
