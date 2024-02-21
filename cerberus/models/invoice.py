@@ -41,7 +41,7 @@ class InvoiceManager(models.Manager["Invoice"]):
             super()
             .get_queryset()
             .annotate(
-                subtotal=Sum(F("charges__line") * F("charges__quantity")),
+                subtotal=Sum(F("charges__amount")),
                 total=F("adjustment") + F("subtotal"),
                 overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )

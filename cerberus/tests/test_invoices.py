@@ -27,6 +27,7 @@ def invoice(customer) -> Generator[Invoice, None, None]:
     invoice: Invoice = baker.make(Invoice, customer=customer, adjustment=0.0)
     for i in range(3):
         baker.make(Charge, name=f"line {i}", line=10, invoice=invoice)
+
     yield invoice
 
 

@@ -287,6 +287,4 @@ def test_complete():
 
     assert booking == charge.booking
     assert booking.pet.customer == charge.customer
-
-    amount = charge.amount
-    assert Money(booking.cost, charge.line_currency) == amount
+    assert Money(booking.cost, charge.line_currency) == charge.amount

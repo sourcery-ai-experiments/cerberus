@@ -132,10 +132,37 @@ class Charge(PolymorphicModel):
     def save(self, *args, **kwargs):
         if self.invoice and not self.invoice.can_edit:
             allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
-            excluded = ("name", "line", "quantity", "customer")
+            excluded = ("name", "amount", "customer")
             kwargs["update_fields"] = allFields.difference(excluded)
 
         if self.customer is None and self.invoice is not None:
             self.customer = self.invoice.customer
 
         return super().save(*args, **kwargs)
+
+
+class QuantityChargeMixin(models.Model):
+    quantity = models.IntegerField(default=1)
+    amount: Money
+    amount_currency: str
+
+    class Meta:
+        abstract = True
+
+    def __init__(self, *args, **kwargs):
+        if "line" in kwargs:
+            kwargs["amount"] = kwargs.pop("line") * kwargs.get("quantity", 1)
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def line(self) -> Money:
+        return Money(self.amount / self.quantity, self.amount_currency)
+
+    @line.setter
+    def line(self, value: Money | Decimal | int | float) -> None:
+        self.amount = Money(value * self.quantity, self.amount_currency)
+
+
+class QuantityCharge(QuantityChargeMixin, Charge):
+    pass

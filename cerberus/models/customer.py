@@ -31,7 +31,7 @@ class CustomerManager(models.Manager["Customer"]):
             .annotate(
                 invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
                 + Sum(
-                    (F("invoices__charges__line") * F("invoices__charges__quantity")),
+                    F("invoices__charges__amount"),
                     filter=Q(invoices__state=Invoice.States.UNPAID.value),
                     default=0,
                 ),

@@ -19,7 +19,7 @@ from humanize import naturaldate
 # Locals
 from ..decorators import save_after
 from ..exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
-from .charge import Charge
+from .charge import Charge, QuantityChargeMixin
 
 if TYPE_CHECKING:
     # Locals
@@ -202,7 +202,7 @@ class Booking(models.Model):
     def create_charge(self) -> Charge:
         charge = BookingCharge(
             name=f"Charge for {self.name}"[:255],
-            line=self.cost,
+            amount=self.cost,
             booking=self,
             customer=self.pet.customer,
         )
@@ -287,5 +287,5 @@ class Booking(models.Model):
         return [i.name for i in self.get_available_state_transitions()]
 
 
-class BookingCharge(Charge):
+class BookingCharge(Charge, QuantityChargeMixin):
     booking = models.ForeignKey(Booking, on_delete=models.PROTECT)

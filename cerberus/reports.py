@@ -7,8 +7,8 @@ from django.urls import path
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# First Party
-from cerberus.models import Invoice
+# Locals
+from .models import Invoice
 
 
 class BaseInvoiceReport(APIView):
@@ -26,7 +26,7 @@ class InvoicePerWeek(BaseInvoiceReport):
             .values("year", "week")
             .annotate(count=Count("id"))
             .annotate(
-                subtotal=Sum(F("charges__line") * F("charges__quantity")),
+                subtotal=Sum(F("charges__amount")),
                 total=Sum("adjustment") + F("subtotal"),
             )
             .order_by("week")

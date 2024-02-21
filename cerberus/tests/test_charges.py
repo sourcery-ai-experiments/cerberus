@@ -17,12 +17,12 @@ def charge() -> Generator[Charge, None, None]:
 
 
 def test_str():
-    charge = baker.prepare(Charge, name="Test Charge", line=10)
+    charge = baker.prepare(Charge, name="Test Charge", amount=10)
     assert f"{charge}" == "Test Charge - £10.00"
 
 
 def test_transitions():
-    charge = baker.prepare(Charge, name="Test Charge", line=1000)
+    charge = baker.prepare(Charge, name="Test Charge", amount=1000)
     transitions = list(charge.get_all_state_transitions())
 
     valid_transitions = {
