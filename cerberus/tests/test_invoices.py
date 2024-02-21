@@ -1,6 +1,10 @@
 # Standard Library
 from collections.abc import Generator
 from datetime import date, timedelta
+from decimal import Decimal
+
+# Django
+from django.conf import settings
 
 # Third Party
 import pytest
@@ -22,7 +26,7 @@ def customer() -> Generator[Customer, None, None]:
 def invoice(customer) -> Generator[Invoice, None, None]:
     invoice: Invoice = baker.make(Invoice, customer=customer, adjustment=0.0)
     for i in range(3):
-        baker.make(Charge, name=f"line {i}", line=10, quantity=i, invoice=invoice)
+        baker.make(Charge, name=f"line {i}", line=10, invoice=invoice)
     yield invoice
 
 
@@ -115,7 +119,7 @@ def test_available_state_transitions(invoice: Invoice):
 
 @pytest.mark.django_db
 def test_loaded_total_with_adjustment(invoice: Invoice):
-    invoice.adjustment = 10
+    invoice.adjustment = Decimal(10)
     invoice.save()
     loaded_invoice = Invoice.objects.get(pk=invoice.pk)
     assert loaded_invoice.total.amount == invoice.total.amount
@@ -151,7 +155,7 @@ def test_create_partial_payments(invoice: Invoice):
 
     baker.make(Payment, invoice=invoice, amount=invoice.total / 2)
 
-    assert invoice.paid > Money(0, "GBP")
+    assert invoice.paid > Money(0, settings.DEFAULT_CURRENCY)
     assert invoice.paid < invoice.total
 
     invoice.pay()
@@ -172,13 +176,13 @@ def test_totals_match():
 
         invoice.send(send_email=False)
 
-    total_totals = Money(0, "GBP")
+    total_totals = settings.DEFAULT_CURRENCY.zero
     for customer in Customer.objects.all():
-        total = Money(0, "GBP")
+        total = settings.DEFAULT_CURRENCY.zero
         for invoice in customer.invoices.all():
             total += invoice.total
 
         assert customer.invoiced_unpaid == total
         total_totals += total
 
-    assert total_totals > Money(0, "GBP")
+    assert total_totals > settings.DEFAULT_CURRENCY.zero

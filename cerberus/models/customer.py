@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 # Django
+from django.conf import settings
 from django.db import models
 from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import Concat
@@ -102,7 +103,7 @@ class Customer(models.Model):
 
     @invoiced_unpaid.setter
     def invoiced_unpaid(self, value):
-        self._invoiced_unpaid = Money(value, "GBP")
+        self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
     @property
     def issues(self):

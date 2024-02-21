@@ -1,6 +1,7 @@
 # Standard Library
 from collections.abc import Callable, Iterable
-from typing import TYPE_CHECKING
+from decimal import Decimal
+from typing import TYPE_CHECKING, Self
 
 # Django
 from django.db import models
@@ -15,6 +16,7 @@ from polymorphic.models import PolymorphicModel
 
 # Locals
 from ..decorators import save_after
+from ..exceptions import ChargeRefundError
 
 if TYPE_CHECKING:
     # Locals
@@ -27,7 +29,7 @@ class Charge(PolymorphicModel):
         UNPAID = "unpaid"
         PAID = "paid"
         VOID = "void"
-        REFUNDED = "refunded"
+        REFUND = "refund"
 
     id: int
     get_all_state_transitions: Callable[[], Iterable[Transition]]
@@ -38,11 +40,20 @@ class Charge(PolymorphicModel):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     name = models.CharField(max_length=255)
-    line = MoneyField(max_digits=14, decimal_places=2, default_currency="GBP")  # type: ignore
+    line = MoneyField(max_digits=14)
     quantity = models.IntegerField(default=1)
 
     state = FSMField(default=States.UNPAID.value, choices=States.choices, protected=True)  # type: ignore
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)  # type: ignore
+
+    parent_charge: models.ForeignKey["Charge|None"] = models.ForeignKey(
+        "self",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        default=None,
+        related_name="child_charges",
+    )
 
     customer: models.ForeignKey["Customer|None"] = models.ForeignKey(
         "cerberus.Customer",
@@ -63,25 +74,13 @@ class Charge(PolymorphicModel):
         ordering = ("created",)
 
     def __str__(self) -> str:
-        return f"{self.name} - {self.total_money}"
+        return f"{self.name} - {self.amount}"
 
     def __float__(self) -> float:
         return float(self.cost)
 
     def __add__(self, other) -> Money:
         return self.cost + other.cost if isinstance(other, Charge) else NotImplemented
-
-    @property
-    def total_money(self):
-        return self.line * self.quantity
-
-    @property
-    def cost(self):
-        return self.line.amount * self.quantity
-
-    @cost.setter
-    def set_cost(self, value):
-        self.line = value / self.quantity
 
     @save_after
     @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
@@ -93,13 +92,42 @@ class Charge(PolymorphicModel):
     def void(self) -> None:
         self.invoice = None
 
-    @save_after
-    @transition(field=state, source=States.PAID.value, target=States.REFUNDED.value)
-    def refund(self) -> None:
-        pass
+    def get_refunds(self) -> Iterable[Self]:
+        return self.__class__.objects.filter(parent_charge=self, state=self.States.REFUND.value)
 
-    def delete(self) -> None:
+    def refund(self, amount: Money | Decimal | int | float | None = None) -> Self:
+        refunded = sum((refund.amount for refund in self.get_refunds()), Money(0, self.amount_currency))
+
+        if refunded >= self.amount:
+            raise ChargeRefundError("Charge has already been refunded in full")
+
+        refundable = self.amount - (-refunded)
+        amount = amount or refundable
+        if not isinstance(amount, Money):
+            amount = Money(amount, self.amount_currency)
+
+        if amount > refundable:
+            raise ChargeRefundError("Refund amount exceeds the refundable amount")
+
+        return self.__class__.objects.create(
+            name=f"{self.name} - Refund",
+            line=-amount,
+            parent_charge=self,
+            customer=self.customer,
+            invoice=None,
+            state=self.States.REFUND.value,
+        )
+
+    def delete(self, using=None, keep_parents=False) -> None:
         return self.void()
+
+    @property
+    def amount(self) -> Money:
+        return self.line * self.quantity
+
+    @property
+    def amount_currency(self) -> str:
+        return self.line_currency
 
     def save(self, *args, **kwargs):
         if self.invoice and not self.invoice.can_edit:
