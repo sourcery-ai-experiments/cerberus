@@ -123,7 +123,7 @@ class Charge(PolymorphicModel):
 
     @property
     def amount(self) -> Money:
-        return self.line * self.quantity
+        return self.line * self.quantity  # type: ignore
 
     @property
     def amount_currency(self) -> str:
