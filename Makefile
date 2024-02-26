@@ -10,8 +10,8 @@ CSS_FILES:=$(shell find assets -name *.css)
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
 WHEEL_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/wheel
-PIP_SYNC_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip-sync
 PRE_COMMIT_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pre-commit
+UV_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/uv
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -31,13 +31,13 @@ pyproject.toml:
 	curl https://gist.githubusercontent.com/bengosney/f703f25921628136f78449c32d37fcb5/raw/pyproject.toml > $@
 	@touch $@
 
-requirements.%.txt: $(PIP_SYNC_PATH) pyproject.toml
+requirements.%.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q --extra $* -o $@ $(filter-out $<,$^)
+	$(UV_PATH) pip compile --generate-hashes --extra $* $(filter-out $<,$^) > $@
 
-requirements.txt: $(PIP_SYNC_PATH) pyproject.toml
+requirements.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
-	@python -m piptools compile --generate-hashes -q $(filter-out $<,$^)
+	uv pip compile --generate-hashes $(filter-out $<,$^) > $@
 
 .direnv: .envrc
 	@python -m ensurepip
@@ -60,8 +60,8 @@ $(PIP_PATH):
 $(WHEEL_PATH): $(PIP_PATH)
 	@python -m pip install wheel
 
-$(PIP_SYNC_PATH): $(PIP_PATH) $(WHEEL_PATH)
-	@python -m pip install pip-tools
+$(UV_PATH): $(PIP_PATH) $(WHEEL_PATH)
+	@python -m pip install uv
 
 $(PRE_COMMIT_PATH): $(PIP_PATH) $(WHEEL_PATH)
 	@python -m pip install pre-commit
@@ -89,6 +89,6 @@ watch-css: ## Watch and build the css
 		$(MAKE) css; \
 	done
 
-install: $(PIP_SYNC_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
+install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
-	@python -m piptools sync requirements.txt $(filter-out $<,$^)
+	$(UV_PATH) pip sync $(filter-out $<,$^)
