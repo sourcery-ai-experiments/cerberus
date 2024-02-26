@@ -61,8 +61,8 @@ dev = [
     "pytest-django-queries",
     "pytest-freezegun",
     "setuptools_scm",
-    "sourcery-cli",
     "graphviz",
+    "ruff",
 ]
 
 [project.urls]
