@@ -12,8 +12,8 @@ from django.utils.timezone import make_aware
 # Third Party
 from faker import Faker
 
-# First Party
-from cerberus.models import Charge, Contact, Customer, Invoice, Pet, Vet
+# Locals
+from ...models import Charge, Contact, Customer, Invoice, Pet, Vet
 
 try:
     # Third Party
@@ -105,7 +105,9 @@ class Command(BaseCommand):
                 start = date - timedelta(days=date.weekday())
                 end = start + timedelta(days=6)
 
-                invoice_count = Invoice.objects.filter(created__gte=make_aware(start), created__lte=make_aware(end)).count()
+                invoice_count = Invoice.objects.filter(
+                    created__gte=make_aware(start), created__lte=make_aware(end)
+                ).count()
 
                 with freeze_time(date):
                     for _ in range(invoice_per_week - invoice_count):
@@ -123,7 +125,10 @@ class Command(BaseCommand):
                         for _ in range(random.randrange(1, 5)):
                             service = random.choice(services)
                             charge = Charge(
-                                line=service["cost"], quantity=random.randrange(1, 5), name=service["name"], invoice=invoice
+                                line=service["cost"],
+                                quantity=random.randrange(1, 5),
+                                name=service["name"],
+                                invoice=invoice,
                             )
                             charge.save()
 

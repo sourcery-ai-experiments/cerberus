@@ -38,6 +38,9 @@ class BookingSlot(models.Model):
     class Meta:
         unique_together = [["start", "end"]]
 
+    def __str__(self) -> str:
+        return f"{self.id}: {self.start} - {self.end}"
+
     @classmethod
     def get_slot(cls, start: datetime, end: datetime) -> Self:
         try:
@@ -53,9 +56,6 @@ class BookingSlot(models.Model):
         dt = dt - timedelta(minutes=dt.minute % 10, seconds=dt.second, microseconds=dt.microsecond)
 
         return make_aware(dt)
-
-    def __str__(self) -> str:
-        return f"{self.id}: {self.start} - {self.end}"
 
     def _valid_dates(self) -> bool:
         return self.end > self.start
@@ -171,6 +171,18 @@ class Booking(models.Model):
     def __str__(self) -> str:
         return f"{self.name} - {naturaldate(self.start)}"
 
+    def save(self, *args, **kwargs) -> None:
+        self.name = f"{self.pet.name}, {self.service.name}"
+
+        with transaction.atomic():
+            if self.pk is None and getattr(self, "_booking_slot", None) is None:
+                self._booking_slot = self._get_new_booking_slot()
+
+            if self._booking_slot is not None:
+                self._booking_slot.save()
+
+            super().save(*args, **kwargs)
+
     @property
     def length(self) -> timedelta:
         return self.end - self.start
@@ -186,18 +198,6 @@ class Booking(models.Model):
     @booking_slot.setter
     def booking_slot(self, value: BookingSlot) -> None:
         self._booking_slot = value
-
-    def save(self, *args, **kwargs) -> None:
-        self.name = f"{self.pet.name}, {self.service.name}"
-
-        with transaction.atomic():
-            if self.pk is None and getattr(self, "_booking_slot", None) is None:
-                self._booking_slot = self._get_new_booking_slot()
-
-            if self._booking_slot is not None:
-                self._booking_slot.save()
-
-            super().save(*args, **kwargs)
 
     def create_charge(self) -> Charge:
         charge = BookingCharge(

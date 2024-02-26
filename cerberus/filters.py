@@ -92,6 +92,10 @@ class VetFilter(FilterDefaults):
         fields = ["name"]
 
     def customer_name_filter(self, queryset, name, value):
-        return queryset.annotate(customers__name=Concat("customers__first_name", Value(" "), "customers__last_name")).filter(
-            customers__name__contains=value
-        )
+        return queryset.annotate(
+            customers__name=Concat(
+                "customers__first_name",
+                Value(" "),
+                "customers__last_name",
+            ),
+        ).filter(customers__name__contains=value)

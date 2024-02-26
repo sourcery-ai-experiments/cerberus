@@ -38,6 +38,13 @@ class Contact(models.Model):
         related_name="contacts",
     )
 
+    class Meta:
+        ordering = ("-created",)
+        unique_together = ("name", "customer")
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
     @property
     def type(self) -> Type:
         details: str = self.details or ""
@@ -52,13 +59,6 @@ class Contact(models.Model):
             return self.Type.PHONE
 
         return self.Type.UNKNOWN
-
-    class Meta:
-        ordering = ("-created",)
-        unique_together = ("name", "customer")
-
-    def __str__(self) -> str:
-        return f"{self.name}"
 
     def set_as_invoice(self):
         if self.type != self.Type.EMAIL:

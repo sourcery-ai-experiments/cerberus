@@ -47,7 +47,9 @@ class Pet(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
-    social_media_concent = models.CharField(default=Social.YES, choices=Social.choices, max_length=choice_length(Social))
+    social_media_concent = models.CharField(
+        default=Social.YES, choices=Social.choices, max_length=choice_length(Social)
+    )
     sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))
     description = models.TextField(blank=True, default="")
     neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))

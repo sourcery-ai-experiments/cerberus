@@ -90,6 +90,24 @@ class Invoice(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def save(self, *args, **kwargs) -> None:
+        if not self.can_edit:
+            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
+            excluded = (
+                "invoice",
+                "details",
+                "sent_to",
+                "adjustment",
+                "adjustment_currency",
+                "customer_name",
+                "due",
+                "adjustment",
+            )
+            kwargs["update_fields"] = allFields.difference(excluded)
+        self._can_edit = False
+
+        super().save(*args, **kwargs)
+
     def can_send(self) -> bool:
         return self.customer is not None and len(self.customer.issues) == 0
 
@@ -230,7 +248,7 @@ class Invoice(models.Model):
         mRoot = settings.MEDIA_ROOT
 
         if result := finders.find(uri):
-            if not isinstance(result, (list, tuple)):
+            if not isinstance(result, list | tuple):
                 result = [result]
             result = [os.path.realpath(path) for path in result]
             path = result[0]
@@ -292,30 +310,15 @@ class Invoice(models.Model):
         o = InvoiceOpen(invoice=self)
         return o.save()
 
-    def save(self, *args, **kwargs) -> None:
-        if not self.can_edit:
-            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
-            excluded = (
-                "invoice",
-                "details",
-                "sent_to",
-                "adjustment",
-                "adjustment_currency",
-                "customer_name",
-                "due",
-                "adjustment",
-            )
-            kwargs["update_fields"] = allFields.difference(excluded)
-        self._can_edit = False
-
-        super().save(*args, **kwargs)
-
 
 class InvoiceOpen(models.Model):
     opened = models.DateTimeField(auto_now_add=True, editable=False)
     invoice: models.ForeignKey["Invoice"] = models.ForeignKey(
         "cerberus.Invoice", on_delete=models.CASCADE, related_name="opens"
     )
+
+    def __str__(self) -> str:
+        return f"{self.invoice} opened at {self.opened}"
 
 
 class Payment(models.Model):
