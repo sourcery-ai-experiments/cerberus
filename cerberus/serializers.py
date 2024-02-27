@@ -293,7 +293,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
             except KeyError:
                 charge = None
 
-            charge_serializer = ChargeSerializer(data=charge_data, instance=charge)
+            charge_serializer: ChargeSerializer = ChargeSerializer(data=charge_data, instance=charge)
             if charge_serializer.is_valid():
                 charge = charge_serializer.save()
                 charge.invoice = invoice
@@ -319,7 +319,7 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
             charge_data.invoice = invoice
             charge_data.customer = invoice.customer
 
-            charge_serializer = ChargeSerializer(data=charge_data)
+            charge_serializer: ChargeSerializer = ChargeSerializer(data=charge_data)
             if charge_serializer.is_valid():
                 charge = charge_serializer.save()
                 charge.invoice = invoice

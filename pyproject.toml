@@ -47,6 +47,7 @@ dev = [
     "django-stubs",
     "django-browser-reload",
     "django-debug-toolbar",
+    "djangorestframework-stubs",
     "hypothesis[django]",
     "icecream",
     "mypy",
@@ -60,6 +61,7 @@ dev = [
     "pytest-django",
     "pytest-django-queries",
     "pytest-freezegun",
+    "types-python-dateutil",
     "setuptools_scm",
     "graphviz",
     "ruff",
@@ -80,7 +82,7 @@ build-backend = "setuptools.build_meta"
 cerberus = ["templates/cerberus/*.html", "templates/cerberus/*.svg"]
 
 [tool.mypy]
-plugins = ["mypy_django_plugin.main"]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 check_untyped_defs = true
 disallow_any_generics = true
 disallow_untyped_calls = true
