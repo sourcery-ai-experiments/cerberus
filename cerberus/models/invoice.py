@@ -92,7 +92,7 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         if not self.can_edit:
-            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
+            all_fields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
             excluded = (
                 "invoice",
                 "details",
@@ -103,7 +103,7 @@ class Invoice(models.Model):
                 "due",
                 "adjustment",
             )
-            kwargs["update_fields"] = allFields.difference(excluded)
+            kwargs["update_fields"] = all_fields.difference(excluded)
         self._can_edit = False
 
         super().save(*args, **kwargs)
@@ -141,9 +141,9 @@ class Invoice(models.Model):
             "description": "Created",
             "by": None,
         }
-        createdLog = StateLog(**created)
+        created_log = StateLog(**created)
 
-        return [createdLog] + list(StateLog.objects.for_(self))  # type: ignore
+        return [created_log] + list(StateLog.objects.for_(self))  # type: ignore
 
     @save_after
     @transition(
@@ -193,7 +193,7 @@ class Invoice(models.Model):
         )
 
         dest = io.BytesIO()
-        results = self.get_pdf(renderTo=dest)
+        results = self.get_pdf(render_to=dest)
         if (err := getattr(results, "err", 0)) > 0:
             raise Exception(err)
 
@@ -242,26 +242,26 @@ class Invoice(models.Model):
         """Convert HTML URIs to absolute system paths so xhtml2pdf can access
         those resources."""
 
-        sUrl = settings.STATIC_URL
-        sRoot = settings.STATIC_ROOT
-        mUrl = settings.MEDIA_URL
-        mRoot = settings.MEDIA_ROOT
+        static_url = settings.STATIC_URL
+        static_root = settings.STATIC_ROOT
+        media_url = settings.MEDIA_URL
+        media_root = settings.MEDIA_ROOT
 
         if result := finders.find(uri):
             if not isinstance(result, list | tuple):
                 result = [result]
             result = [os.path.realpath(path) for path in result]
             path = result[0]
-        elif uri.startswith(mUrl):
-            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-        elif uri.startswith(sUrl):
-            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        elif uri.startswith(media_url):
+            path = os.path.join(media_root, uri.replace(media_url, ""))
+        elif uri.startswith(static_url):
+            path = os.path.join(static_root, uri.replace(static_url, ""))
         else:
             return uri
 
         # make sure that file exists
         if not os.path.isfile(path):
-            raise Exception(f"media URI must start with {sUrl} or {mUrl}")
+            raise Exception(f"media URI must start with {static_url} or {media_url}")
         return path
 
     @property
@@ -277,10 +277,10 @@ class Invoice(models.Model):
         return self.subtotal + self.adjustment
 
     @total.setter
-    def total(self, value):
+    def total(self, _value):
         pass
 
-    def get_pdf(self, renderTo=None) -> pisaContext:
+    def get_pdf(self, render_to=None) -> pisaContext:
         template_path = "cerberus/invoice.html"
         context = {
             "invoice": self,
@@ -289,7 +289,7 @@ class Invoice(models.Model):
         template = get_template(template_path)
         html = template.render(context)
 
-        pdf = pisa.CreatePDF(html, dest=renderTo, link_callback=self.link_callback)
+        pdf = pisa.CreatePDF(html, dest=render_to, link_callback=self.link_callback)
 
         if not isinstance(pdf, pisaContext) or pdf.err > 0:
             raise Exception("Unable to create PDF")
@@ -302,7 +302,7 @@ class Invoice(models.Model):
             headers={"Content-Disposition": f'attachment; filename="{self.name}.pdf"'},
         )
 
-        self.get_pdf(renderTo=response)
+        self.get_pdf(render_to=response)
 
         return response
 

@@ -131,9 +131,9 @@ class Charge(PolymorphicModel):
 
     def save(self, *args, **kwargs):
         if self.invoice and not self.invoice.can_edit:
-            allFields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
+            all_fields = {f.name for f in self._meta.concrete_fields if not f.primary_key}
             excluded = ("name", "line", "quantity", "customer")
-            kwargs["update_fields"] = allFields.difference(excluded)
+            kwargs["update_fields"] = all_fields.difference(excluded)
 
         if self.customer is None and self.invoice is not None:
             self.customer = self.invoice.customer

@@ -18,7 +18,7 @@ from humanize import naturaldate
 
 # Locals
 from ..decorators import save_after
-from ..exceptions import BookingSlotIncorectService, BookingSlotMaxCustomers, BookingSlotMaxPets, BookingSlotOverlaps
+from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
 from .charge import Charge
 
 if TYPE_CHECKING:
@@ -99,9 +99,9 @@ class BookingSlot(models.Model):
 
         return True
 
-    def contains_all(self, bookingIDs: list[int]) -> bool:
+    def contains_all(self, booking_ids: list[int]) -> bool:
         ids = [b.id for b in self.bookings.all()]
-        return all(id in ids for id in bookingIDs)
+        return all(id in ids for id in booking_ids)
 
     @classmethod
     def clean_empty_slots(cls) -> None:
@@ -214,19 +214,19 @@ class Booking(models.Model):
         slot = BookingSlot.get_slot(self.start, self.end)
 
         if slot.service != self.service and slot.service is not None:
-            raise BookingSlotIncorectService("Incorect Service")
+            raise IncorectServiceError("Incorect Service")
 
         if slot.customer_count >= self.service.max_customer and self.pet.customer not in slot.customers:
-            raise BookingSlotMaxCustomers("Max customers")
+            raise MaxCustomersError("Max customers")
 
         if slot.pet_count >= self.service.max_pet:
-            raise BookingSlotMaxPets("Max pets")
+            raise MaxPetsError("Max pets")
 
         if slot.overlaps():
             overlaps = slot.get_overlapping()
 
             if not all(all(b.id == self.id for b in o.bookings.all()) for o in overlaps):
-                raise BookingSlotOverlaps("Overlaps another slot")
+                raise SlotOverlapsError("Overlaps another slot")
 
         return slot
 

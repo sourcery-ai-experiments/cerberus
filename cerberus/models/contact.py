@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 import reversion
 
 # Locals
-from ..exceptions import InvalidEmail
+from ..exceptions import InvalidEmailError
 
 
 @reversion.register()
@@ -62,7 +62,7 @@ class Contact(models.Model):
 
     def set_as_invoice(self):
         if self.type != self.Type.EMAIL:
-            raise InvalidEmail("Can only set email as invoice email")
+            raise InvalidEmailError("Can only set email as invoice email")
 
         self.customer.invoice_email = self.details
         return self.customer.save()

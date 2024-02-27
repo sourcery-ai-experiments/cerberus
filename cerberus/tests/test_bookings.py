@@ -12,7 +12,7 @@ from model_bakery import baker
 from moneyed import Money
 
 # Locals
-from ..exceptions import BookingSlotMaxCustomers, BookingSlotMaxPets
+from ..exceptions import MaxCustomersError, MaxPetsError
 from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
 
 
@@ -121,9 +121,9 @@ def test_get_existing_slot():
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=1)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=3)),
     )
-    sameSlot = BookingSlot.get_slot(start=slot.start, end=slot.end)
+    same_slot = BookingSlot.get_slot(start=slot.start, end=slot.end)
 
-    assert sameSlot.id == slot.id
+    assert same_slot.id == slot.id
 
 
 @pytest.mark.django_db
@@ -135,8 +135,8 @@ def test_no_duplicates():
     )
 
     with pytest.raises(IntegrityError):
-        emptySlot = BookingSlot(start=slot.start, end=slot.end)
-        emptySlot.save()
+        empty_slot = BookingSlot(start=slot.start, end=slot.end)
+        empty_slot.save()
 
 
 @pytest.mark.django_db
@@ -239,7 +239,7 @@ def test_max_pet_booking(make_booking):
     make_booking()
     make_booking()
 
-    with pytest.raises(BookingSlotMaxPets):
+    with pytest.raises(MaxPetsError):
         make_booking()
 
 
@@ -249,7 +249,7 @@ def test_max_customer_booking(make_booking, make_pet):
     make_booking(pet=make_pet(customer=baker.make(Customer)))
     make_booking(pet=make_pet(customer=baker.make(Customer)))
 
-    with pytest.raises(BookingSlotMaxCustomers):
+    with pytest.raises(MaxCustomersError):
         make_booking(pet=make_pet(customer=baker.make(Customer)))
 
 

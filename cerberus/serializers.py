@@ -50,7 +50,7 @@ class EnumSerializer(serializers.Serializer):
 
 
 class NestedObjectSerializer:
-    def fixNestedObject(self, attrs, name, model, required=True, id_name=None):
+    def fix_nested_object(self, attrs, name, model, required=True, id_name=None):
         id_name = id_name if id_name is not None else f"{name}_id"
 
         if not required:
@@ -103,7 +103,7 @@ class ContactSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
         read_only_fields = default_read_only
 
     def validate(self, attrs):
-        attrs = self.fixNestedObject(attrs, "customer", Customer)
+        attrs = self.fix_nested_object(attrs, "customer", Customer)
 
         return super().validate(attrs)
 
@@ -206,8 +206,8 @@ class PetSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedObject
         depth = 1
 
     def validate(self, attrs):
-        attrs = self.fixNestedObject(attrs, "customer", Customer)
-        attrs = self.fixNestedObject(attrs, "vet", Vet, False)
+        attrs = self.fix_nested_object(attrs, "customer", Customer)
+        attrs = self.fix_nested_object(attrs, "vet", Vet, False)
 
         return super().validate(attrs)
 
@@ -249,7 +249,7 @@ class CustomerSerializer(TaggitSerializer, DynamicFieldsModelSerializer, NestedO
         depth = 0
 
     def validate(self, attrs):
-        attrs = self.fixNestedObject(attrs, "vet", Vet, False)
+        attrs = self.fix_nested_object(attrs, "vet", Vet, False)
 
         return super().validate(attrs)
 
@@ -275,27 +275,27 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
         if self.instance and not getattr(self.instance, "can_edit", True):
             raise serializers.ValidationError("Only draft invoices can be edited")
 
-        attrs = self.fixNestedObject(attrs, "customer", Customer)
+        attrs = self.fix_nested_object(attrs, "customer", Customer)
         return super().validate(attrs)
 
     @transaction.atomic
     def update(self, invoice: Invoice, validated_data):
-        chargesData = validated_data.pop("charges") or []
+        charges_data = validated_data.pop("charges") or []
 
         charges = []
-        for chargeData in chargesData:
-            chargeData.invoice = invoice
-            chargeData.customer = invoice.customer
+        for charge_data in charges_data:
+            charge_data.invoice = invoice
+            charge_data.customer = invoice.customer
 
             try:
-                chargeID = chargeData.pop("id")
-                charge = Charge.objects.get(id=chargeID)
+                charge_id = charge_data.pop("id")
+                charge = Charge.objects.get(id=charge_id)
             except KeyError:
                 charge = None
 
-            chargeSerializer = ChargeSerializer(data=chargeData, instance=charge)
-            if chargeSerializer.is_valid():
-                charge = chargeSerializer.save()
+            charge_serializer = ChargeSerializer(data=charge_data, instance=charge)
+            if charge_serializer.is_valid():
+                charge = charge_serializer.save()
                 charge.invoice = invoice
                 charge.save()
                 charges.append(charge)
@@ -310,18 +310,18 @@ class InvoiceSerializer(DynamicFieldsModelSerializer, NestedObjectSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        chargesData = validated_data["charges"] or []
+        charges_data = validated_data["charges"] or []
         del validated_data["charges"]
         invoice = super().create(validated_data)
 
         charges = []
-        for chargeData in chargesData:
-            chargeData.invoice = invoice
-            chargeData.customer = invoice.customer
+        for charge_data in charges_data:
+            charge_data.invoice = invoice
+            charge_data.customer = invoice.customer
 
-            chargeSerializer = ChargeSerializer(data=chargeData)
-            if chargeSerializer.is_valid():
-                charge = chargeSerializer.save()
+            charge_serializer = ChargeSerializer(data=charge_data)
+            if charge_serializer.is_valid():
+                charge = charge_serializer.save()
                 charge.invoice = invoice
                 charge.save()
                 charges.append(charge)

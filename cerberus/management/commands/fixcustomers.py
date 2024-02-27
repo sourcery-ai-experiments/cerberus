@@ -4,9 +4,9 @@ from collections import Counter
 # Django
 from django.core.management.base import BaseCommand
 
-# First Party
-from cerberus.exceptions import InvalidEmail
-from cerberus.models import Contact, Customer
+# Locals
+from ...exceptions import InvalidEmailError
+from ...models import Contact, Customer
 
 
 class Command(BaseCommand):
@@ -23,5 +23,5 @@ class Command(BaseCommand):
                     for contact in customer.contacts.all():
                         try:
                             contact.set_as_invoice()
-                        except InvalidEmail:
+                        except InvalidEmailError:
                             pass
