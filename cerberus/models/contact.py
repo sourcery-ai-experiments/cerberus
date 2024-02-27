@@ -27,7 +27,7 @@ class Contact(models.Model):
 
     # Fields
     name = models.CharField(max_length=255)
-    details = models.CharField(max_length=255, blank=True, null=True)
+    details = models.CharField(max_length=255, blank=True, default="")
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 

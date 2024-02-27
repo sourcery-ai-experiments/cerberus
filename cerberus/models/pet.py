@@ -50,9 +50,9 @@ class Pet(models.Model):
     social_media_concent = models.CharField(
         default=Social.YES, choices=Social.choices, max_length=choice_length(Social)
     )
-    sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))
+    sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))  # noqa: DJ001
     description = models.TextField(blank=True, default="")
-    neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))
+    neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))  # noqa: DJ001
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")

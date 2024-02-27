@@ -63,15 +63,15 @@ class Invoice(models.Model):
     due = models.DateField(blank=True, null=True, default=None)
     adjustment = MoneyField(max_digits=14, default=0.0)
 
-    customer_name = models.CharField(max_length=255, blank=True, null=True)
-    sent_to = models.CharField(max_length=255, blank=True, null=True)
+    customer_name = models.CharField(max_length=255, blank=True, default="")
+    sent_to = models.CharField(max_length=255, blank=True, default="")
     invoice_address = models.TextField(default="", blank=True)
 
     state = FSMField(default=States.DRAFT.value, choices=States.choices, protected=True)  # type: ignore
     paid_on = MonitorField(monitor="state", when=[States.PAID.value], default=None, null=True)  # type: ignore
     sent_on = MonitorField(monitor="state", when=[States.UNPAID.value], default=None, null=True)  # type: ignore
 
-    send_notes = models.TextField(blank=True, default="", null=True)
+    send_notes = models.TextField(blank=True, null=True, default="")  # noqa: DJ001
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
