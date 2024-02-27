@@ -27,23 +27,34 @@ except ModuleNotFoundError:
 class Command(BaseCommand):
     help = "Create some dummy data"
 
+    vet_count = 10
+    customer_count = 200
+    pet_count = 300
+    invoice_per_week = 10
+    invoice_weeks = 10
+
     def handle(self, *args, **options):
         self.stdout.write("Creating some dummy data")
+        self.create_dummy_vets()
+        self.create_dummy_customers()
+        self.create_dummy_contacts()
+        self.create_dummy_pets()
+        self.create_dummy_invoices()
+
+    def create_dummy_vets(self):
         fake = Faker("en_GB")
 
-        vet_count = 10
-        customer_count = 200
-        pet_count = int(customer_count * 1.5)
-
-        for _ in range(vet_count - Vet.objects.count()):
+        for _ in range(self.vet_count - Vet.objects.count()):
             vet = Vet.objects.create(name=fake.company(), phone=fake.phone_number())
             self.stdout.write(f"Created vet {vet.name}")
 
+    def create_dummy_customers(self):
+        fake = Faker("en_GB")
         vets = Vet.objects.all()
         titles = "|".join(["Sir", "Madam", "Mr", "Mrs", "Ms", "Miss", "Dr", "Professor"])
         regex = re.compile(rf"^({titles})\s+", re.IGNORECASE)
 
-        for _ in range(customer_count - Customer.objects.count()):
+        for _ in range(self.customer_count - Customer.objects.count()):
             customer = Customer.objects.create(vet=random.choice(vets))
             name_parts = regex.sub("", f"{fake.name()}").split(" ")
             customer.first_name = name_parts[0]
@@ -53,8 +64,10 @@ class Command(BaseCommand):
             customer.invoice_address = fake.address()
             customer.save()
 
-            self.stdout.write(f"Created customer {customer.name}")
+            self.stdout.write(f"Created customer {customer.first_name} {customer.last_name}")
 
+    def create_dummy_contacts(self):
+        fake = Faker("en_GB")
         customers: QuerySet[Customer] = Customer.objects.all()
 
         for customer in customers:
@@ -70,7 +83,12 @@ class Command(BaseCommand):
                 except IntegrityError:
                     pass
 
-        for _ in range(pet_count - Pet.objects.count()):
+    def create_dummy_pets(self):
+        fake = Faker("en_GB")
+        customers: QuerySet[Customer] = Customer.objects.all()
+        vets = Vet.objects.all()
+
+        for _ in range(self.pet_count - Pet.objects.count()):
             if fake.pybool():
                 name = fake.first_name_male()
                 sex = Pet.Sex.MALE.value
@@ -91,16 +109,17 @@ class Command(BaseCommand):
             )
             self.stdout.write(f"Created pet {pet.name}")
 
+    def create_dummy_invoices(self):
+        fake = Faker("en_GB")
+        customers = Customer.objects.all()
         if has_freezegun:
             services = [
                 {"name": "Walk", "cost": 12},
                 {"name": "Solo Walk", "cost": 24},
                 {"name": "Dropin", "cost": 10},
             ]
-            invoice_per_week = 10
-            invoice_weeks = 10
 
-            for weeks in range(invoice_weeks, -1, -1):
+            for weeks in range(self.invoice_weeks, -1, -1):
                 date = datetime.now() - timedelta(weeks=weeks)
                 start = date - timedelta(days=date.weekday())
                 end = start + timedelta(days=6)
@@ -110,7 +129,7 @@ class Command(BaseCommand):
                 ).count()
 
                 with freeze_time(date):
-                    for _ in range(invoice_per_week - invoice_count):
+                    for _ in range(self.invoice_per_week - invoice_count):
                         self.stdout.write("Creating invoice")
 
                         customer = random.choice(customers)
