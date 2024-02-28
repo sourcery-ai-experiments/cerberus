@@ -37,7 +37,7 @@ requirements.%.txt: $(UV_PATH) pyproject.toml
 
 requirements.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
-	uv pip compile --generate-hashes $(filter-out $<,$^) > $@
+	$(UV_PATH) pip compile --generate-hashes $(filter-out $<,$^) > $@
 
 .direnv: .envrc
 	@python -m ensurepip
