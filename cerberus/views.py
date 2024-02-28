@@ -12,7 +12,6 @@ from django.http import Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.urls.resolvers import URLPattern
-from django.utils.decorators import classonlymethod
 from django.views import View
 
 # Third Party
@@ -210,7 +209,7 @@ class CRUDViews(GenericModelView):
 
     extra_mixins: list = []
 
-    @classonlymethod
+    @classmethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
         defaults: dict[str, Any] = {
             "paginate_by": 25,
@@ -222,7 +221,7 @@ class CRUDViews(GenericModelView):
 
         return defaults
 
-    @classonlymethod
+    @classmethod
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.CREATE:
@@ -238,7 +237,7 @@ class CRUDViews(GenericModelView):
             case _:
                 raise Exception(f"Unhandled action {action}")
 
-    @classonlymethod
+    @classmethod
     def _get_class_basses(cls, view, action: Actions):
         return tuple(
             filter(
@@ -255,20 +254,20 @@ class CRUDViews(GenericModelView):
             )
         )
 
-    @classonlymethod
+    @classmethod
     def as_view(cls, action: Actions):
-        actionClass = cls.get_view_class(action)
+        action_class = cls.get_view_class(action)
         return type(
             f"{cls.model._meta.model_name}_{action.value}",
-            cls._get_class_basses(actionClass, action),
+            cls._get_class_basses(action_class, action),
             {**cls.get_defaults(action), **dict(cls.__dict__)},
         ).as_view()
 
-    @classonlymethod
+    @classmethod
     def model_name(cls):
         return cls.model._meta.model_name or cls.model.__class__.__name__.lower()
 
-    @classonlymethod
+    @classmethod
     def get_urls(cls):
         model_name = cls.model_name()
 
@@ -282,7 +281,7 @@ class CRUDViews(GenericModelView):
         ]
         return paths + cls.extra_views(model_name)
 
-    @classonlymethod
+    @classmethod
     def _extra_requires_login(cls):
         if cls.extra_requires_login is None:
             return cls.requires_login
@@ -380,7 +379,7 @@ class InvoiceCRUD(CRUDViews):
     filter_class = InvoiceFilter
     sortable_fields = ["total"]
 
-    @classonlymethod
+    @classmethod
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.UPDATE:

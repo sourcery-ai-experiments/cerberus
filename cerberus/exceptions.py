@@ -1,24 +1,24 @@
-class BookingSlotException(Exception):
+class BookingSlotError(Exception):
     pass
 
 
-class BookingSlotIncorectService(BookingSlotException):
+class IncorectServiceError(BookingSlotError):
     pass
 
 
-class BookingSlotMaxCustomers(BookingSlotException):
+class MaxCustomersError(BookingSlotError):
     pass
 
 
-class BookingSlotMaxPets(BookingSlotException):
+class MaxPetsError(BookingSlotError):
     pass
 
 
-class BookingSlotOverlaps(BookingSlotException):
+class SlotOverlapsError(BookingSlotError):
     pass
 
 
-class InvalidEmail(Exception):
+class InvalidEmailError(Exception):
     pass
 
 

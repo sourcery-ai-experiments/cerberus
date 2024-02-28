@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 import reversion
 
 # Locals
-from ..exceptions import InvalidEmail
+from ..exceptions import InvalidEmailError
 
 
 @reversion.register()
@@ -27,7 +27,7 @@ class Contact(models.Model):
 
     # Fields
     name = models.CharField(max_length=255)
-    details = models.CharField(max_length=255, blank=True, null=True)
+    details = models.CharField(max_length=255, blank=True, default="")
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
@@ -37,6 +37,13 @@ class Contact(models.Model):
         on_delete=models.CASCADE,
         related_name="contacts",
     )
+
+    class Meta:
+        ordering = ("-created",)
+        unique_together = ("name", "customer")
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
     @property
     def type(self) -> Type:
@@ -53,16 +60,9 @@ class Contact(models.Model):
 
         return self.Type.UNKNOWN
 
-    class Meta:
-        ordering = ("-created",)
-        unique_together = ("name", "customer")
-
-    def __str__(self) -> str:
-        return f"{self.name}"
-
     def set_as_invoice(self):
         if self.type != self.Type.EMAIL:
-            raise InvalidEmail("Can only set email as invoice email")
+            raise InvalidEmailError("Can only set email as invoice email")
 
         self.customer.invoice_email = self.details
         return self.customer.save()

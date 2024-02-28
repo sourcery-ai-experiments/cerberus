@@ -17,7 +17,7 @@ from moneyed import Money
 from taggit.managers import TaggableManager
 
 if TYPE_CHECKING:
-    from . import Pet, Contact, Charge, Booking, Vet
+    from . import Booking, Charge, Contact, Pet, Vet
 
 # Locals
 from .invoice import Invoice
@@ -36,12 +36,21 @@ class CustomerManager(models.Manager["Customer"]):
                     default=0,
                 ),
             )
-            .annotate(unpaid_count=Count("invoices", distinct=True, filter=Q(invoices__state=Invoice.States.UNPAID.value)))
+            .annotate(
+                unpaid_count=Count(
+                    "invoices",
+                    distinct=True,
+                    filter=Q(invoices__state=Invoice.States.UNPAID.value),
+                )
+            )
             .annotate(
                 overdue_count=Count(
                     "invoices",
                     distinct=True,
-                    filter=Q(invoices__state=Invoice.States.UNPAID.value, invoices__due__lt=datetime.today()),
+                    filter=Q(
+                        invoices__state=Invoice.States.UNPAID.value,
+                        invoices__due__lt=datetime.today(),
+                    ),
                 )
             )
             .order_by(*Customer._meta.ordering or list())
@@ -88,14 +97,20 @@ class Customer(models.Model):
 
     objects = money_manager(CustomerManager())
 
+    _invoiced_unpaid = None
+
     class Meta:
         ordering = ("first_name", "last_name")
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+    def get_absolute_url(self) -> str:
+        return reverse("customer_detail", kwargs={"pk": self.pk})
 
     @property
     def active_pets(self):
         return self.pets.filter(active=True)
-
-    _invoiced_unpaid = None
 
     @property
     def invoiced_unpaid(self):
@@ -117,9 +132,6 @@ class Customer(models.Model):
 
         return issues
 
-    def __str__(self) -> str:
-        return f"{self.name}"
-
     @property
     def bookings(self):
         bookings: list["Booking"] = []
@@ -128,6 +140,3 @@ class Customer(models.Model):
             bookings.extend(pet.bookings.all())
 
         return bookings
-
-    def get_absolute_url(self) -> str:
-        return reverse("customer_detail", kwargs={"pk": self.pk})

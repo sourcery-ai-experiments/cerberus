@@ -30,35 +30,76 @@ class SingleMoneyWidget(MoneyWidget):
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = "__all__"
-        # fields = ["first_name","last_name","other_names","invoice_address","invoice_email"]
+        fields = [
+            "first_name",
+            "last_name",
+            "other_names",
+            "invoice_address",
+            "invoice_email",
+            "active",
+            "vet",
+            "tags",
+        ]
         widgets = {"tags": forms.TextInput()}
 
 
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = "__all__"
+        fields = [
+            "name",
+            "dob",
+            "active",
+            "social_media_concent",
+            "sex",
+            "description",
+            "neutered",
+            "medical_conditions",
+            "treatment_limit",
+            "allergies",
+            "tags",
+            "customer",
+            "vet",
+        ]
 
 
 class VetForm(forms.ModelForm):
     class Meta:
         model = Vet
-        fields = "__all__"
+        fields = [
+            "name",
+            "phone",
+            "details",
+        ]
 
 
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
-        fields = "__all__"
-        exclude = ["booking_slot"]
+        fields = [
+            "name",
+            "cost",
+            "start",
+            "end",
+            "state",
+            "pet",
+            "service",
+        ]
         widgets = {"state": forms.TextInput(attrs={"readonly": True})}
 
 
 class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
-        exclude = ["paid_on", "sent_on", "state", "sent_to", "created", "last_updated"]
+        fields = [
+            "details",
+            "due",
+            "adjustment",
+            "customer_name",
+            "sent_to",
+            "invoice_address",
+            "send_notes",
+        ]
         widgets = {
             "adjustment": SingleMoneyWidget(),
             "due": forms.DateInput(attrs={"type": "date"}),

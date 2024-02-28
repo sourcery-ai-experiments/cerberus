@@ -79,7 +79,7 @@ def test_can_send(customer: Customer):
 @pytest.mark.django_db
 def test_cant_update(customer: Customer, invoice: Invoice):
     invoice.send()
-    invoice.sent_to = None
+    invoice.sent_to = ""
     invoice.save()
 
     loaded = Invoice.objects.get(pk=invoice.pk)
