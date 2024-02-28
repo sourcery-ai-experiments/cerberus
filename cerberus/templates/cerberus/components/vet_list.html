@@ -3,7 +3,7 @@
 {% url 'vet_list' as pagi_url %}
 
 {% if not request.htmx %}
-  <div class="htmx-container">
+  <div class="htmx-container" x-data="{sort: '{{ sort }}', sort_order: '{{ sort_order }}'}">
     {% include 'cerberus/components/filters.html' with url=pagi_url target="#vet-list" clear_url=pagi_url %}
 {% endif %}
 <div id="vet-list" {% if vets is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
@@ -11,7 +11,7 @@
   <table class="htmx-load-target">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="name" %}</th>
         <th>Phone</th>
         <th>Actions</th>
       </tr>
