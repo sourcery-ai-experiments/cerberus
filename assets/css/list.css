@@ -24,9 +24,7 @@ th {
   align-items: center;
 
   &:focus {
-    outline-width: 0.25em;
-    outline-style: solid;
-    outline-color: var(--primary-focus);
+    box-shadow: 0 0 0 0.5em var(--primary-focus);
   }
 
   &::after {
