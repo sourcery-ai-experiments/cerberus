@@ -1,19 +1,21 @@
 {% load crispy_forms_tags %}
 
 {% if filter %}
-  <form method="get"{% if url %} hx-get="{{ url }}" hx-trigger="change" hx-swap="morph:outerHTML"{% if target %} hx-target="{{ target }}" {% endif %}hx-push-url="true" {% endif %}class="inline filter-form">
-    <input type="hidden" id="sort" name="sort" x-model="sort" value="{{ sort }}" />
-    <input type="hidden" id="sort_order" name="sort_order" x-model="sort_order" value="{{ sort_order }}" />
-    <div>
-      {{ filter.form|crispy }}
+  <section>
+    <form method="get"{% if url %} hx-get="{{ url }}" hx-trigger="change" hx-swap="morph:outerHTML"{% if target %} hx-target="{{ target }}" {% endif %}hx-push-url="true" {% endif %}class="inline filter-form">
+      <input type="hidden" id="sort" name="sort" x-model="sort" value="{{ sort }}" />
+      <input type="hidden" id="sort_order" name="sort_order" x-model="sort_order" value="{{ sort_order }}" />
       <div>
-        <a role="button" href="{{ url }}">Clear</a>
-      </div>
-      <noscript>
+        {{ filter.form|crispy }}
         <div>
-          <button type="submit">Filter</button>
+          <a role="button" href="{{ url }}">Clear</a>
         </div>
-      </noscript>
-    </div>
-  </form>
+        <noscript>
+          <div>
+            <button type="submit">Filter</button>
+          </div>
+        </noscript>
+      </div>
+    </form>
+  </section>
 {% endif %}

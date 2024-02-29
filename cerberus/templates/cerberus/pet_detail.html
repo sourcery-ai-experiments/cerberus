@@ -21,7 +21,7 @@
     </nav>
     <div class="grid pair">
         <div>Name</div><div>{{ pet.name }}</div>
-        <div>Customer</div><div>{{ pet.customer }}</div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' pet.customer.pk %}">{{ pet.customer }}</a></div>
         <div>Description</div><div>{{ pet.description }}</div>
         <div>Dob</div><div>{{ pet.dob }}</div>
         <div>Sex</div><div>{{ pet.sex|title }}</div>
