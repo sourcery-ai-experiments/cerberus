@@ -9,10 +9,10 @@
 <div id="pet-list" {% if pets is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %} >
   {% include "components/pagination.html" with hx_target="#pet-list" base_url=pagi_url %}
   <table class="htmx-load-target">
-    <thead>
+    <thead hx-boost="true" hx-target="#pet-list">
       <tr>
-        <th>{% include "cerberus/components/sort_item.html" with field_name="name" field_label="Name" %}</th>
-        <th>{% include "cerberus/components/sort_item.html" with field_name="customer" field_label="Customer" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="name" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="customer" %}</th>
         <th>Actions</th>
       </tr>
     </thead>

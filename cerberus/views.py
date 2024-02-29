@@ -312,6 +312,7 @@ class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
     filter_class = CustomerFilter
+    sortable_fields = ["name"]
 
 
 class PetCRUD(CRUDViews):
@@ -325,6 +326,7 @@ class VetCRUD(CRUDViews):
     model = Vet
     form_class = VetForm
     filter_class = VetFilter
+    sortable_fields = ["name"]
 
 
 class BookingCRUD(CRUDViews):
@@ -377,7 +379,7 @@ class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
     filter_class = InvoiceFilter
-    sortable_fields = ["total"]
+    sortable_fields = ["id", "customer", "total"]
 
     @classmethod
     def get_view_class(cls, action: Actions):

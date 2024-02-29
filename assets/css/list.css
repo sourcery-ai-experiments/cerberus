@@ -11,15 +11,28 @@ th {
   }
 }
 
+.right {
+  & .sort-item {
+    flex-direction: row-reverse;
+  }
+}
+
 .sort-item {
-  display: inline-block;
+  display: flex;
   cursor: pointer;
+  white-space: nowrap;
+  align-items: center;
+
+  &:focus {
+    box-shadow: 0 0 0 0.5em var(--primary-focus);
+  }
 
   &::after {
     content: " ";
     display: inline-block;
     width: 1em;
   }
+
   &.sorting {
     &::after {
       display: none;
@@ -28,5 +41,6 @@ th {
 
   svg {
     width: 1em;
+    margin: 0 0.15em;
   }
 }

@@ -3,17 +3,17 @@
 {% url 'invoice_list' as pagi_url %}
 
 {% if not request.htmx %}
-  <div class="htmx-container">
+  <div class="htmx-container" x-data="{sort: '{{ sort }}', sort_order: '{{ sort_order }}'}">
     {% include 'cerberus/components/filters.html' with url=pagi_url target="#invoice-list" clear_url=pagi_url %}
 {% endif %}
 <div id="invoice-list"{% if invoices is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
   {% include "components/pagination.html" with hx_target="#invoice-list" base_url=pagi_url %}
   <table class="htmx-load-target">
-    <thead>
+    <thead hx-boost="true" hx-target="#invoice-list">
       <tr>
-        <th>Name</th>
-        <th>Customer</th>
-        <th class="right">Total</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="id" field_label="Name" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="customer" %}</th>
+        <th class="right">{% include "cerberus/components/sort_item.html" with field_name="total" %}</th>
         <th>State</th>
         <th>Actions</th>
       </tr>
