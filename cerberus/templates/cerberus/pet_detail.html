@@ -6,19 +6,15 @@
 {% block page_title %}Pet {{ object.name }}{% endblock %}
 
 {% block content %}
-    <nav>
-        <ul>
-            <li>
-                <details role="list" dir="rtl">
-                    <summary aria-haspopup="listbox" role="link">Menu</summary>
-                    <ul role="listbox">
-                        <li><a href="{% url 'pet_update' pet.id %}">Edit</a></li>
-                        <li><a hx-get="{% url 'pet_delete' pet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">Delete</a></li>
-                    </ul>
-                </details>
-            </li>
+
+    <details role="list">
+        <summary aria-haspopup="listbox" role="link">Menu</summary>
+        <ul role="listbox">
+            <li><a href="{% url 'pet_update' pet.id %}">Edit</a></li>
+            <li><a hx-get="{% url 'pet_delete' pet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">Delete</a></li>
         </ul>
-    </nav>
+    </details>
+
     <div class="grid pair">
         <div>Name</div><div>{{ pet.name }}</div>
         <div>Customer</div><div><a href="{% url 'customer_detail' pet.customer.pk %}">{{ pet.customer }}</a></div>

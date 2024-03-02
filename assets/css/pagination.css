@@ -17,7 +17,8 @@
     border: 1px solid;
     display: inline-block;
 
-    &:hover {
+    &:hover,
+    & {
       text-decoration: none;
     }
 

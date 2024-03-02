@@ -5,25 +5,19 @@
 {% block page_title %}Invoice {{ invoice.name }}{% endblock %}
 
 {% block content %}
-    <nav>
-        <ul>
-            <li>
-                <details role="list" dir="rtl">
-                    <summary aria-haspopup="listbox" role="link">Menu</summary>
-                    <ul role="listbox">
-                        {% if invoice.can_edit %}
-                            <li><a href="{% url 'invoice_update' invoice.id %}">Edit</a></li>
-                            <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
-                        {% endif %}
-                        <li><a href="{% url 'invoice_pdf' invoice.id %}">Download</a></li>
-                        {% if invoice.can_resend_email %}
-                            <li><a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">Resend Email</a></li>
-                        {% endif %}
-                    </ul>
-                </details>
-            </li>
+    <details role="list">
+        <summary aria-haspopup="listbox" role="link">Menu</summary>
+        <ul role="listbox">
+            {% if invoice.can_edit %}
+                <li><a href="{% url 'invoice_update' invoice.id %}">Edit</a></li>
+                <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
+            {% endif %}
+            <li><a href="{% url 'invoice_pdf' invoice.id %}">Download</a></li>
+            {% if invoice.can_resend_email %}
+                <li><a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">Resend Email</a></li>
+            {% endif %}
         </ul>
-    </nav>
+    </details>
     <section class="grid pair">
         <div>Customer</div><div>{{ invoice.customer }}</div>
         <div>Sent to</div><div>{{ invoice.sent_to|default:"-" }}</div>

@@ -5,19 +5,13 @@
 {% block page_title %}{{ customer.name }}{% endblock %}
 
 {% block content %}
-    <nav>
-        <ul>
-            <li>
-                <details role="list" dir="rtl">
-                    <summary aria-haspopup="listbox" role="link">Menu</summary>
-                    <ul role="listbox">
-                        <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
-                        <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
-                    </ul>
-                </details>
-            </li>
+    <details role="list">
+        <summary aria-haspopup="listbox" role="link">Menu</summary>
+        <ul role="listbox">
+            <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
+            <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
         </ul>
-    </nav>
+    </details>
     <div class="details" role="main">
         <div class="name">{{ customer.name }}</div>
         <div class="email">{{ customer.invoice_email }}</div>
