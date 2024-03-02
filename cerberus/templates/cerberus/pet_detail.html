@@ -6,22 +6,23 @@
 {% block page_title %}Pet {{ object.name }}{% endblock %}
 
 {% block content %}
-    <nav>
-        <ul>
-            <li>
-                <details role="list" dir="rtl">
-                    <summary aria-haspopup="listbox" role="link">Menu</summary>
-                    <ul role="listbox">
-                        <li><a href="{% url 'pet_update' pet.id %}">Edit</a></li>
-                        <li><a hx-get="{% url 'pet_delete' pet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">Delete</a></li>
-                    </ul>
-                </details>
-            </li>
+    <details
+        role="list"
+        @click="toggle()"
+        @click.outside="$nextTick(() => open = false)"
+        x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
+        :open="open"
+    >
+        <summary aria-haspopup="listbox" role="link">Menu</summary>
+        <ul role="listbox">
+            <li><a href="{% url 'pet_update' pet.id %}">Edit</a></li>
+            <li><a hx-get="{% url 'pet_delete' pet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">Delete</a></li>
         </ul>
-    </nav>
+    </details>
+
     <div class="grid pair">
         <div>Name</div><div>{{ pet.name }}</div>
-        <div>Customer</div><div>{{ pet.customer }}</div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' pet.customer.pk %}">{{ pet.customer }}</a></div>
         <div>Description</div><div>{{ pet.description }}</div>
         <div>Dob</div><div>{{ pet.dob }}</div>
         <div>Sex</div><div>{{ pet.sex|title }}</div>

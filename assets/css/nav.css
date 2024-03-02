@@ -1,5 +1,8 @@
 nav {
-  button {
+  [type="button"],
+  [type="reset"],
+  [type="submit"] {
     padding: 0.3rem 0.5rem;
+    margin-bottom: 0;
   }
 }
