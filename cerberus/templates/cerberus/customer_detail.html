@@ -5,7 +5,13 @@
 {% block page_title %}{{ customer.name }}{% endblock %}
 
 {% block content %}
-    <details role="list">
+    <details
+        role="list"
+        @click="toggle()"
+        @click.outside="$nextTick(() => open = false)"
+        x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
+        :open="open"
+    >
         <summary aria-haspopup="listbox" role="link">Menu</summary>
         <ul role="listbox">
             <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>

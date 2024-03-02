@@ -8,7 +8,13 @@
 {% block page_title %}Booking {{ object.name }}{% endblock %}
 
 {% block content %}
-    <details role="list">
+    <details
+        role="list"
+        @click="toggle()"
+        @click.outside="$nextTick(() => open = false)"
+        x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
+        :open="open"
+    >
         <summary aria-haspopup="listbox" role="link">Menu</summary>
         <ul role="listbox">
             <li><a href="{% url 'booking_update' booking.id %}">Edit</a></li>
