@@ -41,6 +41,7 @@ readme = "README.rst"
 [project.optional-dependencies]
 dev = [
     "black",
+    "cogapp",
     "django-debug-toolbar",
     "django-debugtools",
     "django-extensions",
