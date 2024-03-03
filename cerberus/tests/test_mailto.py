@@ -1,8 +1,4 @@
-# Django
-from django.core.exceptions import ValidationError
-
 # Third Party
-import pytest
 from pytest_django.asserts import assertHTMLEqual
 
 # Locals
@@ -16,5 +12,4 @@ def test_valid_email():
 
 def test_invalid_email():
     email = "not an email"
-    with pytest.raises(ValidationError):
-        mailto(email)
+    assert mailto(email) == email
