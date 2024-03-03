@@ -120,6 +120,9 @@ class Customer(models.Model):
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
+    def outstanding_invoices(self):
+        return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
+
     @property
     def issues(self):
         issues = []

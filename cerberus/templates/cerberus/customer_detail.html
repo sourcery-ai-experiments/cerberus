@@ -11,10 +11,28 @@
             <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
         </ul>
     {% endcomponent %}
-    <div class="details" role="main">
-        <div class="name">{{ customer.name }}</div>
-        <div class="email">{{ customer.invoice_email|mailto }}</div>
-        {{ customer.invoice_address|linebreaks }}
+    <div class="row">
+        <div class="details col" role="main">
+            <div class="name">{{ customer.name }}</div>
+            <div class="email">{{ customer.invoice_email|mailto }}</div>
+            {{ customer.invoice_address|linebreaks }}
+        </div>
+        {% if customer.invoiced_unpaid %}
+            <div class="customer finance">
+                <table>
+                    <tr>
+                        <th colspan="2">Outstanding:</th>
+                        <th>{{ customer.invoiced_unpaid }}</th>
+                    </tr>
+                    {% for invoice in customer.outstanding_invoices %}
+                        <tr class="invoice">
+                            <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
+                            <td class="{{ invoice.overdue|yesno:'overdue,due' }}">{{ invoice.due }}</td>
+                            <td>{{ invoice.total }}</td>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
     </div>
     <h3>Pets</h3>
     <div class="columns half">
