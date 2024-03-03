@@ -47,7 +47,7 @@
     </section>
     <section>
         <h3>Contacts</h3>
-        <div class="columns third">
+        <div class="grid-3">
             {% for contact in customer.contacts.all %}
                 {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
             {% empty %}

@@ -2,85 +2,56 @@
   --grid-gap: 1rem;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  /* This is better for small screens, once min() is better supported */
-  /* grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); */
-  gap: var(--grid-gap);
-}
-
 /*[[[cog
 import cog
-cols = 12
-for i in range(1, cols + 1):
+for i in range(1, 9):
     cog.outl(f""".grid-{i} {{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax({i}00px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min({i*100}px, 100%), 1fr));
   gap: var(--grid-gap);
 }}""")
 ]]]*/
 .grid-1 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-4 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-5 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(500px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-6 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(600px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-7 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(700px, 100%), 1fr));
   gap: var(--grid-gap);
 }
 .grid-8 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(800px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(800px, 100%), 1fr));
   gap: var(--grid-gap);
 }
-.grid-9 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(900px, 1fr));
-  gap: var(--grid-gap);
-}
-.grid-10 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1000px, 1fr));
-  gap: var(--grid-gap);
-}
-.grid-11 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1100px, 1fr));
-  gap: var(--grid-gap);
-}
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1200px, 1fr));
-  gap: var(--grid-gap);
-}
-/*[[[end]]] (checksum: 701fe3c76a649f9caef335229bc300fc)*/
+/*[[[end]]] (checksum: f46ec06f923fcfdda489c2a0c2340a3d)*/
 
 .row {
   display: flex;
