@@ -34,24 +34,27 @@
             </div>
         {% endif %}
     </div>
-    <h3>Pets</h3>
-    <div class="columns half">
-        {% for pet in customer.active_pets %}
-            {% url 'pet_detail' pet.id as url %}
-            {% include "components/card.html" with url=url title=pet.name type="Pet" description=pet.description %}
-        {% empty %}
-            <p>No pets</p>
-        {% endfor %}
-    </div>
-
-    <h3>Contacts</h3>
-    <div class="columns third">
-        {% for contact in customer.contacts.all %}
-            {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
-        {% empty %}
-            <p>No contacts</p>
-        {% endfor %}
-    </div>
+    <section>
+        <h3>Pets</h3>
+        <div class="grid-3">
+            {% for pet in customer.active_pets %}
+                {% url 'pet_detail' pet.id as url %}
+                {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
+            {% empty %}
+                <p>No pets</p>
+            {% endfor %}
+        </div>
+    </section>
+    <section>
+        <h3>Contacts</h3>
+        <div class="columns third">
+            {% for contact in customer.contacts.all %}
+                {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+            {% empty %}
+                <p>No contacts</p>
+            {% endfor %}
+        </div>
+    </section>
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}
