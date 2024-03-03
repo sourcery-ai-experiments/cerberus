@@ -34,9 +34,9 @@ babel==2.14.0 \
     --hash=sha256:6919867db036398ba21eb5c7a0f6b28ab8cbc3ae7a73a44ebe34ae74a4e7d363 \
     --hash=sha256:efb1a25b7118e67ce3a259bed20545c29cb68be8ad2c784c83689981b7a57287
     # via py-moneyed
-beautifultable==0.7.0 \
-    --hash=sha256:8deee768c7939578412f930c95c2ac51307fb723a6368e9e233091cdad240537 \
-    --hash=sha256:f1185c5bbb2d522a9c7dfe24cc55151f32379031d001c9731a2b55714b927089
+beautifultable==1.1.0 \
+    --hash=sha256:040bc987444965678f4ffdfa2f17ac357f1a13e5875b161c9a1899b375319d17 \
+    --hash=sha256:b34053a581976c4c23064bb0e918a7f6f22273cf196c787946db323a6a2b7d84
     # via pytest-django-queries
 black==24.2.0 \
     --hash=sha256:057c3dc602eaa6fdc451069bd027a1b2635028b575a6c3acfd63193ced20d9c8 \
