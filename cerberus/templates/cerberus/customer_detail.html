@@ -1,23 +1,16 @@
 {% extends 'base.html' %}
 
-{% load field_tags %}
+{% load field_tags components %}
 
 {% block page_title %}{{ customer.name }}{% endblock %}
 
 {% block content %}
-    <details
-        role="list"
-        @click="toggle()"
-        @click.outside="$nextTick(() => open = false)"
-        x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
-        :open="open"
-    >
-        <summary aria-haspopup="listbox" role="link">Menu</summary>
+    {% component "cerberus/components/dropdown.html" %}
         <ul role="listbox">
             <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
             <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
         </ul>
-    </details>
+    {% endcomponent %}
     <div class="details" role="main">
         <div class="name">{{ customer.name }}</div>
         <div class="email">{{ customer.invoice_email }}</div>

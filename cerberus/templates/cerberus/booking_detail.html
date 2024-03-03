@@ -1,26 +1,19 @@
 {% extends 'base.html' %}
 
 {% load humanize %}
-{% load field_tags %}
+{% load field_tags components %}
 {% load djmoney %}
 {% load human_duration %}
 
 {% block page_title %}Booking {{ object.name }}{% endblock %}
 
 {% block content %}
-    <details
-        role="list"
-        @click="toggle()"
-        @click.outside="$nextTick(() => open = false)"
-        x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
-        :open="open"
-    >
-        <summary aria-haspopup="listbox" role="link">Menu</summary>
+    {% component "cerberus/components/dropdown.html" %}
         <ul role="listbox">
             <li><a href="{% url 'booking_update' booking.id %}">Edit</a></li>
             <li><a hx-get="{% url 'booking_delete' booking.id %}" hx-swap="afterend" href="{% url 'booking_delete' booking.id %}">Delete</a></li>
         </ul>
-    </details>
+    {% endcomponent %}
     <div class="grid pair">
         <div>Pet</div><div>{{ booking.pet }}</div>
         <div>Service</div><div>{{ booking.service }}</div>
