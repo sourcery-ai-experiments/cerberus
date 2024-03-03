@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load field_tags components %}
+{% load field_tags components mailto %}
 
 {% block page_title %}{{ customer.name }}{% endblock %}
 
@@ -13,7 +13,7 @@
     {% endcomponent %}
     <div class="details" role="main">
         <div class="name">{{ customer.name }}</div>
-        <div class="email">{{ customer.invoice_email }}</div>
+        <div class="email">{{ customer.invoice_email|mailto }}</div>
         {{ customer.invoice_address|linebreaks }}
     </div>
     <h3>Pets</h3>
