@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev css
+.PHONY: help clean test install all init dev css cog
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
@@ -6,12 +6,14 @@ HOOKS=$(.git/hooks/pre-commit)
 REQS=$(wildcard requirements.*.txt)
 
 CSS_FILES:=$(shell find assets -name *.css)
+COG_FILE:=.cogfiles
 
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
 WHEEL_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/wheel
 PRE_COMMIT_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pre-commit
 UV_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/uv
+COG_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/cog
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -92,3 +94,12 @@ watch-css: ## Watch and build the css
 install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
 	$(UV_PATH) pip sync $(filter-out $<,$^)
+
+$(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
+	@uv pip install cogapp
+
+$(COG_FILE):
+	find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
+
+cog: $(COG_PATH) $(COG_FILE) ## Run cog
+	@cog -rc @$(COG_FILE)
