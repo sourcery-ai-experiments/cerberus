@@ -1,5 +1,6 @@
 # Django
 from django.template import Context, Template
+from django.template.engine import Engine
 
 # Third Party
 import pytest
@@ -16,7 +17,11 @@ def render_template():
 
 @pytest.fixture(autouse=True)
 def component_template(tmp_path, settings):
-    settings.TEMPLATES[0]["DIRS"] += [tmp_path]
+    if tmp_path not in settings.TEMPLATES[0]["DIRS"]:
+        settings.TEMPLATES[0]["DIRS"] += [tmp_path]
+    engine = Engine.get_default()
+    if tmp_path not in engine.dirs:
+        engine.dirs += [tmp_path]
 
     with open(tmp_path / "test.html", "w") as f:
         f.write(
