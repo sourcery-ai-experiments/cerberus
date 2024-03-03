@@ -27,7 +27,7 @@ dependencies = [
     "markdown",
     "mjml-python",
     "psycopg2",
-    "reportlab==4.0.9",
+    "reportlab==4.1.0",
     "uritemplate",
     "wheel",
     "whitenoise",
