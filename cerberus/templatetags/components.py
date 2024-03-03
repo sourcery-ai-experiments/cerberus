@@ -17,10 +17,9 @@ class ComponentNode(Node):
         self.template_name = template_name
 
     def render(self, context) -> str:
-        self.extra_context["component_block"] = self.node_list.render(context)
-
+        component_block: str = self.node_list.render(context)
         inclusion_node = InclusionNode(
-            lambda c: self.extra_context,
+            lambda c: {"component_block": component_block, **self.extra_context},
             args=[],
             kwargs={},
             takes_context=True,
