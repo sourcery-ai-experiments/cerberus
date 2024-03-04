@@ -34,12 +34,7 @@
             </div>
         {% endif %}
     </div>
-    <div class="tab-wrapper"
-         x-data="{ active: 'bookings', setActive(section) { if (section != this.active) { this.active = section; window.location='#'+section; }}}"
-         x-init="active = window.location.hash.replace(/^#/,'') || active"
-         :class="active != '' ? 'active' : ''"
-         @hashchange.window="active = window.location.hash.replace(/^#/,'') || 'bookings'"
-    >
+    {% component "cerberus/components/tab-wrapper.html" inital="bookings" %}
         <nav class="tab-nav">
             <a href="#bookings" @click.prevent="setActive('bookings')">Bookings</a>
             <a href="#pets" @click.prevent="setActive('pets')">Pets</a>
@@ -72,7 +67,7 @@
                 </div>
             </section>
         </div>
-    </div>
+    {% endcomponent %}
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}
