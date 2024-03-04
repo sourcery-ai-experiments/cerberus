@@ -7,6 +7,9 @@
             this.active = section;
             window.location='#'+section;
         }
+    },
+    navClass(section) {
+        return section == this.active ? 'active' : '';
     }
 }"
 {# fmt:on #}
