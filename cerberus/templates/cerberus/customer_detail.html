@@ -34,37 +34,44 @@
             </div>
         {% endif %}
     </div>
-    <nav class="tab-nav">
-        <a href="#bookings">Bookings</a>
-        <a href="#pets">Pets</a>
-        <a href="#contacts">Contacts</a>
-    </nav>
-    <div class="tabs">
-        <section id="bookings" class="tab-content">
-            <h3>Bookings</h3>
-            {% include "cerberus/components/booking_list.html" %}
-        </section>
-        <section id="pets" class="tab-content">
-            <h3>Pets</h3>
-            <div class="grid-3">
-                {% for pet in customer.active_pets %}
-                    {% url 'pet_detail' pet.id as url %}
-                    {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
-                {% empty %}
-                    <p>No pets</p>
-                {% endfor %}
-            </div>
-        </section>
-        <section id="contacts" class="tab-content">
-            <h3>Contacts</h3>
-            <div class="grid-3">
-                {% for contact in customer.contacts.all %}
-                    {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
-                {% empty %}
-                    <p>No contacts</p>
-                {% endfor %}
-            </div>
-        </section>
+    <div class="tab-wrapper"
+         x-data="{ active: 'bookings', setActive(section) { if (section != this.active) { this.active = section; window.location='#'+section; }}}"
+         x-init="active = window.location.hash.replace(/^#/,'') || active"
+         :class="active != '' ? 'active' : ''"
+         @hashchange.window="active = window.location.hash.replace(/^#/,'') || 'bookings'"
+    >
+        <nav class="tab-nav">
+            <a href="#bookings" @click.prevent="setActive('bookings')">Bookings</a>
+            <a href="#pets" @click.prevent="setActive('pets')">Pets</a>
+            <a href="#contacts" @click.prevent="setActive('contacts')">Contacts</a>
+        </nav>
+        <div class="tabs">
+            <section id="bookings" class="tab-content" x-show="active == 'bookings'">
+                <h3>Bookings</h3>
+                {% include "cerberus/components/booking_list.html" %}
+            </section>
+            <section id="pets" class="tab-content" x-show="active == 'pets'">
+                <h3>Pets</h3>
+                <div class="grid-3">
+                    {% for pet in customer.active_pets %}
+                        {% url 'pet_detail' pet.id as url %}
+                        {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
+                    {% empty %}
+                        <p>No pets</p>
+                    {% endfor %}
+                </div>
+            </section>
+            <section id="contacts" class="tab-content" x-show="active == 'contacts'">
+                <h3>Contacts</h3>
+                <div class="grid-3">
+                    {% for contact in customer.contacts.all %}
+                        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+                    {% empty %}
+                        <p>No contacts</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
     </div>
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
