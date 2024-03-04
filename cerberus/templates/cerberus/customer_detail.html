@@ -34,31 +34,38 @@
             </div>
         {% endif %}
     </div>
-    <section>
-        <h3>Bookings</h3>
-        {% include "cerberus/components/booking_list.html" %}
-    </section>
-    <section>
-        <h3>Pets</h3>
-        <div class="grid-3">
-            {% for pet in customer.active_pets %}
-                {% url 'pet_detail' pet.id as url %}
-                {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
-            {% empty %}
-                <p>No pets</p>
-            {% endfor %}
-        </div>
-    </section>
-    <section>
-        <h3>Contacts</h3>
-        <div class="grid-3">
-            {% for contact in customer.contacts.all %}
-                {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
-            {% empty %}
-                <p>No contacts</p>
-            {% endfor %}
-        </div>
-    </section>
+    <nav class="tab-nav">
+        <a href="#bookings">Bookings</a>
+        <a href="#pets">Pets</a>
+        <a href="#contacts">Contacts</a>
+    </nav>
+    <div class="tabs">
+        <section id="bookings" class="tab-content">
+            <h3>Bookings</h3>
+            {% include "cerberus/components/booking_list.html" %}
+        </section>
+        <section id="pets" class="tab-content">
+            <h3>Pets</h3>
+            <div class="grid-3">
+                {% for pet in customer.active_pets %}
+                    {% url 'pet_detail' pet.id as url %}
+                    {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
+                {% empty %}
+                    <p>No pets</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section id="contacts" class="tab-content">
+            <h3>Contacts</h3>
+            <div class="grid-3">
+                {% for contact in customer.contacts.all %}
+                    {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+                {% empty %}
+                    <p>No contacts</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

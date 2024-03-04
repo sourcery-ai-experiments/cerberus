@@ -1,0 +1,27 @@
+.tabs {
+  .tab-content {
+    display: none;
+  }
+
+  & > .tab-content:target {
+    display: block;
+  }
+
+  &:not(:has(.tab-content:target)) {
+    & > .tab-content:first-of-type {
+      display: block;
+    }
+  }
+}
+
+.tab-nav {
+  a {
+    &:has(input[type="radio"]:checked) {
+      color: red;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+  }
+}
