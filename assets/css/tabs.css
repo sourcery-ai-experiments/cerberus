@@ -2,7 +2,7 @@
   --pico-tab-background-color: var(--pico-background-color);
   --pico-tab-border-color: var(--pico-muted-color);
   --pico-tab-border-color-hover: var(--pico-muted-border-color);
-  --pico-tab-border-width: 0.1em;
+  --pico-tab-border-width: var(--pico-border-width);
 }
 
 .tab-wrapper {
@@ -34,7 +34,7 @@
       var(--pico-tab-border-color);
 
     & > * {
-      padding: 0.5em 1em;
+      padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
       cursor: pointer;
       border: var(--pico-tab-border-width) solid transparent;
       border-top-left-radius: 0.25rem;
