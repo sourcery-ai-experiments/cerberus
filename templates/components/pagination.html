@@ -10,19 +10,27 @@
     role="pagination"
     aria-label="pagination"
   >
+    <li>
+      <a
+        {% if page_obj.number != 1 %}href="{{ base_url }}"{% endif %}
+        aria-label="Goto first page"
+      >&laquo;</a>
+    </li>
     {% for i in pages %}
       <li>
-        {% if i|is_numeric %}
-          <a
-            {% if i == page_obj.number %}class="current"{% endif %}
-            {% if i != page_obj.number %}href="{{ base_url }}?{% querystring page=i %}"{% endif %}
-            aria-label="Goto page {{ i }}"
-          >{{ i }}</a
-            >
-        {% else %}
-          <span>{{ i }}</span>
-        {% endif %}
-      </li>
+        <a
+          {% if i == page_obj.number %}aria-current="page"{% endif %}
+          {% if i != page_obj.number %}href="{{ base_url }}?{% querystring page=i %}"{% endif %}
+          aria-label="Goto page {{ i }}"
+        >{{ i }}</a
+          >
+        </li>
     {% endfor %}
+    <li>
+      <a
+        {% if page_obj.number != paginator.num_pages %}href="{{ base_url }}?{% querystring page=paginator.num_pages %}"{% endif %}
+        aria-label="Goto last page"
+      >&raquo;</a>
+    </li>
   </ol>
 {% endif %}
