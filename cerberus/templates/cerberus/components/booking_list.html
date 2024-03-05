@@ -13,7 +13,8 @@
   <table class="htmx-load-target">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Pet</th>
+        {% if hide_customer != True %}<th>Customer</th>{% endif %}
         <th>Service</th>
         <th>Start</th>
         <th>Duration</th>
@@ -24,11 +25,12 @@
     <tbody>
       {% for booking in bookings %}
         <tr>
-          <td>{{ booking.name }}</td>
+          <td>{{ booking.pet.name }}</td>
+          {% if hide_customer != True %}<td>{{ booking.pet.customer.name }}</td>{% endif %}
           <td>{{ booking.service }}</td>
-          <td><span data-tooltip="{{ booking.start }}">{{ booking.start|naturaltime }}</span></td>
+          <td><span data-tooltip="{{ booking.start|naturaltime }}">{{ booking.start }}</span></td>
           <td><span data-tooltip="{{ booking.length }}">{{ booking.length|naturaldelta }}</span></td>
-          <td>{{ booking.state }}</td>
+          <td>{{ booking.state|title }}</td>
           <td>
             <a href="{% url 'booking_detail' booking.id %}">Details</a>
             {% for transition in booking.available_state_transitions %}

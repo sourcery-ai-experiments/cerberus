@@ -406,9 +406,9 @@ executing==2.0.1 \
     --hash=sha256:35afe2ce3affba8ee97f2d69927fa823b08b472b7b994e36a52a964b93d16147 \
     --hash=sha256:eac49ca94516ccc753f9fb5ce82603156e590b27525a8bc32cce8ae302eb61bc
     # via icecream
-faker==23.3.0 \
-    --hash=sha256:117ce1a2805c1bc5ca753b3dc6f9d567732893b2294b827d3164261ee8f20267 \
-    --hash=sha256:458d93580de34403a8dec1e8d5e6be2fee96c4deca63b95d71df7a6a80a690de
+faker==24.0.0 \
+    --hash=sha256:2456d674f40bd51eb3acbf85221277027822e529a90cc826453d9a25dff932b1 \
+    --hash=sha256:ea6f784c40730de0f77067e49e78cdd590efb00bec3d33f577492262206c17fc
 filelock==3.13.1 \
     --hash=sha256:521f5f56c50f8426f5e03ad3b281b490a87ef15bc6c526f168290f0c7148d44e \
     --hash=sha256:57dbda9b35157b05fb3e58ee91448612eb674172fab98ee235ccb0b5bee19a1c
@@ -834,9 +834,9 @@ pyproject-hooks==1.0.0 \
     # via
     #   build
     #   pip-tools
-pytest==8.1.0 \
-    --hash=sha256:ee32db7af8de4629a455806befa90559f307424c07b8413ccfc30bf5b221dd7e \
-    --hash=sha256:f8fa04ab8f98d185113ae60ea6d79c22f8143b14bc1caeced44a0ab844928323
+pytest==8.0.2 \
+    --hash=sha256:d4051d623a2e0b7e51960ba963193b09ce6daeb9759a451844a21e4ddedfc1bd \
+    --hash=sha256:edfaaef32ce5172d5466b5127b42e0d6d35ebbe4453f0e3505d96afd93f6b096
     # via
     #   pytest-clarity
     #   pytest-django

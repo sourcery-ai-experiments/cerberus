@@ -35,11 +35,11 @@ pyproject.toml:
 
 requirements.%.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
-	$(UV_PATH) pip compile --generate-hashes --extra $* $(filter-out $<,$^) > $@
+	python -m uv pip compile --generate-hashes --extra $* $(filter-out $<,$^) > $@
 
 requirements.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
-	$(UV_PATH) pip compile --generate-hashes $(filter-out $<,$^) > $@
+	python -m uv pip compile --generate-hashes $(filter-out $<,$^) > $@
 
 .direnv: .envrc
 	@python -m ensurepip
@@ -93,10 +93,10 @@ watch-css: ## Watch and build the css
 
 install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
-	$(UV_PATH) pip sync $(filter-out $<,$^)
+	python -m uv pip sync $(filter-out $<,$^)
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
-	@uv pip install cogapp
+	python -m uv pip install cogapp
 
 $(COG_FILE):
 	find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@

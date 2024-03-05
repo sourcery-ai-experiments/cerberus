@@ -43,7 +43,7 @@
         <div class="tabs">
             <section id="bookings" class="tab-content" x-show="active == 'bookings'">
                 <h3>Bookings</h3>
-                {% include "cerberus/components/booking_list.html" %}
+                {% include "cerberus/components/booking_list.html" with bookings=customer.upcoming_bookings hide_customer=True %}
             </section>
             <section id="pets" class="tab-content" x-show="active == 'pets'">
                 <h3>Pets</h3>
