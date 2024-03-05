@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev css cog
+.PHONY: help clean test install all init dev css js cog
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
@@ -94,6 +94,14 @@ watch-css: ## Watch and build the css
 install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
 	python -m uv pip sync $(filter-out $<,$^)
+
+cerberus_crm/static/js/htmx.min.js:
+	curl -sL https://unpkg.com/htmx.org > $@
+
+cerberus_crm/static/js/alpine.min.js:
+	curl -sL https://unpkg.com/alpinejs > $@
+
+js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js ## Fetch the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
