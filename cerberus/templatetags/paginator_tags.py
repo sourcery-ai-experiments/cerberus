@@ -1,3 +1,6 @@
+# Standard Library
+from collections.abc import Generator
+
 # Django
 from django import template
 from django.core.paginator import Paginator
@@ -5,10 +8,27 @@ from django.core.paginator import Paginator
 register = template.Library()
 
 
+def get_pages(paginator: Paginator, number: int | float | str | None, total: int = 7) -> Generator[int, None, None]:
+    number = paginator.validate_number(number)
+
+    if paginator.num_pages <= total:
+        yield from paginator.page_range
+        return
+
+    around: set[int] = set([number])
+    while len(around) < total:
+        if (n := min(around) - 1) > 0:
+            around.add(n)
+        if (n := max(around) + 1) <= paginator.num_pages:
+            around.add(n)
+
+    yield from around
+
+
 @register.simple_tag
-def page_range(paginator: Paginator, number: int, on_each_side: int = 1, on_ends: int = 1):
+def page_range(paginator: Paginator, number: int, total: int = 7):
     try:
-        return paginator.get_elided_page_range(number=number, on_each_side=on_each_side, on_ends=on_ends)  # type: ignore
+        return get_pages(paginator, number, total)
     except AttributeError:
         return []
 

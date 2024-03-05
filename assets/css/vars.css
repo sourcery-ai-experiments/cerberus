@@ -12,7 +12,7 @@
 
   --overdue: var(--negative);
 
-  --fab-size: 3rem;
+  --fab-size: 3em;
 
   --pico-dropdown-background-color: var(--pico-background-color);
   --pico-dropdown-border-color: var(--pico-primary-border);

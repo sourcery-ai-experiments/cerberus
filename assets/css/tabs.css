@@ -1,0 +1,56 @@
+:root {
+  --pico-tab-background-color: var(--pico-background-color);
+  --pico-tab-border-color: var(--pico-muted-color);
+  --pico-tab-border-color-hover: var(--pico-muted-border-color);
+  --pico-tab-border-width: var(--pico-border-width);
+}
+
+.tab-wrapper {
+  &:not(.active) {
+    .tabs {
+      & > .tab-content {
+        display: none;
+      }
+
+      & > .tab-content:target {
+        display: block;
+      }
+
+      &:not(:has(.tab-content:target)) {
+        & > .tab-content:first-of-type {
+          display: block;
+        }
+      }
+    }
+  }
+
+  & > nav {
+    display: flex;
+    justify-content: start;
+    padding: 0 0.5em;
+    margin-bottom: 1em;
+
+    border-bottom: var(--pico-tab-border-width) solid
+      var(--pico-tab-border-color);
+
+    & > * {
+      padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
+      cursor: pointer;
+      border: var(--pico-tab-border-width) solid transparent;
+      border-top-left-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
+      margin-bottom: calc(-1 * var(--pico-tab-border-width));
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--pico-tab-border-color-hover)
+          var(--pico-tab-border-color-hover) transparent;
+      }
+
+      &.active {
+        border-color: var(--pico-tab-border-color) var(--pico-tab-border-color)
+          var(--pico-tab-background-color);
+      }
+    }
+  }
+}

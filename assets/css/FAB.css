@@ -3,17 +3,12 @@
   color: var(--pico-primary-inverse);
   aspect-ratio: 1;
 
-  box-shadow:
-    rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px,
-    rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px,
-    rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  box-shadow: var(--pico-box-shadow);
 
   position: fixed;
   display: flex;
-  bottom: 1em;
-  right: 1em;
+  bottom: var(--pico-spacing);
+  right: var(--pico-spacing);
   border-radius: 50%;
   width: var(--fab-size);
   height: var(--fab-size);
@@ -23,7 +18,7 @@
 
   &:hover {
     background: var(--pico-primary-hover-background);
-    color: var(--contrast-hover);
+    color: var(--pico-primary-hover);
     text-decoration: none;
   }
 
@@ -31,9 +26,6 @@
     background: var(--pico-primary-hover-background);
     opacity: 0.8;
     text-decoration: none;
-    box-shadow:
-      rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
-      rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
   }
 
   &[data-char] {

@@ -1,0 +1,21 @@
+<div class="tab-wrapper"
+{# fmt:off #}
+    x-data="{
+    active: '{{ component_inital }}',
+    setActive(section) {
+        if (section != this.active) {
+            this.active = section;
+            window.location='#'+section;
+        }
+    },
+    navClass(section) {
+        return section == this.active ? 'active' : '';
+    }
+}"
+{# fmt:on #}
+     x-init="active = window.location.hash.replace(/^#/,'') || active"
+     :class="active != '' ? 'active' : ''"
+     @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ component_inital }}'"
+>
+    {{ component_block }}
+</div>

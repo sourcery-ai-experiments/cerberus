@@ -2,25 +2,35 @@
 {% load crispy_forms_tags %}
 
 {% page_range paginator page_obj.number as pages %}
-<ol
-  hx-boost="true"
-  hx-target="{{ hx_target }}"
-  hx-swap="outerHTML"
-  role="pagination"
-  aria-label="pagination"
->
-  {% for i in pages %}
+{% if paginator.num_pages > 1 %}
+  <ol
+    hx-boost="true"
+    hx-target="{{ hx_target }}"
+    hx-swap="outerHTML"
+    role="pagination"
+    aria-label="pagination"
+  >
     <li>
-      {% if i|is_numeric %}
+      <a
+        {% if page_obj.number != 1 %}href="{{ base_url }}"{% endif %}
+        aria-label="Goto first page"
+      >&laquo;</a>
+    </li>
+    {% for i in pages %}
+      <li>
         <a
-          {% if i == page_obj.number %}class="current"{% endif %}
+          {% if i == page_obj.number %}aria-current="page"{% endif %}
           {% if i != page_obj.number %}href="{{ base_url }}?{% querystring page=i %}"{% endif %}
           aria-label="Goto page {{ i }}"
         >{{ i }}</a
           >
-      {% else %}
-        <span>{{ i }}</span>
-      {% endif %}
+        </li>
+    {% endfor %}
+    <li>
+      <a
+        {% if page_obj.number != paginator.num_pages %}href="{{ base_url }}?{% querystring page=paginator.num_pages %}"{% endif %}
+        aria-label="Goto last page"
+      >&raquo;</a>
     </li>
-  {% endfor %}
-</ol>
+  </ol>
+{% endif %}

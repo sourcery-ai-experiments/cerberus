@@ -4,6 +4,23 @@ body {
   }
 }
 
+/* start: small screen hack */
+header {
+  & > nav {
+    & > ul {
+      flex-wrap: wrap;
+    }
+  }
+}
+
+nav[aria-label="breadcrumb"] {
+  ol,
+  ul {
+    flex-wrap: wrap;
+  }
+}
+/* end: small screen hack */
+
 .inline {
   display: flex;
 

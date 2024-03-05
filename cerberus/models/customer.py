@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from . import Booking, Charge, Contact, Pet, Vet
 
 # Locals
+from .booking import Booking
 from .invoice import Invoice
 
 
@@ -120,6 +121,9 @@ class Customer(models.Model):
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
+    def outstanding_invoices(self):
+        return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
+
     @property
     def issues(self):
         issues = []
@@ -133,10 +137,11 @@ class Customer(models.Model):
         return issues
 
     @property
-    def bookings(self):
-        bookings: list["Booking"] = []
+    def bookings(self) -> QuerySet["Booking"]:
+        return Booking.objects.filter(pet__in=self.pets.all()).order_by("start")
 
-        for pet in self.pets.all():
-            bookings.extend(pet.bookings.all())
-
-        return bookings
+    @property
+    def upcoming_bookings(self) -> QuerySet["Booking"]:
+        return self.bookings.filter(start__gte=datetime.today()).exclude(
+            state__in=[Booking.States.CANCELED.value, Booking.States.COMPLETED.value]
+        )

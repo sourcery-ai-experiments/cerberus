@@ -11,29 +11,63 @@
             <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
         </ul>
     {% endcomponent %}
-    <div class="details" role="main">
-        <div class="name">{{ customer.name }}</div>
-        <div class="email">{{ customer.invoice_email|mailto }}</div>
-        {{ customer.invoice_address|linebreaks }}
+    <div class="row">
+        <div class="details col" role="main">
+            <div class="name">{{ customer.name }}</div>
+            <div class="email">{{ customer.invoice_email|mailto }}</div>
+            {{ customer.invoice_address|linebreaks }}
+        </div>
+        {% if customer.invoiced_unpaid %}
+            <div class="customer finance">
+                <table>
+                    <tr>
+                        <th colspan="2">Outstanding:</th>
+                        <th>{{ customer.invoiced_unpaid }}</th>
+                    </tr>
+                    {% for invoice in customer.outstanding_invoices %}
+                        <tr class="invoice">
+                            <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
+                            <td class="{{ invoice.overdue|yesno:'overdue,due' }}">{{ invoice.due }}</td>
+                            <td>{{ invoice.total }}</td>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
     </div>
-    <h3>Pets</h3>
-    <div class="columns half">
-        {% for pet in customer.active_pets %}
-            {% url 'pet_detail' pet.id as url %}
-            {% include "components/card.html" with url=url title=pet.name type="Pet" description=pet.description %}
-        {% empty %}
-            <p>No pets</p>
-        {% endfor %}
-    </div>
-
-    <h3>Contacts</h3>
-    <div class="columns third">
-        {% for contact in customer.contacts.all %}
-            {% include "components/card.html" with title=contact.name type="Contact" description=contact.details %}
-        {% empty %}
-            <p>No contacts</p>
-        {% endfor %}
-    </div>
+    {% component "cerberus/components/tab-wrapper.html" inital="bookings" %}
+        <nav class="tab-nav">
+            <a href="#bookings" :class="navClass('bookings')" @click.prevent="setActive('bookings')">Bookings</a>
+            <a href="#pets" :class="navClass('pets')" @click.prevent="setActive('pets')">Pets</a>
+            <a href="#contacts" :class="navClass('contacts')" @click.prevent="setActive('contacts')">Contacts</a>
+        </nav>
+        <div class="tabs">
+            <section id="bookings" class="tab-content" x-show="active == 'bookings'">
+                <h3>Bookings</h3>
+                {% include "cerberus/components/booking_list.html" with bookings=customer.upcoming_bookings hide_customer=True %}
+            </section>
+            <section id="pets" class="tab-content" x-show="active == 'pets'">
+                <h3>Pets</h3>
+                <div class="grid-3">
+                    {% for pet in customer.active_pets %}
+                        {% url 'pet_detail' pet.id as url %}
+                        {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
+                    {% empty %}
+                        <p>No pets</p>
+                    {% endfor %}
+                </div>
+            </section>
+            <section id="contacts" class="tab-content" x-show="active == 'contacts'">
+                <h3>Contacts</h3>
+                <div class="grid-3">
+                    {% for contact in customer.contacts.all %}
+                        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+                    {% empty %}
+                        <p>No contacts</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    {% endcomponent %}
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

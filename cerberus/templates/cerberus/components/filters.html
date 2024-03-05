@@ -2,7 +2,7 @@
 
 {% if filter %}
   <section>
-    <form method="get"{% if url %} hx-get="{{ url }}" hx-trigger="change" hx-swap="morph:outerHTML"{% if target %} hx-target="{{ target }}" {% endif %}hx-push-url="true" {% endif %}class="inline filter-form">
+    <form method="get"{% if url %} hx-get="{{ url }}" hx-trigger="keyup delay:.5s, change" hx-swap="outerHTML"{% if target %} hx-target="{{ target }}" {% endif %}hx-push-url="true" {% endif %}class="inline filter-form">
       <input type="hidden" id="sort" name="sort" x-model="sort" value="{{ sort }}" />
       <input type="hidden" id="sort_order" name="sort_order" x-model="sort_order" value="{{ sort_order }}" />
       <div>

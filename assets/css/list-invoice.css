@@ -1,5 +1,5 @@
-#invoice-list {
-  .overdue {
+.invoice {
+  & .overdue {
     color: var(--overdue);
   }
 }
