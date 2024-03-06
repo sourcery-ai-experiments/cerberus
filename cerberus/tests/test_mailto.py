@@ -2,7 +2,7 @@
 from pytest_django.asserts import assertHTMLEqual
 
 # Locals
-from ..templatetags.mailto import mailto
+from ..templatetags.string_utils import mailto
 
 
 def test_valid_email():
