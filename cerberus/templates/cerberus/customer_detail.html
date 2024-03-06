@@ -29,6 +29,7 @@
                             <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
                             <td class="{{ invoice.overdue|yesno:'overdue,due' }}">{{ invoice.due }}</td>
                             <td>{{ invoice.total }}</td>
+                        </tr>
                     {% endfor %}
                 </table>
             </div>
