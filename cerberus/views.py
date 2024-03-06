@@ -84,16 +84,24 @@ class FilterableMixin(GenericModelView):
         return context
 
 
+class SortableFieldError(Exception):
+    pass
+
+
 class SortableViewMixin(GenericModelView):
     sortable_fields: list[str] = []
 
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        if (sort := self.request.GET.get("sort")) in self.sortable_fields:
-            sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
-            if sort:
+        if sort := self.request.GET.get("sort"):
+            if sort in self.sortable_fields:
+                sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
                 queryset = queryset.order_by(f"{sort_order}{sort}")
+            else:
+                raise SortableFieldError(
+                    f"Invalid sort field '{sort}', must be one of {', '.join(self.sortable_fields)}"
+                )
 
         return queryset
 
@@ -332,6 +340,7 @@ class VetCRUD(CRUDViews):
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
+    sortable_fields = ["pet__customer", "pet", "service", "start"]
 
 
 class BookingStateActions(TransitionView):
