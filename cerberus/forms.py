@@ -26,6 +26,9 @@ class SingleMoneyWidget(MoneyWidget):
             **kwargs,
         )
 
+    def id_for_label(self, id_):
+        return f"{id_}_0"
+
 
 class CustomerForm(forms.ModelForm):
     class Meta:
