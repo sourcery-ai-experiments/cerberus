@@ -14,3 +14,8 @@ def mailto(input: str) -> str:
         return mark_safe(f'<a href="mailto:{input}">{input}</a>')
     except ValidationError:
         return input
+
+
+@register.filter
+def linebreakto(input: str, to: str) -> str:
+    return to.join(input.splitlines())

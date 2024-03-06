@@ -1,5 +1,4 @@
 # Django
-# Django
 from django import template
 
 # Third Party
