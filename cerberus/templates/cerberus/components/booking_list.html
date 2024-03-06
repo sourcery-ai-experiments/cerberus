@@ -13,10 +13,12 @@
   <table class="htmx-load-target">
     <thead>
       <tr>
-        <th>Pet</th>
-        {% if hide_customer != True %}<th>Customer</th>{% endif %}
-        <th>Service</th>
-        <th>Start</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="pet" %}</th>
+        {% if hide_customer != True %}
+          <th>{% include "cerberus/components/sort_item.html" with field_name="pet__customer" field_label="Customer" %}</th>
+        {% endif %}
+        <th>{% include "cerberus/components/sort_item.html" with field_name="service" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="start" %}</th>
         <th>Duration</th>
         <th>State</th>
         <th>Actions</th>
