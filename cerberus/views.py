@@ -340,7 +340,15 @@ class VetCRUD(CRUDViews):
 class ServiceCRUD(CRUDViews):
     model = Service
     form_class = ServiceForm
-    sortable_fields = ["name", "price"]
+    sortable_fields = [
+        "name",
+        "length",
+        "cost",
+        "cost_per_additional",
+        "max_pet",
+        "max_customer",
+        "display_colour",
+    ]
 
 
 class BookingCRUD(CRUDViews):
