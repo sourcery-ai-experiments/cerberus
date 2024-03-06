@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import F, Q
 from django.db.models.query import QuerySet
 from django.utils.timezone import make_aware
 
@@ -154,6 +154,11 @@ class Booking(models.Model):
     cost = models.PositiveIntegerField()
     start = models.DateTimeField()
     end = models.DateTimeField()
+    length = models.GeneratedField(  # type: ignore
+        expression=F("end") - F("start"),
+        output_field=models.DurationField(),
+        db_persist=True,
+    )
 
     state = FSMField(default=States.PRELIMINARY.value, choices=States.choices, protected=True)  # type: ignore
 
@@ -182,10 +187,6 @@ class Booking(models.Model):
                 self._booking_slot.save()
 
             super().save(*args, **kwargs)
-
-    @property
-    def length(self) -> timedelta:
-        return self.end - self.start
 
     @property
     def booking_slot(self) -> BookingSlot:

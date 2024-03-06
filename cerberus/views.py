@@ -340,7 +340,7 @@ class VetCRUD(CRUDViews):
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
-    sortable_fields = ["pet__customer", "pet", "service", "start"]
+    sortable_fields = ["pet__customer", "pet", "service", "start", "length"]
 
 
 class BookingStateActions(TransitionView):

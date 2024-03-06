@@ -19,7 +19,7 @@
         {% endif %}
         <th>{% include "cerberus/components/sort_item.html" with field_name="service" %}</th>
         <th>{% include "cerberus/components/sort_item.html" with field_name="start" %}</th>
-        <th>Duration</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="length" field_label="Duration" %}</th>
         <th>State</th>
         <th>Actions</th>
       </tr>
