@@ -3,6 +3,7 @@ from datetime import timedelta
 
 # Django
 from django.db import models
+from django.urls import reverse
 
 # Third Party
 import reversion
@@ -28,3 +29,6 @@ class Service(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def get_absolute_url(self) -> str:
+        return reverse("service_detail", kwargs={"pk": self.pk})

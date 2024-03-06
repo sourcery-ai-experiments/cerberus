@@ -2,7 +2,7 @@
 from pytest_django.asserts import assertHTMLEqual
 
 # Locals
-from ..templatetags.string_utils import linebreakto, mailto
+from ..templatetags.string_utils import linebreakto, mailto, unslug
 
 
 def test_mailto_valid_email():
@@ -62,3 +62,39 @@ def test_linebreakto_():
     assert linebreakto(input_str, to_str) == expected_output
 
     print("All tests passed successfully!")
+
+
+def test_unslug_with_single_word():
+    input_str = "hello_world"
+    expected_output = "hello world"
+    assert unslug(input_str) == expected_output
+
+
+def test_unslug_with_multiple_words():
+    input_str = "this_is_a_test"
+    expected_output = "this is a test"
+    assert unslug(input_str) == expected_output
+
+
+def test_unslug_with_no_underscores():
+    input_str = "hello"
+    expected_output = "hello"
+    assert unslug(input_str) == expected_output
+
+
+def test_unslug_with_empty_string():
+    input_str = ""
+    expected_output = ""
+    assert unslug(input_str) == expected_output
+
+
+def test_unslug_with_special_characters():
+    input_str = "special_characters_!@#$%"
+    expected_output = "special characters !@#$%"
+    assert unslug(input_str) == expected_output
+
+
+def test_unslug_with_whitespace_only():
+    input_str = "   "
+    expected_output = "   "
+    assert unslug(input_str) == expected_output

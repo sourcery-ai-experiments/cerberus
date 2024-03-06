@@ -20,8 +20,8 @@ from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListVi
 
 # Locals
 from .filters import CustomerFilter, InvoiceFilter, PetFilter, VetFilter
-from .forms import BookingForm, ChargeForm, CustomerForm, InvoiceForm, PetForm, VetForm
-from .models import Booking, Charge, Customer, Invoice, Pet, Vet
+from .forms import BookingForm, ChargeForm, CustomerForm, InvoiceForm, PetForm, ServiceForm, VetForm
+from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 
 
 @login_required
@@ -335,6 +335,12 @@ class VetCRUD(CRUDViews):
     form_class = VetForm
     filter_class = VetFilter
     sortable_fields = ["name"]
+
+
+class ServiceCRUD(CRUDViews):
+    model = Service
+    form_class = ServiceForm
+    sortable_fields = ["name", "price"]
 
 
 class BookingCRUD(CRUDViews):
