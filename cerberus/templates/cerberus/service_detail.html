@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+{% load field_tags components %}
+
+{% block page_title %}service {{ object.name }}{% endblock %}
+
+{% block content %}
+    {% component "cerberus/components/dropdown.html" %}
+        <ul role="listbox">
+            <li><a href="{% url 'service_update' service.id %}">Edit</a></li>
+            <li><a hx-get="{% url 'service_delete' service.id %}" hx-target="main" hx-swap="afterend" href="{% url 'service_delete' service.id %}">Delete</a></li>
+        </ul>
+    {% endcomponent %}
+
+    <div class="grid pair">
+        <div>Name</div><div>{{ service.name }}</div>
+        <div>Length</div><div>{{ service.length }}</div>
+        <div>Booked Length</div><div>{{ service.booked_length }}</div>
+        <div>Cost</div><div>{{ service.cost }}</div>
+        <div>Cost Per Additional</div><div>{{ service.cost_per_additional }}</div>
+        <div>Max Pet</div><div>{{ service.max_pet }}</div>
+        <div>Max Customer</div><div>{{ service.max_customer }}</div>
+        <div>Display Colour</div><div>{{ service.display_colour }}</div>
+        <div>Created</div><div>{{ service.created }}</div>
+        <div>Last Updated</div><div>{{ service.last_updated }}</div>
+    </div>
+{% endblock %}

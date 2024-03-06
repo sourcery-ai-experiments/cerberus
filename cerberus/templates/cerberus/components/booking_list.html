@@ -31,7 +31,7 @@
           {% if hide_customer != True %}<td>{{ booking.pet.customer.name }}</td>{% endif %}
           <td>{{ booking.service }}</td>
           <td><span data-tooltip="{{ booking.start|naturaltime }}">{{ booking.start }}</span></td>
-          <td><span data-tooltip="{{ booking.length }}">{{ booking.length|naturaldelta }}</span></td>
+          <td><span data-tooltip="{{ booking.length|precisedelta }}">{{ booking.length|naturaldelta }}</span></td>
           <td>{{ booking.state|title }}</td>
           <td>
             <a href="{% url 'booking_detail' booking.id %}">Details</a>

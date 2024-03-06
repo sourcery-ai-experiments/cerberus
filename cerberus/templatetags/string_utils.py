@@ -19,3 +19,8 @@ def mailto(input: str) -> str:
 @register.filter
 def linebreakto(input: str, to: str) -> str:
     return to.join(input.splitlines())
+
+
+@register.filter
+def unslug(input: str) -> str:
+    return input.replace("_", " ")

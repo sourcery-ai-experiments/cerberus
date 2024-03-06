@@ -1,0 +1,50 @@
+{% load crispy_forms_tags %}
+{% load humanize human_duration %}
+
+{% url 'service_list' as pagi_url %}
+
+{% if not request.htmx %}
+  <div class="htmx-container" x-data="{sort: '{{ sort }}', sort_order: '{{ sort_order }}'}">
+    {% include 'cerberus/components/filters.html' with url=pagi_url target="#service-list" clear_url=pagi_url %}
+{% endif %}
+<div id="service-list"{% if services is None %} hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>
+  {% include "components/pagination.html" with hx_target="#service-list" base_url=pagi_url %}
+  <table class="htmx-load-target">
+    <thead hx-boost="true" hx-target="#service-list">
+      <tr>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="name" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="length" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="cost" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="cost_per_additional" field_label="Additional" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="max_pet" field_label="Pets" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="max_customer" field_label="Customers" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="display_colour" field_label="Display" %}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for service in services %}
+        <tr class="service">
+          <td>{{ service.name }}</td>
+          <td>{{ service.length|precisedelta }}</td>
+          <td>{{ service.cost }}</td>
+          <td>{{ service.cost_per_additional }}</td>
+          <td>{{ service.max_pet }}</td>
+          <td>{{ service.max_customer }}</td>
+          <td>{{ service.display_colour }}</td>
+          <td>
+            <a href="{% url 'service_detail' service.id %}">Details</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6">No services found</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "components/pagination.html" with hx_target="#service-list" base_url=pagi_url %}
+</div>
+{% if not request.htmx %}
+  </div>
+{% endif %}

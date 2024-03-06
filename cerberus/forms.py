@@ -5,7 +5,7 @@ from django import forms
 from djmoney.forms import MoneyWidget
 
 # Locals
-from .models import Booking, Charge, Customer, Invoice, Pet, Vet
+from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 
 
 class SingleMoneyWidget(MoneyWidget):
@@ -25,6 +25,9 @@ class SingleMoneyWidget(MoneyWidget):
             *args,
             **kwargs,
         )
+
+    def id_for_label(self, id_):
+        return f"{id_}_0"
 
 
 class CustomerForm(forms.ModelForm):
@@ -113,4 +116,23 @@ class ChargeForm(forms.ModelForm):
         widgets = {
             "line": SingleMoneyWidget(attrs={"x-model.number.fill": "line", "min": "0"}),
             "quantity": forms.NumberInput(attrs={"x-model.number.fill": "quantity"}),
+        }
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = [
+            "name",
+            "length",
+            "booked_length",
+            "cost",
+            "cost_per_additional",
+            "max_pet",
+            "max_customer",
+            "display_colour",
+        ]
+        widgets = {
+            "cost": SingleMoneyWidget(),
+            "cost_per_additional": SingleMoneyWidget(),
         }
