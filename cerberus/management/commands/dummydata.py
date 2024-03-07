@@ -13,7 +13,7 @@ from django.utils.timezone import make_aware
 from faker import Faker
 
 # Locals
-from ...models import Charge, Contact, Customer, Invoice, Pet, Vet
+from ...models import Charge, Contact, Customer, Invoice, Pet, Service, Vet
 
 try:
     # Third Party
@@ -40,6 +40,34 @@ class Command(BaseCommand):
         self.create_dummy_contacts()
         self.create_dummy_pets()
         self.create_dummy_invoices()
+        self.create_dummy_services()
+
+    def create_dummy_services(self):
+        fake = Faker("en_GB")
+
+        walk_defaults = {
+            "cost": 12,
+            "length": timedelta(minutes=60),
+            "booked_length": timedelta(minutes=120),
+            "max_pet": 4,
+        }
+        fake.color
+
+        services = [
+            {"name": "Walk", "max_customer": 4, "display_colour": "#00ad3d", **walk_defaults},
+            {"name": "Solo Walk", "max_customer": 1, "display_colour": "#0025e0", **walk_defaults},
+            {
+                "name": "Dropin",
+                "max_customer": 1,
+                "max_pet": 1,
+                "cost": 10,
+                "display_colour": "#ffae00",
+                "length": timedelta(minutes=30),
+                "booked_length": timedelta(minutes=60),
+            },
+        ]
+        for service in services:
+            Service.objects.get_or_create(name=service["name"], defaults=service)
 
     def create_dummy_vets(self):
         fake = Faker("en_GB")

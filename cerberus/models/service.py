@@ -26,6 +26,7 @@ class Service(models.Model):
 
     class Meta:
         ordering = ("name",)
+        unique_together = (("name", "cost", "max_pet", "max_customer", "length"),)
 
     def __str__(self) -> str:
         return f"{self.name}"
