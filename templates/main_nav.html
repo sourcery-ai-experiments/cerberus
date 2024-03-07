@@ -14,12 +14,15 @@
     <li><a href="{% url 'booking_list' %}">Bookings</a></li>
     <li><a href="{% url 'invoice_list' %}">Invoices</a></li>
     <li>
-      <form id="logout-form" method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" role="link">
-          {% include 'icons/log-out.svg' %}
-        </button>
-      </form>
+      <a class="js" href="{% url 'logout' %}" hx-post="{% url 'logout' %}">{% include 'icons/log-out.svg' %}</a>
+      <noscript>
+        <form id="logout-form" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" role="link">
+            {% include 'icons/log-out.svg' %}
+          </button>
+        </form>
+      </noscript>
     </li>
   </ul>
 </nav>
