@@ -1,7 +1,7 @@
 *:has(> table) {
   display: block;
   max-width: 100%;
-  overflow-y: auto;
+  overflow: auto;
 
   --shadow-size: 15px;
   --shadow-background: var(--pico-background-color);
