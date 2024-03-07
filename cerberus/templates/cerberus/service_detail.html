@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% load humanize %}
+{% load humanize human_duration %}
 {% load field_tags components %}
 
-{% block page_title %}service {{ object.name }}{% endblock %}
+{% block page_title %}Service {{ object.name }}{% endblock %}
 
 {% block content %}
     {% component "cerberus/components/dropdown.html" %}
@@ -15,14 +15,14 @@
 
     <div class="grid pair">
         <div>Name</div><div>{{ service.name }}</div>
-        <div>Length</div><div>{{ service.length }}</div>
-        <div>Booked Length</div><div>{{ service.booked_length }}</div>
+        <div>Length</div><div>{{ service.length|precisedelta }}</div>
+        <div>Booked Length</div><div>{{ service.booked_length|precisedelta }}</div>
         <div>Cost</div><div>{{ service.cost }}</div>
         <div>Cost Per Additional</div><div>{{ service.cost_per_additional }}</div>
         <div>Max Pet</div><div>{{ service.max_pet }}</div>
         <div>Max Customer</div><div>{{ service.max_customer }}</div>
-        <div>Display Colour</div><div>{{ service.display_colour }}</div>
-        <div>Created</div><div>{{ service.created }}</div>
-        <div>Last Updated</div><div>{{ service.last_updated }}</div>
+        <div>Display Colour</div><div><span class="pill" style="background: {{ service.display_colour }}">{{ service.display_colour }}</span></div>
+        <div>Created</div><div>{% natural_time service.created %}</div>
+        <div>Last Updated</div><div>{% natural_time service.last_updated %}</div>
     </div>
 {% endblock %}

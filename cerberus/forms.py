@@ -135,4 +135,5 @@ class ServiceForm(forms.ModelForm):
         widgets = {
             "cost": SingleMoneyWidget(),
             "cost_per_additional": SingleMoneyWidget(),
+            "display_colour": forms.TextInput(attrs={"type": "color"}),
         }

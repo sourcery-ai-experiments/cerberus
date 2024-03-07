@@ -1,0 +1,7 @@
+.pill {
+  padding: 0.25em 0.75em;
+  border-radius: 1em;
+  font-size: 0.75em;
+  text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
+  color: var(--pico-contrast);
+}

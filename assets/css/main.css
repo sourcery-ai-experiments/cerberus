@@ -25,6 +25,8 @@
 
 @import "login.css";
 
+@import "pill.css";
+
 body {
   overflow-y: scroll;
 }
