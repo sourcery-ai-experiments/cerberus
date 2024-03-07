@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 "max_customer": 1,
                 "max_pet": 1,
                 "cost": 10,
-                "display_colour": "#ffae00",
+                "display_colour": "#cc8b00",
                 "length": timedelta(minutes=30),
                 "booked_length": timedelta(minutes=60),
             },
