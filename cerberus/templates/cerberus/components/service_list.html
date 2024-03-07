@@ -31,7 +31,9 @@
           <td>{{ service.cost_per_additional }}</td>
           <td>{{ service.max_pet }}</td>
           <td>{{ service.max_customer }}</td>
-          <td>{{ service.display_colour }}</td>
+          <td>
+            <span class="pill" style="background: {{ service.display_colour }}">{{ service.display_colour }}</span>
+          </td>
           <td>
             <a href="{% url 'service_detail' service.id %}">Details</a>
           </td>
