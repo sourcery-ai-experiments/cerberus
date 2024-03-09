@@ -1,5 +1,5 @@
 .PHONY: help clean test install all init dev css js cog
-.DEFAULT_GOAL := install
+.DEFAULT_GOAL := dev
 .PRECIOUS: requirements.%.in
 
 HOOKS=$(.git/hooks/pre-commit)
@@ -14,6 +14,8 @@ WHEEL_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/wheel
 PRE_COMMIT_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pre-commit
 UV_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/uv
 COG_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/cog
+COGABLE_FILES:=$(shell find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \;)
+MIGRATION_FILES:=$(shell ls -d -- **/migrations/*.py)
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -41,21 +43,21 @@ requirements.txt: $(UV_PATH) pyproject.toml
 	@echo "Builing $@"
 	python -m uv pip compile --generate-hashes $(filter-out $<,$^) > $@
 
-.direnv: .envrc
-	@python -m ensurepip
-	@python -m pip install --upgrade pip
-	@touch $@ $^
+.direnv: .envrc $(UV_PATH) requirements.txt $(REQS)
+	@echo "Installing $(filter-out $<,$^)"
+	python -m uv pip sync requirements.txt $(REQS)
+	@touch $@
 
 .git/hooks/pre-commit: .git $(PRE_COMMIT_PATH) .pre-commit-config.yaml
 	pre-commit install
 
 .envrc:
 	@echo "Setting up .envrc then stopping"
-	@echo "layout python python3.11" > $@
+	@echo "layout python python3.12" > $@
 	@touch -d '+1 minute' $@
 	@false
 
-$(PIP_PATH):
+$(PIP_PATH): .envrc
 	@python -m ensurepip
 	@python -m pip install --upgrade pip
 
@@ -68,7 +70,7 @@ $(UV_PATH): $(PIP_PATH) $(WHEEL_PATH)
 $(PRE_COMMIT_PATH): $(PIP_PATH) $(WHEEL_PATH)
 	@python -m pip install pre-commit
 
-init: .direnv $(PIP_SYNC_PATH) requirements.dev.txt .git/hooks/pre-commit ## Initalise a enviroment
+init: .envrc $(UV_PATH) requirements.dev.txt .direnv .git/hooks/pre-commit ## Initalise a enviroment
 	@python -m pip install --upgrade pip
 
 clean: ## Remove all build files
@@ -106,8 +108,17 @@ js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js ## F
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
 
-$(COG_FILE):
+$(COG_FILE): $(COGABLE_FILES)
 	find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
 
-cog: $(COG_PATH) $(COG_FILE) ## Run cog
-	@cog -rc @$(COG_FILE)
+$(COGABLE_FILES): $(COG_PATH)
+	cog -rc $?
+
+cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run co
+
+db.sqlite3: .direnv $(MIGRATION_FILES)
+	python manage.py migrate
+	python manage.py dummydata
+	@touch $@
+
+dev: .direnv db.sqlite3 cog css js ## Setup the project read for development
