@@ -3,7 +3,7 @@
 {% load humanize human_duration %}
 {% load field_tags components %}
 
-{% block page_title %}Service {{ object.name }}{% endblock %}
+{% block page_title %}{{ object.name }} | Service{% endblock %}
 
 {% block content %}
     {% component "cerberus/components/dropdown.html" %}

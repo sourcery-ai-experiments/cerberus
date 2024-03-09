@@ -10,7 +10,7 @@ from django.db.models.functions import Concat
 from django_filters import rest_framework as filters
 
 # Locals
-from .models import Booking, Customer, Invoice, Pet, Vet
+from .models import Booking, Customer, Invoice, Pet, Service, Vet
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
@@ -99,3 +99,15 @@ class VetFilter(FilterDefaults):
                 "customers__last_name",
             ),
         ).filter(customers__name__contains=value)
+
+
+class ServiceFilter(FilterDefaults):
+    name = filters.CharFilter(lookup_expr="icontains", label="Name")
+    length = filters.DurationFilter()
+    cost = filters.RangeFilter()
+    max_pet = filters.RangeFilter()
+    max_customer = filters.RangeFilter()
+
+    class Meta:
+        model = Service
+        fields = ["name", "length", "cost", "max_pet", "max_customer"]
