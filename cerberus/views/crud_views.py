@@ -150,7 +150,14 @@ class BreadcrumbMixin(GenericModelView):
         return context
 
 
-def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwargs):
+def extra_view(
+    detail: bool,
+    methods: list[str] | None = None,
+    url_path: str | None = None,
+    url_name: str | None = None,
+    route_extras: list[str] | None = None,
+    **kwargs,
+):
     methods = ["get"] if methods is None else methods
     methods = [method.lower() for method in methods]
 
@@ -159,6 +166,7 @@ def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwarg
         func.detail = detail
         func.url_path = url_path or func.__name__.replace("_", "-")
         func.url_name = url_name
+        func.route_extras = route_extras
 
         return func
 
@@ -266,13 +274,17 @@ class CRUDViews(GenericModelView):
         for name in dir(cls):
             view = getattr(cls, name)
             if all(hasattr(view, attr) for attr in ["methods", "detail", "url_path", "url_name"]):
+                view_func = getattr(cls(), name)
+
+                route_parts = [model_name]
                 if view.detail:
-                    route = f"{model_name}/<int:pk>/{view.url_path}/"
-                else:
-                    route = f"{model_name}/{view.url_path}/"
+                    route_parts.append("<int:pk>")
+                route_parts.append(view.url_path)
+                if view.route_extras:
+                    route_parts.extend(view.extra_route)
+                route = f"{"/".join(route_parts)}/"
 
                 url_name = view.url_name or f"{model_name}_{view.__name__}"
-                view_func = getattr(cls(), name)
                 if cls._extra_requires_login():
                     view_func = login_required(view_func)
 
