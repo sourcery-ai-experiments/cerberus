@@ -94,6 +94,10 @@ class VetFilter(FilterDefaults):
         model = Vet
         fields = ["name"]
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        return queryset.distinct()
+
 
 class ServiceFilter(FilterDefaults):
     name = filters.CharFilter(lookup_expr="icontains")
