@@ -21,6 +21,7 @@
 @import "list-invoice.css";
 
 @import "form.css";
+@import "range-input.css";
 @import "htmx.css";
 
 @import "login.css";

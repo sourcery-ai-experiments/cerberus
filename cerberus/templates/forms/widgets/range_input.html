@@ -1,0 +1,28 @@
+<div
+    class="range-input"
+    x-data="{ start: '{{ widget.subwidgets.0.value|default_if_none:'' }}', stop: '{{ widget.subwidgets.1.value|default_if_none:'' }}' }"
+    x-init="start = stop ? Math.min(parseInt(start), parseInt(stop) - 1) : start; stop = start ? Math.max(parseInt(start) + 1, parseInt(stop)) : stop"
+>
+    {% with widget.subwidgets.0 as widget %}
+        <input
+            x-model="start"
+            type="number"
+            min="0"
+            :max="parseInt(stop) - 1"
+            x-on:change="start = start && stop ? Math.min(start, parseInt(stop) - 1) : start"
+            name="{{ widget.name }}"
+            {% include "django/forms/widgets/attrs.html"  %}
+        />
+    {% endwith %}
+    <span>-</span>
+    {% with widget.subwidgets.1 as widget %}
+        <input
+            x-model="stop"
+            type="number"
+            :min="parseInt(start) + 1"
+            x-on:change="stop = start && stop ? Math.max(parseInt(start) + 1, stop) : stop"
+            name="{{ widget.name }}"
+            {% include "django/forms/widgets/attrs.html"  %}
+        />
+    {% endwith %}
+</div>

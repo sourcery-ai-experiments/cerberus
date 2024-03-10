@@ -3,14 +3,13 @@ from distutils.util import strtobool
 
 # Django
 from django import forms
-from django.db.models import Value
-from django.db.models.functions import Concat
 
 # Third Party
 from django_filters import rest_framework as filters
+from django_filters.widgets import RangeWidget
 
 # Locals
-from .models import Booking, Customer, Invoice, Pet, Vet
+from .models import Booking, Customer, Invoice, Pet, Service, Vet
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
@@ -18,6 +17,10 @@ ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 class Switch(forms.widgets.Input):
     template_name = "forms/widgets/switch.html"
     input_type = "checkbox"
+
+
+class RangeInput(RangeWidget):
+    template_name = "forms/widgets/range_input.html"
 
 
 class FilterDefaults(filters.FilterSet):
@@ -83,7 +86,7 @@ class InvoiceFilter(FilterDefaults):
 
 
 class VetFilter(FilterDefaults):
-    customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
+    customers__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
 
@@ -91,11 +94,14 @@ class VetFilter(FilterDefaults):
         model = Vet
         fields = ["name"]
 
-    def customer_name_filter(self, queryset, name, value):
-        return queryset.annotate(
-            customers__name=Concat(
-                "customers__first_name",
-                Value(" "),
-                "customers__last_name",
-            ),
-        ).filter(customers__name__contains=value)
+
+class ServiceFilter(FilterDefaults):
+    name = filters.CharFilter(lookup_expr="icontains")
+    length = filters.DurationFilter()
+    cost = filters.RangeFilter(widget=RangeInput)
+    max_pet = filters.RangeFilter(widget=RangeInput)
+    max_customer = filters.RangeFilter(widget=RangeInput)
+
+    class Meta:
+        model = Service
+        fields = []

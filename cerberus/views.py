@@ -19,7 +19,7 @@ from django_filters import FilterSet
 from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
 
 # Locals
-from .filters import CustomerFilter, InvoiceFilter, PetFilter, VetFilter
+from .filters import CustomerFilter, InvoiceFilter, PetFilter, ServiceFilter, VetFilter
 from .forms import BookingForm, ChargeForm, CustomerForm, InvoiceForm, PetForm, ServiceForm, VetForm
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 
@@ -98,7 +98,7 @@ class SortableViewMixin(GenericModelView):
             if sort in self.sortable_fields:
                 sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
                 queryset = queryset.order_by(f"{sort_order}{sort}")
-            else:
+            elif sort != "None":
                 raise SortableFieldError(
                     f"Invalid sort field '{sort}', must be one of {', '.join(self.sortable_fields)}"
                 )
@@ -340,6 +340,7 @@ class VetCRUD(CRUDViews):
 class ServiceCRUD(CRUDViews):
     model = Service
     form_class = ServiceForm
+    filter_class = ServiceFilter
     sortable_fields = [
         "name",
         "length",
