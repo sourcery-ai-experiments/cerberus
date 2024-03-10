@@ -17,4 +17,16 @@
         <div>Phone</div><div>{{ vet.phone }}</div>
         <div>Details</div><div>{{ vet.details|default:'-' }}</div>
     </div>
+    <h2>Customers</h2>
+    <ul>
+        {% for customer in vet.customers.all %}
+            <li><a href="{% url 'customer_detail' customer.id %}">{{ customer.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Pets</h2>
+    <ul>
+        {% for pet in vet.pets.all %}
+            <li><a href="{% url 'pet_detail' pet.id %}">{{ pet.name }}</a></li>
+        {% endfor %}
+    </ul>
 {% endblock %}

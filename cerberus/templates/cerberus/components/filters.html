@@ -6,7 +6,7 @@
       method="get"
       {% if url %}
         hx-get="{{ url }}"
-        hx-trigger="keyup changed delay:.5s, change"
+        hx-trigger="keyup delay:.5s, change"
         hx-debounce="200ms"
         hx-swap="outerHTML"
         hx-sync="this:replace"
