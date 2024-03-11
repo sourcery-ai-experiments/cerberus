@@ -1,5 +1,5 @@
 # Locals
-from .booking import BookingCRUD, BookingStateActions
+from .booking import BookingCalenderDay, BookingCalenderMonth, BookingCalenderRedirect, BookingCRUD, BookingStateActions
 from .invoice import InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
 from .views import CustomerCRUD, PetCRUD, ServiceCRUD, VetCRUD, dashboard
 
@@ -11,6 +11,9 @@ __all__ = [
     "ServiceCRUD",
     "BookingCRUD",
     "BookingStateActions",
+    "BookingCalenderMonth",
+    "BookingCalenderDay",
+    "BookingCalenderRedirect",
     "InvoiceUpdateView",
     "InvoiceCreateView",
     "InvoiceCRUD",

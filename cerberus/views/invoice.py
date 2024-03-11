@@ -1,8 +1,11 @@
 # Standard Library
 
+# Standard Library
+from typing import Self
+
 # Django
 from django.forms import modelformset_factory
-from django.http import HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
@@ -69,7 +72,7 @@ class InvoiceCRUD(CRUDViews):
                 return super().get_view_class(action)
 
     @extra_view(detail=True, methods=["get", "post"])
-    def email(self, request, pk):
+    def email(self: Self, request: HttpRequest, pk: int) -> HttpResponse:
         invoice = get_object_or_404(Invoice, pk=pk)
         if request.method != "POST":
             return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
@@ -81,7 +84,7 @@ class InvoiceCRUD(CRUDViews):
         return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
 
     @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
-    def download(self, request, pk: int):
+    def download(self: Self, request: HttpRequest, pk: int) -> HttpResponse:
         invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
         return invoice.get_pdf_response()

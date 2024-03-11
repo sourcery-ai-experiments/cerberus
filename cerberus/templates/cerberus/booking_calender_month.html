@@ -1,0 +1,31 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+    <h2>Bookings drag drop test</h2>
+{% endblock %}
+
+{% block content %}
+    <div id="calender">
+        <h1>Calender | {{ year }} - {{ month }}</h1>
+        <div hx-boost="true" hx-target="#calender">
+            <a href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}">Previous</a>
+            <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"        >Next</a>
+        </div>
+        <div class="calender grid" >
+            {% for day, bookings in calendar %}
+                <div class="{% if day.month == date.month %}selected{% endif %}">
+                    <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
+                        {{ day|date:"d" }}
+                    </a>
+                    <ul>
+                        {% for booking in bookings %}
+                            <li style="--display-colour: {{ booking.service.display_colour }}">{{ booking.start|time:"H:i" }} - {{ booking.end|time:"H:i" }} - {{ booking.pet }} - {{ booking.service }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
