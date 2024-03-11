@@ -30,7 +30,7 @@
           </td>
           <td>{{ customer.active_pets|join:", " }}</td>
           <td>
-            <a href="{% url 'customer_detail' customer.id %}">Details</a>
+            <a href="{% url 'customer_detail' customer.sqid %}">Details</a>
           </td>
         </tr>
       {% empty %}

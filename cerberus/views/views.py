@@ -22,6 +22,9 @@ class CustomerCRUD(CRUDViews):
     filter_class = CustomerFilter
     sortable_fields = ["name"]
 
+    url_lookup: str = "<slug:sqid>"
+    lookup_field: str = "sqid"
+
 
 class PetCRUD(CRUDViews):
     model = Pet

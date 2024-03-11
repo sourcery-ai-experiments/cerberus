@@ -18,7 +18,7 @@
         </ul>
     {% endcomponent %}
     <section class="grid pair">
-        <div>Customer</div><div>{% if invoice.customer %}<a href="{% url 'customer_detail' invoice.customer.id %}">{{ invoice.customer }}</a>{% else %}-{% endif %}</div>
+        <div>Customer</div><div>{% if invoice.customer %}<a href="{% url 'customer_detail' invoice.customer.sqid %}">{{ invoice.customer }}</a>{% else %}-{% endif %}</div>
         <div>Sent to</div><div>{{ invoice.sent_to|default:"-" }}</div>
         <div>Invoice address</div><div>{{ invoice.invoice_address|default:"-"|linebreakto:", " }}</div>
         <div>Due</div><div>{{ invoice.due|default:"-" }}</div>
