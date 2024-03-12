@@ -5,12 +5,19 @@
     grid-gap: min(0.5vw, 0.5em);
 
     & > * {
-      border: var(--pico-border-width) solid var(--pico-muted-border-color);
-      border-radius: var(--pico-border-radius);
       overflow: hidden;
       padding: min(0.25vh, 0.25em) min(0.5vw, 0.5em);
-      min-height: max(16vh, 5em);
       font-size: 0.8rem;
+
+      &.heading {
+        text-align: center;
+      }
+
+      &:has(a) {
+        border: var(--pico-border-width) solid var(--pico-muted-border-color);
+        border-radius: var(--pico-border-radius);
+        min-height: max(16vh, 5em);
+      }
 
       ul {
         &,
@@ -23,16 +30,24 @@
       }
 
       a {
+        --day-color: var(--pico-color);
+        color: var(--day-color);
         text-decoration: none;
         border-bottom: 0.075em solid transparent;
         transition: 0.2s all ease-in-out;
         &:hover {
           text-decoration: none;
-          border-bottom-color: var(--pico-color);
+          border-bottom-color: var(--day-color);
         }
       }
 
-      &:not(.selected) {
+      &.today {
+        a {
+          --day-color: var(--pico-contrast);
+        }
+      }
+
+      &:not(.current) {
         a {
           color: var(--pico-muted-color);
           text-decoration-color: var(--pico-muted-color);

@@ -1,5 +1,7 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
+{% load date_utils %}
+
 {% block page_title %}Bookings{% endblock %}
 
 {% block subtitle %}
@@ -15,9 +17,12 @@
             <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}">Next</a>
             <a href="{% url 'booking_list' %}" hx-boost="false">List View</a>
         </div>
-        <div class="calender grid" >
+        <div class="calender grid">
+            {% for day in days %}
+                <div class="heading">{{ day|day_of_week }}</div>
+            {% endfor %}
             {% for day, bookings in calendar %}
-                <div class="{% if day.month == date.month %}selected{% endif %}">
+                <div class="{% if day.month == date.month %}current{% endif %} {% if day == today %}today{% endif %}">
                     <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
                         {{ day|date:"d" }}
                     </a>

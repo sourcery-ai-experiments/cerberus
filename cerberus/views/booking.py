@@ -61,15 +61,16 @@ class BookingCalenderMonth(TemplateView):
         except ValueError as e:
             raise Http404(f"month {month} not found") from e
 
-        calendar = list(Calendar(MONDAY).itermonthdates(year, month))
+        calendar = Calendar(MONDAY)
 
         context["date"] = date
         context["year"] = year
         context["month"] = month
         context["next_month"] = date + relativedelta(months=1)
         context["prev_month"] = date + relativedelta(months=-1)
-        context["month_calendar"] = calendar
-        context["calendar"] = self.organize_bookings(calendar)
+        context["calendar"] = self.organize_bookings(list(calendar.itermonthdates(year, month)))
+        context["today"] = datetime.date.today()
+        context["days"] = calendar.iterweekdays()
 
         return context
 
