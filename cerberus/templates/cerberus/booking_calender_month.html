@@ -8,10 +8,12 @@
 
 {% block content %}
     <div id="calender">
-        <h1>Calender | {{ year }} - {{ month }}</h1>
+        <h1>Bookings {{ date|date:"F Y" }}</h1>
         <div hx-boost="true" hx-target="#calender">
             <a href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}">Previous</a>
-            <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"        >Next</a>
+            <a href="{% url 'booking_calender_current'%}">Today</a>
+            <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}">Next</a>
+            <a href="{% url 'booking_list' %}" hx-boost="false">List View</a>
         </div>
         <div class="calender grid" >
             {% for day, bookings in calendar %}
