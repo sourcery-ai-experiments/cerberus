@@ -2,6 +2,7 @@
 import datetime
 from calendar import MONDAY, Calendar
 from collections import defaultdict, namedtuple
+from collections.abc import Iterable
 
 # Django
 from django.http import Http404
@@ -38,6 +39,20 @@ class BookingCalenderRedirect(RedirectView):
 class BookingCalenderMonth(TemplateView):
     template_name = "cerberus/booking_calender_month.html"
 
+    def grouped_bookings(self, start: datetime.date, end: datetime.date) -> dict[datetime.date, list[Booking]]:
+        bookings = Booking.objects.filter(start__gte=start, end__lte=end).order_by("start")
+
+        bookings_by_date: dict[datetime.date, list[Booking]] = defaultdict(list)
+        for booking in bookings:
+            bookings_by_date[booking.start.date()].append(booking)
+
+        return bookings_by_date
+
+    def organize_bookings(self, dates: list[datetime.date]) -> Iterable[BookingDay]:
+        bookings_by_date = self.grouped_bookings(dates[0], dates[-1])
+
+        return [BookingDay(date, bookings_by_date[date]) for date in dates]
+
     def get_context_data(self, year, month, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -46,28 +61,15 @@ class BookingCalenderMonth(TemplateView):
         except ValueError as e:
             raise Http404(f"month {month} not found") from e
 
-        calendar = Calendar(MONDAY)
-
-        month_calendar = list(calendar.itermonthdates(year, month))
-        bookings = Booking.objects.filter(
-            start__gte=month_calendar[0],
-            end__lte=month_calendar[-1],
-        ).order_by("start")
-        bookings_by_date: dict[datetime.date, list[Booking]] = defaultdict(list)
-        for booking in bookings:
-            bookings_by_date[booking.start.date()].append(booking)
-
-        booking_days: list[BookingDay] = []
-        for date in month_calendar:
-            booking_days.append(BookingDay(date, bookings_by_date[date]))
+        calendar = list(Calendar(MONDAY).itermonthdates(year, month))
 
         context["date"] = date
         context["year"] = year
         context["month"] = month
         context["next_month"] = date + relativedelta(months=1)
         context["prev_month"] = date + relativedelta(months=-1)
-        context["month_calendar"] = month_calendar
-        context["calendar"] = booking_days
+        context["month_calendar"] = calendar
+        context["calendar"] = self.organize_bookings(calendar)
 
         return context
 
