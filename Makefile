@@ -1,6 +1,7 @@
 .PHONY: help clean test install all init dev css js cog
 .DEFAULT_GOAL := dev
 .PRECIOUS: requirements.%.in
+.FORCE:
 
 HOOKS=$(.git/hooks/pre-commit)
 REQS=$(wildcard requirements.*.txt)
@@ -109,12 +110,12 @@ $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
 
 $(COG_FILE): $(COGABLE_FILES)
-	find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
+	@find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
 
-$(COGABLE_FILES): $(COG_PATH)
-	cog -rc $?
+$(COGABLE_FILES): .FORCE
+	@cog -rc $@
 
-cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run co
+cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run cog
 
 db.sqlite3: .direnv $(MIGRATION_FILES)
 	python manage.py migrate

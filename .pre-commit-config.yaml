@@ -1,11 +1,5 @@
 exclude: migrations/.*\.py|Procfile|[aw]sgi\.py|node_modules|.git|\.polar|inputs/.*
 repos:
-- repo: local
-  hooks:
-  - id: cog
-    language: system
-    name: cog
-    entry: cog -rc @.cogfiles
 - repo: https://github.com/adamchainz/django-upgrade
   rev: 1.16.0
   hooks:

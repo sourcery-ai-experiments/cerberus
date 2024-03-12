@@ -1,0 +1,32 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load date_utils %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+    <h2>Bookings {{ date|date:"l jS F Y" }}</h2>
+{% endblock %}
+
+{% block content %}
+    <div id="day">
+        <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
+
+        <ol>
+            {% for time, bookings in booking_times %}
+                <li>
+                    <div>{{ time|date:"H:i" }}</div>
+                    <div>
+                        {% for booking in bookings %}
+                            <div
+                                class="booking"
+                                data-length="{{ booking.length_minutes }}"
+                                style="--display-colour: {{ booking.service.display_colour }}"
+                            >{{ booking.pet }} - {{ booking.service }}</div>
+                        {% endfor %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+{% endblock %}

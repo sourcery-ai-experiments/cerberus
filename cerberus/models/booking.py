@@ -258,6 +258,12 @@ class Booking(models.Model):
 
         return False
 
+    def length_seconds(self) -> int:
+        return int(self.length.total_seconds())
+
+    def length_minutes(self) -> int:
+        return self.length_seconds() // 60
+
     @save_after
     @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
     def process(self) -> None:
