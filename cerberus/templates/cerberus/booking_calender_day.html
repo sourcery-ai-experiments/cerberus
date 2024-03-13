@@ -19,19 +19,19 @@
                     <div
                         class="dropzone"
                         :class="{ 'adding': adding }"
-                        x-on:drop.prevent="
-                                           const id = event.dataTransfer.getData('text/plain');
-                                           const target = event.target.closest('.dropzone');
-                                           const element = document.getElementById(id);
-                                           target.appendChild(element);
-                                           adding = false;
-                                           removing = false;
-                                           fetch(element.dataset.moveUrl, {
-                                           method: 'PUT',
-                                           headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                                           body: JSON.stringify({ to: target.dataset.time })
-                                           }).then(() => $dispatch('bookingdrop', {id: element.dataset.id }));
-                                          "
+                        x-on:drop.prevent="{# fmt:off #}
+                            const id = event.dataTransfer.getData('text/plain');
+                            const target = event.target.closest('.dropzone');
+                            const element = document.getElementById(id);
+                            target.appendChild(element);
+                            adding = false;
+                            removing = false;
+                            fetch(element.dataset.moveUrl, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                                body: JSON.stringify({ to: target.dataset.time })
+                            }).then(() => $dispatch('bookingdrop', {id: element.dataset.id }));
+                        {# fmt:on #}"
                         x-on:dragover.prevent="adding = true"
                         x-on:dragleave.prevent="adding = false"
                         x-data="{ adding: false, removing: false }"
@@ -45,11 +45,11 @@
                                 draggable="true"
                                 x-data="{ dragging: false }"
                                 x-on:dragend="dragging = false"
-                                x-on:dragstart.self="
-                                                     dragging = true;
-                                                     event.dataTransfer.effectAllowed = 'move';
-                                                     event.dataTransfer.setData('text/plain', event.target.id);
-                                                    "
+                                x-on:dragstart.self="{# fmt:off #}
+                                    dragging = true;
+                                    event.dataTransfer.effectAllowed = 'move';
+                                    event.dataTransfer.setData('text/plain', event.target.id);
+                                {# fmt:on #}"
                                 data-length="{{ booking.length_minutes }}"
                                 data-id="{{ booking.id }}"
                                 data-move-url="{% url 'booking-move-booking' booking.id %}"
