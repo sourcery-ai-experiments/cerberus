@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="day">
+    <div id="day" hx-trigger="bookingdrop" hx-get="{{ request.path }}">
         <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
 
         <ol x-data>
@@ -26,10 +26,16 @@
                                            target.appendChild(element);
                                            adding = false;
                                            removing = false;
+                                           fetch(element.dataset.moveUrl, {
+                                           method: 'PUT',
+                                           headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                                           body: JSON.stringify({ to: target.dataset.time })
+                                           }).then(() => $dispatch('bookingdrop', {id: element.dataset.id }));
                                           "
                         x-on:dragover.prevent="adding = true"
                         x-on:dragleave.prevent="adding = false"
                         x-data="{ adding: false, removing: false }"
+                        data-time="{{ date|date:'Y-m-d' }}T{{ time|date:'H:i' }}:00{{ date|date:'O' }}"
                     >
                         {% for booking in bookings %}
                             <div
@@ -45,8 +51,10 @@
                                                      event.dataTransfer.setData('text/plain', event.target.id);
                                                     "
                                 data-length="{{ booking.length_minutes }}"
+                                data-id="{{ booking.id }}"
+                                data-move-url="{% url 'booking-move-booking' booking.id %}"
                                 style="--display-colour: {{ booking.service.display_colour }}"
-                            >{{ booking.pet }} - {{ booking.service }}</div>
+                            >{{ booking.pet }}</div>
                         {% endfor %}
                     </div>
                 </li>

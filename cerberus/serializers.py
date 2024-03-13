@@ -138,6 +138,7 @@ class ServiceSerializer(DynamicFieldsModelSerializer):
 class BookingSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
     service = ServiceSerializer()
+    booking_slot = BookingSlotSerializer()
 
     class Meta:
         model = Booking
