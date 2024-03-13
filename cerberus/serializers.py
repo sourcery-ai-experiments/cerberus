@@ -7,7 +7,7 @@ from django.db import transaction
 
 # Third Party
 from django_fsm_log.models import StateLog
-from djmoney.contrib.django_rest_framework import MoneyField
+from djmoney.contrib.django_rest_framework.fields import MoneyField
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 

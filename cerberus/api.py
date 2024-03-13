@@ -343,14 +343,17 @@ class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
 
     @action(detail=False, methods=["get"])
     def dropdown(self, request):
-        serializer = PetDropDownSerializer(self.queryset.filter(active=True), many=True)
+        if self.queryset:
+            serializer_data = PetDropDownSerializer(self.queryset.filter(active=True), many=True).data
+        else:
+            serializer_data = []
 
         return Response(
             {
-                "results": serializer.data,
+                "results": serializer_data,
                 "next": None,
                 "previous": None,
-                "count": len(serializer.data),
+                "count": len(serializer_data),
             }
         )
 
