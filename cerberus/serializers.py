@@ -167,7 +167,7 @@ class BookingMoveSerializer(serializers.Serializer):
 
 
 class BookingSlotMoveSerializer(serializers.Serializer):
-    start = serializers.DateTimeField()
+    to = serializers.DateTimeField()
 
 
 class AddressSerializer(DynamicFieldsModelSerializer):

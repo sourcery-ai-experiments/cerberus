@@ -142,7 +142,7 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
 
     @action(detail=True, methods=["PUT"])
     def move_booking_slot(self, request, pk=None):
-        booking = self.get_object()
+        booking: Booking = self.get_object()
         incoming = BookingSlotMoveSerializer(data=request.data)
         incoming.is_valid()
         status = 400
@@ -161,6 +161,22 @@ class BookingSlotViewSet(viewsets.ModelViewSet):
     queryset = BookingSlot.objects.all()
     serializer_class = BookingSlotSerializer
     permission_classes = default_permissions
+
+    @action(detail=True, methods=["PUT"])
+    def move(self, request, pk=None):
+        booking_slot: BookingSlot = self.get_object()
+        incoming = BookingSlotMoveSerializer(data=request.data)
+        incoming.is_valid()
+        status = 400
+
+        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
+            with FSMLogDescriptor(booking_slot, "by", request.user):
+                if booking_slot.move_slot(parser.parse(incoming.data["to"])):
+                    status = 200
+
+        serializer = self.get_serializer(booking_slot)
+
+        return Response({"item": serializer.data, "status": status}, status=status)
 
 
 class ChargeViewSet(viewsets.ModelViewSet):

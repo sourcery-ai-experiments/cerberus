@@ -37,25 +37,45 @@
                         x-data="{ adding: false, removing: false }"
                         data-time="{{ date|date:'Y-m-d' }}T{{ time|date:'H:i' }}:00{{ date|date:'O' }}"
                     >
-                        {% for booking in bookings %}
-                            <div
-                                id="booking-{{ booking.id }}"
-                                class="booking"
-                                :class="{ 'dragging': dragging }"
-                                draggable="true"
-                                x-data="{ dragging: false }"
-                                x-on:dragend="dragging = false"
-                                x-on:dragstart.self="{# fmt:off #}
-                                    dragging = true;
-                                    event.dataTransfer.effectAllowed = 'move';
-                                    event.dataTransfer.setData('text/plain', event.target.id);
-                                {# fmt:on #}"
-                                data-length="{{ booking.length_minutes }}"
-                                data-id="{{ booking.id }}"
-                                data-move-url="{% url 'booking-move-booking' booking.id %}"
-                                style="--display-colour: {{ booking.service.display_colour }}"
-                            >{{ booking.pet }}</div>
-                        {% endfor %}
+                        {% if bookings %}
+                            {% with slot=bookings.0.booking_slot %}
+                                <div
+                                    class="booking-group"
+                                    :class="{ 'dragging': dragging }"
+                                    draggable="true"
+                                    id="booking-group-{{ slot.id }}"
+                                    data-id="{{ slot.id }}"
+                                    data-move-url="{% url 'bookingslot-move' slot.id %}"
+                                    x-data="{ dragging: false }"
+                                    x-on:dragend="dragging = false"
+                                    x-on:dragstart.self="{# fmt:off #}
+                                        dragging = true;
+                                        event.dataTransfer.effectAllowed = 'move';
+                                        event.dataTransfer.setData('text/plain', event.target.id);
+                                    {# fmt:on #}"
+                                >
+                                    {% for booking in bookings %}
+                                        <div
+                                            id="booking-{{ booking.id }}"
+                                            class="booking"
+                                            :class="{ 'dragging': dragging }"
+                                            draggable="true"
+                                            x-data="{ dragging: false }"
+                                            x-on:dragend="dragging = false"
+                                            x-on:dragstart.self="{# fmt:off #}
+                                                dragging = true;
+                                                event.dataTransfer.effectAllowed = 'move';
+                                                event.dataTransfer.setData('text/plain', event.target.id);
+                                            {# fmt:on #}"
+                                            data-length="{{ booking.length_minutes }}"
+                                            data-id="{{ booking.id }}"
+                                            data-move-url="{% url 'booking-move-booking' booking.id %}"
+                                            style="--display-colour: {{ booking.service.display_colour }}"
+                                        >{{ booking.pet }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endwith %}
+                        {% endif %}
                     </div>
                 </li>
             {% endfor %}

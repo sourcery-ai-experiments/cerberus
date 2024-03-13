@@ -84,8 +84,8 @@ class BookingSlot(models.Model):
         if not all(b.can_move for b in self.bookings.all()):
             return False
 
-        self.start = start
         self.end = start + (self.end - self.start) if end is None else end
+        self.start = start
 
         if self.overlaps():
             raise ValidationError("Slot overlaps another slot")

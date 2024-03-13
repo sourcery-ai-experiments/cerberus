@@ -43,11 +43,19 @@
     cursor: grab;
   }
 
+  .booking-group {
+    &:has(:nth-child(2)) {
+      background: red;
+      padding-left: 2em;
+    }
+  }
+
   .dropzone {
     flex-grow: 1;
     display: inline-block;
     z-index: 1;
     position: relative;
+    display: flex;
 
     &.adding {
       background: var(--pico-muted-border-color);
