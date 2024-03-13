@@ -1,6 +1,3 @@
-# Standard Library
-from distutils.util import strtobool
-
 # Django
 from django import forms
 
@@ -12,6 +9,10 @@ from django_filters.widgets import RangeWidget
 from .models import Booking, Customer, Invoice, Pet, Service, Vet
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
+
+
+def strtobool(value: str) -> bool:
+    return value.lower() in ("yes", "true", "y", "t", "1")
 
 
 class Switch(forms.widgets.Input):
