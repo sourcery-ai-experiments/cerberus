@@ -35,6 +35,23 @@
     display: inline-block;
     background: var(--display-colour);
     height: var(--height);
+    z-index: 10;
+    position: relative;
+    padding: 0 0.5em;
+    line-height: var(--height);
+    box-sizing: border-box;
+    cursor: grab;
+  }
+
+  .dropzone {
+    flex-grow: 1;
+    display: inline-block;
+    z-index: 1;
+    position: relative;
+
+    &.adding {
+      background: var(--pico-muted-border-color);
+    }
   }
 
   /* prettier-ignore */

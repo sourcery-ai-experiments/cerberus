@@ -12,14 +12,38 @@
     <div id="day">
         <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
 
-        <ol>
+        <ol x-data>
             {% for time, bookings in booking_times %}
                 <li>
                     <div>{{ time|date:"H:i" }}</div>
-                    <div>
+                    <div
+                        class="dropzone"
+                        :class="{ 'adding': adding }"
+                        x-on:drop.prevent="
+                                           const id = event.dataTransfer.getData('text/plain');
+                                           const target = event.target.closest('.dropzone');
+                                           const element = document.getElementById(id);
+                                           target.appendChild(element);
+                                           adding = false;
+                                           removing = false;
+                                          "
+                        x-on:dragover.prevent="adding = true"
+                        x-on:dragleave.prevent="adding = false"
+                        x-data="{ adding: false, removing: false }"
+                    >
                         {% for booking in bookings %}
                             <div
+                                id="booking-{{ booking.id }}"
                                 class="booking"
+                                :class="{ 'dragging': dragging }"
+                                draggable="true"
+                                x-data="{ dragging: false }"
+                                x-on:dragend="dragging = false"
+                                x-on:dragstart.self="
+                                                     dragging = true;
+                                                     event.dataTransfer.effectAllowed = 'move';
+                                                     event.dataTransfer.setData('text/plain', event.target.id);
+                                                    "
                                 data-length="{{ booking.length_minutes }}"
                                 style="--display-colour: {{ booking.service.display_colour }}"
                             >{{ booking.pet }} - {{ booking.service }}</div>
