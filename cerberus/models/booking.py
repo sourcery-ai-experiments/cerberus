@@ -167,6 +167,7 @@ class Booking(models.Model):
     service = models.ForeignKey("cerberus.Service", on_delete=models.PROTECT, related_name="bookings")
     _booking_slot = models.ForeignKey("cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
     _booking_slot_id: int | None
+    _previous_slot: BookingSlot | None = None
 
     charges = GenericRelation(Charge)
 
@@ -188,6 +189,9 @@ class Booking(models.Model):
 
             super().save(*args, **kwargs)
 
+            if self._previous_slot is not None and self._previous_slot.bookings.count() == 0:
+                self._previous_slot.delete()
+
     @property
     def booking_slot(self) -> BookingSlot:
         if self._booking_slot is None:
@@ -198,6 +202,9 @@ class Booking(models.Model):
 
     @booking_slot.setter
     def booking_slot(self, value: BookingSlot) -> None:
+        if value != self._booking_slot:
+            self._previous_slot = self._booking_slot
+
         self._booking_slot = value
 
     def create_charge(self) -> Charge:
@@ -246,9 +253,9 @@ class Booking(models.Model):
         self.start -= delta
         self.end -= delta
 
-        self._booking_slot = self._get_new_booking_slot()
-
+        self.booking_slot = self._get_new_booking_slot()
         self.save()
+
         return True
 
     def move_booking_slot(self, start: datetime) -> bool:
