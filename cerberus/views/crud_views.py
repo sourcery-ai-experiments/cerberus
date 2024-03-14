@@ -114,19 +114,19 @@ class BreadcrumbMixin(GenericModelView):
         obj = getattr(self, "object", None)
         obj_id = getattr(obj, "id", 0)
 
-        def list_crumb():
+        def list_crumb() -> Crumb:
             return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
-        def detail_crumb():
+        def detail_crumb() -> Crumb:
             return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
 
-        def update_crumb():
+        def update_crumb() -> Crumb:
             return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
 
-        def create_crumb():
+        def create_crumb() -> Crumb:
             return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
 
-        def delete_crumb():
+        def delete_crumb() -> Crumb:
             return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
 
         match self.__class__.__name__.split("_"):
