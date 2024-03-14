@@ -43,6 +43,7 @@
     cursor: grab;
     text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
     color: var(--pico-contrast);
+    border-radius: 0.25em;
   }
 
   .booking-group {
@@ -52,6 +53,7 @@
       display: inline-flex;
       gap: 0.5em;
       cursor: grab;
+      border-radius: 0.25em;
     }
   }
 
@@ -68,7 +70,7 @@
   }
 
   /* prettier-ignore */
-  .booking {
+  .booking, .booking-group:has(:nth-child(2)) {
     /*[[[cog
 import cog
 for i in range(10):

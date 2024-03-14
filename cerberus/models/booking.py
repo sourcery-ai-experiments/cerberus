@@ -34,6 +34,11 @@ class BookingSlot(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     start = models.DateTimeField()
     end = models.DateTimeField()
+    length = models.GeneratedField(  # type: ignore
+        expression=F("end") - F("start"),
+        output_field=models.DurationField(),
+        db_persist=True,
+    )
 
     class Meta:
         unique_together = [["start", "end"]]
@@ -102,6 +107,12 @@ class BookingSlot(models.Model):
     def contains_all(self, booking_ids: list[int]) -> bool:
         ids = [b.id for b in self.bookings.all()]
         return all(id in ids for id in booking_ids)
+
+    def length_seconds(self) -> int:
+        return int(self.length.total_seconds())
+
+    def length_minutes(self) -> int:
+        return self.length_seconds() // 60
 
     @classmethod
     def clean_empty_slots(cls) -> None:
