@@ -21,13 +21,14 @@
                         :class="{ 'adding': adding }"
                         x-on:drop.prevent="{# fmt:off #}
                             const id = event.dataTransfer.getData('text/plain');
-                            const { target } = event;
+                            const target = event.target.closest('.dropzone');
                             const container = target.querySelector('.booking-group') || target;
                             const element = document.getElementById(id);
                             const parent = element.parentElement;
                             container.appendChild(element);
                             adding = false;
                             removing = false;
+                            console.log('drop', element.dataset.id, target.dataset.time);
                             fetch(element.dataset.moveUrl, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
