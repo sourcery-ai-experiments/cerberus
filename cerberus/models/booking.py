@@ -233,19 +233,19 @@ class Booking(models.Model):
         slot = BookingSlot.get_slot(self.start, self.end)
 
         if slot.service != self.service and slot.service is not None:
-            raise IncorectServiceError("Incorect Service")
-
-        if slot.customer_count >= self.service.max_customer and self.pet.customer not in slot.customers:
-            raise MaxCustomersError("Max customers")
+            raise IncorectServiceError("Booking is for a different service")
 
         if slot.pet_count >= self.service.max_pet:
-            raise MaxPetsError("Max pets")
+            raise MaxPetsError(f"Booking has max pets for service, {self.service.max_pet}")
+
+        if slot.customer_count >= self.service.max_customer and self.pet.customer not in slot.customers:
+            raise MaxCustomersError(f"Booking has max customers for service, {self.service.max_customer}")
 
         if slot.overlaps():
             overlaps = slot.get_overlapping()
 
             if not all(all(b.id == self.id for b in o.bookings.all()) for o in overlaps):
-                raise SlotOverlapsError("Overlaps another slot")
+                raise SlotOverlapsError("Booking overlaps another")
 
         return slot
 

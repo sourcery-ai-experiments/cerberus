@@ -37,8 +37,9 @@
                             .then(() => $dispatch('bookingdrop', {id: element.dataset.id }))
                             .catch((err) => {
                                 parent.appendChild(element);
-                                errors.push('Failed to move booking');
-                                setTimeout(() => errors.shift(), 3000);
+                                err.json()
+                                   .then((data) => errors.push(`Failed to move: ${data.detail}`))
+                                   .then(() => setTimeout(() => errors.shift(), 3000));
                             });
                         {# fmt:on #}"
                         x-on:dragover.prevent="adding = true"
