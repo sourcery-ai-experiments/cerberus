@@ -38,7 +38,7 @@
                             .catch((err) => {
                                 parent.appendChild(element);
                                 err.json()
-                                   .then((data) => errors.push(`Failed to move: ${data.detail}`))
+                                   .then((data) => errors.push(`Error: ${data.detail}`))
                                    .then(() => setTimeout(() => errors.shift(), 3000));
                             });
                         {# fmt:on #}"
