@@ -9,6 +9,9 @@ REQS=$(wildcard requirements.*.txt)
 CSS_FILES:=$(shell find assets -name *.css)
 COG_FILE:=.cogfiles
 
+TS_FILES:=$(wildcard assets/typescript/*.ts)
+JS_FILES:=$(patsubst %.ts,%.js,$(TS_FILES))
+
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
 WHEEL_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/wheel
@@ -104,7 +107,13 @@ cerberus_crm/static/js/htmx.min.js:
 cerberus_crm/static/js/alpine.min.js:
 	curl -sL https://unpkg.com/alpinejs > $@
 
-js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js ## Fetch the js
+assets/js/%.js: assets/typescript/%.ts
+	npx tsc $<
+
+cerberus_crm/static/js/main.js: $(TS_FILES) node_modules rollup.config.ts
+	npx rollup --config rollup.config.ts --configPlugin typescript
+
+js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.js ## Fetch the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
@@ -123,3 +132,7 @@ db.sqlite3: .direnv $(MIGRATION_FILES)
 	@touch $@
 
 dev: .direnv db.sqlite3 cog css js ## Setup the project read for development
+
+node_modules: package.json package-lock.json
+	npm install
+	@touch $@
