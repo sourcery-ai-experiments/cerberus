@@ -1093,9 +1093,9 @@ tinycss2==1.2.1 \
     # via
     #   cssselect2
     #   svglib
-types-python-dateutil==2.8.19.20240311 \
-    --hash=sha256:51178227bbd4cbec35dc9adffbf59d832f20e09842d7dcb8c73b169b8780b7cb \
-    --hash=sha256:ef813da0809aca76472ca88807addbeea98b19339aebe56159ae2f4b4f70857a
+types-python-dateutil==2.9.0.20240315 \
+    --hash=sha256:78aa9124f360df90bb6e85eb1a4d06e75425445bf5ecb13774cb0adef7ff3956 \
+    --hash=sha256:c1f6310088eb9585da1b9f811765b989ed2e2cdd4203c1a367e944b666507e4e
 types-pytz==2024.1.0.20240203 \
     --hash=sha256:9679eef0365db3af91ef7722c199dbb75ee5c1b67e3c4dd7bfbeb1b8a71c21a3 \
     --hash=sha256:c93751ee20dfc6e054a0148f8f5227b9a00b79c90a4d3c9f464711a73179c89e
