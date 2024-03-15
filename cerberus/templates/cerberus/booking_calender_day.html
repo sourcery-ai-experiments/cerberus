@@ -12,7 +12,7 @@
     <div id="day" hx-trigger="bookingdrop" hx-get="{{ request.path }}">
         <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
 
-        <ol x-data>
+        <ol x-data="{ errors: [] }">
             {% for time, bookings in booking_times %}
                 <li>
                     <div>{{ time|date:"H:i" }}</div>
@@ -24,6 +24,7 @@
                             const { target } = event;
                             const container = target.querySelector('.booking-group') || target;
                             const element = document.getElementById(id);
+                            const parent = element.parentElement;
                             container.appendChild(element);
                             adding = false;
                             removing = false;
@@ -31,7 +32,14 @@
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
                                 body: JSON.stringify({ to: target.dataset.time })
-                            }).then(() => $dispatch('bookingdrop', {id: element.dataset.id }));
+                            })
+                            .then((r) => r.ok ? r : Promise.reject(r))
+                            .then(() => $dispatch('bookingdrop', {id: element.dataset.id }))
+                            .catch((err) => {
+                                parent.appendChild(element);
+                                errors.push('Failed to move booking');
+                                setTimeout(() => errors.shift(), 3000);
+                            });
                         {# fmt:on #}"
                         x-on:dragover.prevent="adding = true"
                         x-on:dragleave.prevent="adding = false"
@@ -81,6 +89,13 @@
                     </div>
                 </li>
             {% endfor %}
+            <template x-teleport="body">
+                <div x-show="errors" class="toast-container">
+                    <template x-for="error in errors">
+                        <div x-text="error"></div>
+                    </template>
+                </div>
+            </template>
         </ol>
     </div>
 {% endblock %}

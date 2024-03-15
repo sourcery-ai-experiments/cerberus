@@ -1,0 +1,16 @@
+.toast-container {
+  position: fixed;
+  bottom: var(--pico-spacing);
+  right: var(--pico-spacing);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--pico-spacing) / 2);
+
+  & > * {
+    border-radius: calc(var(--pico-spacing) / 2);
+    background: var(--pico-background-color);
+    padding: calc(var(--pico-spacing) / 3) calc(var(--pico-spacing) / 2);
+    border: 1px solid var(--negative);
+  }
+}
