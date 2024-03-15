@@ -21,9 +21,10 @@
                         :class="{ 'adding': adding }"
                         x-on:drop.prevent="{# fmt:off #}
                             const id = event.dataTransfer.getData('text/plain');
-                            const target = event.target.closest('.dropzone');
+                            const { target } = event;
+                            const container = target.querySelector('.booking-group') || target;
                             const element = document.getElementById(id);
-                            target.appendChild(element);
+                            container.appendChild(element);
                             adding = false;
                             removing = false;
                             fetch(element.dataset.moveUrl, {
