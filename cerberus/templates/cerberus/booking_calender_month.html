@@ -15,7 +15,6 @@
             <a href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}">Previous</a>
             <a href="{% url 'booking_calender_current'%}">Today</a>
             <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}">Next</a>
-            <a href="{% url 'booking_list' %}" hx-boost="false">List View</a>
         </div>
         <div class="calender grid">
             {% for day in days %}

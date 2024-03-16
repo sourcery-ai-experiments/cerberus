@@ -1,11 +1,12 @@
 # Standard Library
-from calendar import MONDAY, Calendar
+from calendar import MONDAY, Calendar, month_name
 from collections import defaultdict, namedtuple
 from collections.abc import Iterable
 from datetime import date, datetime, time, timedelta
 
 # Django
 from django.http import Http404
+from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
 # Third Party
@@ -14,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 # Locals
 from ..forms import BookingForm
 from ..models import Booking
-from .crud_views import CRUDViews
+from .crud_views import CRUDViews, Crumb
 from .transition_view import TransitionView
 
 BookingGroup = namedtuple("BookingDay", ["date", "bookings"])
@@ -36,7 +37,46 @@ class BookingCalenderRedirect(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
 
-class BookingCalenderMonth(TemplateView):
+class CalendarBreadCrumbs:
+    def get_breadcrumbs(self, year: int, month: int | None = None, day: int | None = None) -> list[Crumb]:
+        crumbs = [
+            Crumb("Dashboard", reverse_lazy("dashboard")),
+            Crumb("Bookings", reverse_lazy("booking_list")),
+            Crumb(year, reverse_lazy("booking_calender_year", kwargs={"year": year})),
+            Crumb(month_name[month], reverse_lazy("booking_calender_month", kwargs={"year": year, "month": month}))
+            if month is not None
+            else None,
+            Crumb(day, reverse_lazy("booking_calender_day", kwargs={"year": year, "month": month, "day": day}))
+            if day is not None
+            else None,
+        ]
+
+        return list(filter(lambda crumb: crumb is not None, crumbs))
+
+
+class BookingCalenderYear(TemplateView, CalendarBreadCrumbs):
+    template_name = "cerberus/booking_calender_year.html"
+
+    def get_context_data(self, year, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            date = datetime(year=year, month=1, day=1)
+        except ValueError as e:
+            raise Http404(f"year {year} not found") from e
+
+        context["date"] = date
+        context["prev_year"] = year - 1
+        context["year"] = year
+        context["next_year"] = year + 1
+        context["today"] = date.today()
+        context["months"] = list(enumerate(month_name))[1:]
+        context["breadcrumbs"] = self.get_breadcrumbs(year)
+
+        return context
+
+
+class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_month.html"
 
     def grouped_bookings(self, start: date, end: date) -> dict[date, list[Booking]]:
@@ -71,11 +111,12 @@ class BookingCalenderMonth(TemplateView):
         context["calendar"] = self.organize_bookings(list(calendar.itermonthdates(year, month)))
         context["today"] = date.today()
         context["days"] = calendar.iterweekdays()
+        context["breadcrumbs"] = self.get_breadcrumbs(year, month)
 
         return context
 
 
-class BookingCalenderDay(TemplateView):
+class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_day.html"
 
     @staticmethod
@@ -122,6 +163,7 @@ class BookingCalenderDay(TemplateView):
         context["month"] = month
         context["day"] = day
         context["booking_times"] = self.organize_bookings(times)
+        context["breadcrumbs"] = self.get_breadcrumbs(year, month, day)
 
         return context
 

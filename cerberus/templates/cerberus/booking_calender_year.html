@@ -1,0 +1,27 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load date_utils %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+    <h2>Year {{ date|date:"Y" }}</h2>
+{% endblock %}
+
+{% block content %}
+    <div id="year">
+        <h1>Bookings for {{ date|date:"Y" }}</h1>
+        <div hx-boost="true" hx-target="#year">
+            <a href="{% url 'booking_calender_year' year=prev_year %}">Previous</a>
+            <a href="{% url 'booking_calender_current'%}">Today</a>
+            <a href="{% url 'booking_calender_year' year=next_year %}">Next</a>
+        </div>
+        <div>
+            {% for i, month in months %}
+                <div>
+                    <a href="{% url 'booking_calender_month' year=year month=i %}">{{ month }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
