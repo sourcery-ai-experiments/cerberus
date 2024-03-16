@@ -28,6 +28,7 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
         }
 
         toast('Updated', 'success');
+
         return data;
     } else {
         throw new Error("Move URL is not provided.");

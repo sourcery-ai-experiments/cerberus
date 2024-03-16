@@ -8,7 +8,7 @@
   align-items: flex-end;
   gap: calc(var(--pico-spacing) / 2);
   max-height: calc(100vh - calc(var(--pico-spacing) * 2));
-  overflow-y: hidden;
+  overflow-y: visible;
 
   & > * {
     border-radius: calc(var(--pico-spacing) / 2);
@@ -18,6 +18,12 @@
     --border-color: var(--pico-primary-border);
     border: 1px solid var(--border-color);
     pointer-events: none;
+
+    animation: add 0.2s;
+
+    &.remove {
+      animation: remove 0.3s;
+    }
 
     &::after {
       content: "\2715";
@@ -35,5 +41,32 @@
     &.warn {
       --border-color: var(--warning);
     }
+  }
+}
+
+@keyframes add {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(var(--pico-spacing) + 100%));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+@keyframes remove {
+  0% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+
+  75% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(calc(var(--pico-spacing) + 100%));
   }
 }
