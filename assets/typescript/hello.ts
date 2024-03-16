@@ -1,1 +1,1 @@
-export const hello = (): void => console.log("Hello, World!");
+export const hello = (who: string): void => console.log(`Hello, ${who}!`);

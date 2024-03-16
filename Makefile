@@ -20,6 +20,7 @@ UV_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/uv
 COG_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/cog
 COGABLE_FILES:=$(shell find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \;)
 MIGRATION_FILES:=$(shell ls -d -- **/migrations/*.py)
+ESBUILD_PATH:=./node_modules/.bin/esbuild
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -107,10 +108,12 @@ cerberus_crm/static/js/htmx.min.js:
 cerberus_crm/static/js/alpine.min.js:
 	curl -sL https://unpkg.com/alpinejs > $@
 
-cerberus_crm/static/js/main.js: $(TS_FILES) node_modules rollup.config.ts
-	npx rollup --config rollup.config.ts --configPlugin typescript
+$(ESBUILD_PATH): node_modules
 
-js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.js ## Fetch the js
+cerberus_crm/static/js/%.min.js: assets/typescript/%.ts $(TS_FILES) $(ESBUILD_PATH)
+	$(ESBUILD_PATH) $< --bundle --minify --sourcemap --outfile=$@
+
+js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.min.js ## Fetch and build the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
