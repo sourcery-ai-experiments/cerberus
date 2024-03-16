@@ -107,9 +107,6 @@ cerberus_crm/static/js/htmx.min.js:
 cerberus_crm/static/js/alpine.min.js:
 	curl -sL https://unpkg.com/alpinejs > $@
 
-assets/js/%.js: assets/typescript/%.ts
-	npx tsc $<
-
 cerberus_crm/static/js/main.js: $(TS_FILES) node_modules rollup.config.ts
 	npx rollup --config rollup.config.ts --configPlugin typescript
 
