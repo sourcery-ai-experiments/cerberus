@@ -12,7 +12,7 @@
     <div id="day" hx-trigger="bookingdrop" hx-get="{{ request.path }}">
         <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
 
-        <ol x-data="{ errors: [] }">
+        <ol x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
             {% for time, bookings in booking_times %}
                 <li>
                     <div>{{ time|date:"H:i" }}</div>
@@ -20,27 +20,10 @@
                         class="dropzone"
                         :class="{ 'adding': adding }"
                         x-on:drop.prevent="{# fmt:off #}
-                            const id = event.dataTransfer.getData('text/plain');
-                            const target = event.target.closest('.dropzone');
-                            const container = target.querySelector('.booking-group') || target;
-                            const element = document.getElementById(id);
-                            const parent = element.parentElement;
-                            container.appendChild(element);
                             adding = false;
                             removing = false;
-                            fetch(element.dataset.moveUrl, {
-                                method: 'PUT',
-                                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                                body: JSON.stringify({ to: target.dataset.time })
-                            })
-                            .then((r) => r.ok ? r : Promise.reject(r))
-                            .then(() => $dispatch('bookingdrop', {id: element.dataset.id }))
-                            .catch((err) => {
-                                parent.appendChild(element);
-                                err.json()
-                                   .then((data) => errors.push(`Error: ${data.detail}`))
-                                   .then(() => setTimeout(() => errors.shift(), 3000));
-                            });
+                            const id = event.dataTransfer.getData('text/plain');
+                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'));
                         {# fmt:on #}"
                         x-on:dragover.prevent="adding = true"
                         x-on:dragleave.prevent="adding = false"
@@ -90,13 +73,6 @@
                     </div>
                 </li>
             {% endfor %}
-            <template x-teleport="body">
-                <div x-show="errors" class="toast-container">
-                    <template x-for="error in errors">
-                        <div x-text="error"></div>
-                    </template>
-                </div>
-            </template>
         </ol>
     </div>
 {% endblock %}
