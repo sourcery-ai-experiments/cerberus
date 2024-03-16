@@ -39,16 +39,15 @@ class BookingCalenderRedirect(RedirectView):
 
 class CalendarBreadCrumbs:
     def get_breadcrumbs(self, year: int, month: int | None = None, day: int | None = None) -> list[Crumb]:
+        month_url = reverse_lazy("booking_calender_month", kwargs={"year": year, "month": month})
+        day_url = reverse_lazy("booking_calender_day", kwargs={"year": year, "month": month, "day": day})
+
         crumbs = [
             Crumb("Dashboard", reverse_lazy("dashboard")),
             Crumb("Bookings", reverse_lazy("booking_list")),
             Crumb(year, reverse_lazy("booking_calender_year", kwargs={"year": year})),
-            Crumb(month_name[month], reverse_lazy("booking_calender_month", kwargs={"year": year, "month": month}))
-            if month is not None
-            else None,
-            Crumb(day, reverse_lazy("booking_calender_day", kwargs={"year": year, "month": month, "day": day}))
-            if day is not None
-            else None,
+            Crumb(month_name[month], month_url) if month is not None else None,
+            Crumb(day, day_url) if day is not None else None,
         ]
 
         return list(filter(lambda crumb: crumb is not None, crumbs))
