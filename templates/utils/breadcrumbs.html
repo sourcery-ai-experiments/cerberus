@@ -1,4 +1,4 @@
-<nav aria-label="breadcrumb">
+<nav id="breadcrumbs" aria-label="breadcrumb" {% if request.htmx %}hx-swap-oob="#breadcrumbs"{% endif %}>
   <ul>
     {% for crumb in breadcrumbs %}
       <li>
