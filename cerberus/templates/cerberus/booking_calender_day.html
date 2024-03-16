@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="day" hx-trigger="bookingdrop" hx-get="{{ request.path }}">
+    <div id="day">
         <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
 
         <ol x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
