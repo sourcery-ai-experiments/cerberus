@@ -8,26 +8,34 @@ declare global {
 }
 
 export const moveBooking = (bookingElement: HTMLElement, bookingTarget: HTMLElement) => {
-    const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
-    const parent = bookingElement.parentElement;
-    container.appendChild(bookingElement);
+    return new Promise((resolve, _reject) => {
+        const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
+        const parent = bookingElement.parentElement;
+        container.appendChild(bookingElement);
 
-    const { moveUrl } = bookingElement.dataset;
-    if (moveUrl) {
-        fetch(moveUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
-            body: JSON.stringify({ to: bookingTarget.dataset.time })
-        })
-            .then((r) => r.ok ? r : Promise.reject(r))
-            .then(() => dispatchEvent(bookingTarget, 'booking-move', { id: bookingElement.dataset.id }))
-            .catch((err) => {
-                parent && parent.appendChild(bookingElement);
-                if (err.status !== 400) {
-                    toast(`Error: ${err.statusText}`, 'error');
-                } else {
-                    err.json().then((data) => toast(`Error: ${data.detail}`, 'error'));
-                }
-            });
-    }
+        const reject = (reason: string) => {
+            toast(reason, "error");
+            _reject(reason);
+        }
+
+        const { moveUrl } = bookingElement.dataset;
+        if (moveUrl) {
+            fetch(moveUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
+                body: JSON.stringify({ to: bookingTarget.dataset.time })
+            })
+                .then((response) => response.ok ? response : Promise.reject(response))
+                .then((response) => response.json())
+                .then((data) => resolve(data))
+                .catch((error) => {
+                    parent && parent.appendChild(bookingElement);
+                    if (error.status !== 400) {
+                        reject(`Error: ${error.statusText}`);
+                    } else {
+                        error.json().then((data) => reject(`Error: ${data.detail}`));
+                    }
+                });
+        }
+    });
 }
