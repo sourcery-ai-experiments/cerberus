@@ -7,35 +7,29 @@ declare global {
     }
 }
 
-export const moveBooking = (bookingElement: HTMLElement, bookingTarget: HTMLElement) => {
-    return new Promise((resolve, _reject) => {
-        const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
-        const parent = bookingElement.parentElement;
+export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement) => {
+    const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
+    const parent = bookingElement.parentElement;
+
+    const { moveUrl } = bookingElement.dataset;
+    if (moveUrl) {
         container.appendChild(bookingElement);
-
-        const reject = (reason: string) => {
-            toast(reason, "error");
-            _reject(reason);
+        const response = await fetch(moveUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
+            body: JSON.stringify({ to: bookingTarget.dataset.time })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            const message = response.status != 400 ? response.statusText : data.detail;
+            parent && parent.appendChild(bookingElement);
+            toast(`Error: ${message}`, "error");
+            throw new Error(message);
         }
 
-        const { moveUrl } = bookingElement.dataset;
-        if (moveUrl) {
-            fetch(moveUrl, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
-                body: JSON.stringify({ to: bookingTarget.dataset.time })
-            })
-                .then((response) => response.ok ? response : Promise.reject(response))
-                .then((response) => response.json())
-                .then((data) => resolve(data))
-                .catch((error) => {
-                    parent && parent.appendChild(bookingElement);
-                    if (error.status !== 400) {
-                        reject(`Error: ${error.statusText}`);
-                    } else {
-                        error.json().then((data) => reject(`Error: ${data.detail}`));
-                    }
-                });
-        }
-    });
+        toast('Updated', 'success');
+        return data;
+    } else {
+        throw new Error("Error");
+    }
 }

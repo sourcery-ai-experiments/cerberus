@@ -12,7 +12,7 @@
     background: var(--pico-background-color);
     padding: calc(var(--pico-spacing) / 3) calc(var(--pico-spacing) / 2);
 
-    --border-color: = var(--pico-primary-border);
+    --border-color: var(--pico-primary-border);
     border: 1px solid var(--border-color);
 
     &.error {
