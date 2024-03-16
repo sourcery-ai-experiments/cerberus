@@ -20,8 +20,8 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
             body: JSON.stringify({ to: bookingTarget.dataset.time })
         });
         const data = await response.json();
-        if (!response.ok) {
-            const message = response.status != 400 ? response.statusText : data.detail;
+        if (!response.ok || !data) {
+            const message = data.detail || response.statusText;
             parent && parent.appendChild(bookingElement);
             toast(`Error: ${message}`, "error");
             throw new Error(message);
@@ -30,6 +30,6 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
         toast('Updated', 'success');
         return data;
     } else {
-        throw new Error("Error");
+        throw new Error("Move URL is not provided.");
     }
 }
