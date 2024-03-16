@@ -19,10 +19,10 @@
     border: 1px solid var(--border-color);
     pointer-events: none;
 
-    animation: add 0.2s;
+    animation: add 0.2s ease-in-out;
 
     &.remove {
-      animation: remove 0.3s;
+      animation: remove 0.3s ease-in-out;
     }
 
     &::after {
@@ -50,9 +50,12 @@
     transform: translateY(calc(var(--pico-spacing) + 100%));
   }
 
+  50% {
+    transform: translateY(0%);
+  }
+
   100% {
     opacity: 1;
-    transform: translateY(0%);
   }
 }
 
