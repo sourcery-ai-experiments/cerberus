@@ -19,5 +19,10 @@ export const toast = (message: string, type: ToastType = "info", duration: numbe
     toast.classList.add('toast', type);
     toast.innerHTML = message;
     container.appendChild(toast);
-    setTimeout(() => container.removeChild(toast), duration);
+
+    const timeout = setTimeout(() => container.removeChild(toast), duration);
+    toast.addEventListener('click', () => {
+        container.removeChild(toast);
+        clearTimeout(timeout);
+    });
 }
