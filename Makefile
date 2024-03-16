@@ -91,11 +91,11 @@ cerberus_crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
 
 css: cerberus_crm/static/css/main.min.css ## Build the css
 
-watch-css: ## Watch and build the css
+watch-assets: ## Watch and build the css and js
 	@echo "Watching scss"
-	$(MAKE) css
+	$(MAKE) css js
 	@while inotifywait -qr -e close_write assets/; do \
-		$(MAKE) css; \
+		$(MAKE) css js; \
 	done
 
 install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
