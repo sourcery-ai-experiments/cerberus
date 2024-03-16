@@ -7,7 +7,7 @@ declare global {
     }
 }
 
-export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement) => {
+export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement): Promise<object> => {
     const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
     const parent = bookingElement.parentElement;
 
@@ -24,10 +24,13 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
             const message = data.detail || response.statusText;
             parent && parent.appendChild(bookingElement);
             toast(`Error: ${message}`, "error");
-            throw new Error(message);
-        }
 
-        toast('Updated', 'success');
+            if (response.status !== 400) {
+                throw new Error(message);
+            }
+        } else {
+            toast('Saved: OK', 'success');
+        }
 
         return data;
     } else {
