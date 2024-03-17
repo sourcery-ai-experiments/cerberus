@@ -16,10 +16,11 @@
             <a href="{% url 'booking_calender_current'%}">Today</a>
             <a href="{% url 'booking_calender_year' year=next_year %}">Next</a>
         </div>
-        <div>
-            {% for i, month in months %}
+        <div class="year-calender">
+            {% for name, i, booking_count in months %}
                 <div>
-                    <a href="{% url 'booking_calender_month' year=year month=i %}">{{ month }}</a>
+                    <a href="{% url 'booking_calender_month' year=year month=i %}">{{ name }}</a>
+                    <div>Bookings: {{ booking_count }}</div>
                 </div>
             {% endfor %}
         </div>

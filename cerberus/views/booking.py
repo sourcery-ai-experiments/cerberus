@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from datetime import date, datetime, time, timedelta
 
 # Django
+from django.db.models import Count
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
@@ -53,11 +54,28 @@ class CalendarBreadCrumbs:
         return list(filter(lambda crumb: crumb is not None, crumbs))
 
 
+BookingMonth = namedtuple("BookingMonth", ["name", "i", "booking_count"])
+
+
 class BookingCalenderYear(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_year.html"
 
+    def get_booking_stats(self, year) -> dict[int, int]:
+        month_stats: dict[int, int] = defaultdict(int)
+
+        for stats in Booking.objects.filter(start__year=year).values("start__month").annotate(count=Count("id")):
+            month_stats[stats["start__month"]] = stats["count"]
+
+        return month_stats
+
+    def get_months(self, year) -> Iterable[BookingMonth]:
+        stats = self.get_booking_stats(year)
+
+        for i in range(1, 13):
+            yield BookingMonth(month_name[i], i, stats[i])
+
     def get_context_data(self, year, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super().get_context_data(year=year, **kwargs)
 
         try:
             date = datetime(year=year, month=1, day=1)
@@ -69,7 +87,7 @@ class BookingCalenderYear(TemplateView, CalendarBreadCrumbs):
         context["year"] = year
         context["next_year"] = year + 1
         context["today"] = date.today()
-        context["months"] = list(enumerate(month_name))[1:]
+        context["months"] = self.get_months(year)
         context["breadcrumbs"] = self.get_breadcrumbs(year)
 
         return context
