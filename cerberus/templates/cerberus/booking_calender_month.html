@@ -30,18 +30,49 @@
                 </a>
             </div>
         </div>
-        <div class="calender grid">
+        <div class="calender grid" x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
             {% for day in days %}
                 <div class="heading">{{ day|day_of_week }}</div>
             {% endfor %}
             {% for day, bookings in calendar %}
-                <div class="{% if day.month == date.month %}current{% endif %} {% if day == today %}today{% endif %}">
+                <div
+                    :class="{ 'adding': adding }"
+                    x-on:drop.prevent="{# fmt:off #}
+                            adding = false;
+                            removing = false;
+                            const id = event.dataTransfer.getData('text/plain');
+                            moveBookingDay(document.getElementById(id), event.target.closest('.dropzone'));
+                        {# fmt:on #}"
+                    x-on:dragover.prevent="adding = true"
+                    x-on:dragleave.prevent="adding = false"
+                    x-data="{ adding: false, removing: false }"
+                    data-date="{{ day|date:'Y-m-d' }}"
+                    class="dropzone {% if day.month == date.month %}current{% endif %} {% if day == today %}today{% endif %}"
+                >
                     <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
                         {{ day|date:"d" }}
                     </a>
                     <ul>
                         {% for booking in bookings %}
-                            <li style="--display-colour: {{ booking.service.display_colour }}">{{ booking.start|time:"H:i" }} - {{ booking.end|time:"H:i" }} - {{ booking.pet }} - {{ booking.service }}</li>
+                            <li
+                                id="booking-{{ booking.id }}"
+                                class="booking"
+                                :class="{ 'dragging': dragging }"
+                                draggable="true"
+                                x-data="{ dragging: false }"
+                                x-on:dragend="dragging = false"
+                                x-on:dragstart.self="{# fmt:off #}
+                                    dragging = true;
+                                    event.dataTransfer.effectAllowed = 'move';
+                                    event.dataTransfer.setData('text/plain', event.target.id);
+                                {# fmt:on #}"
+                                data-time="{{ booking.start|date:'H:i:s' }}"
+                                data-length="{{ booking.length_minutes }}"
+                                data-id="{{ booking.id }}"
+                                data-move-url="{% url 'booking-move-booking' booking.id %}"
+                                draggable="true"
+                                style="--display-colour: {{ booking.service.display_colour }}"
+                            >{{ booking.pet }}</li>
                         {% endfor %}
                     </ul>
                 </div>

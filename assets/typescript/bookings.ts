@@ -7,6 +7,44 @@ declare global {
     }
 }
 
+const makeRequest = async (url: string, body: object): Promise<object> => {
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
+        body: JSON.stringify(body)
+    });
+    const data = await response.json();
+    if (!response.ok || !data) {
+        const message = data.detail || response.statusText;
+        throw new Error(message);
+    }
+
+    return data;
+}
+
+export const moveBookingDay = async (bookingElement: HTMLElement, bookingTarget: HTMLElement): Promise<object> => {
+    const container = bookingTarget.querySelector('ul') || bookingTarget;
+    const parent = bookingElement.parentElement;
+
+    const { moveUrl } = bookingElement.dataset;
+    if (moveUrl) {
+        container.appendChild(bookingElement);
+        const dateTime = `${bookingTarget.dataset.date}T${bookingElement.dataset.time}`
+
+        try {
+            const data = await makeRequest(moveUrl, { to: dateTime });
+            toast('Saved: OK', 'success');
+            return data;
+        } catch (error) {
+            parent && parent.appendChild(bookingElement);
+            toast(`${error}`, "error");
+            return {};
+        }
+    } else {
+        throw new Error("Move URL is not provided.");
+    }
+}
+
 export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement): Promise<object> => {
     const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
     const parent = bookingElement.parentElement;
@@ -14,25 +52,16 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
     const { moveUrl } = bookingElement.dataset;
     if (moveUrl) {
         container.appendChild(bookingElement);
-        const response = await fetch(moveUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': window.CSRFToken },
-            body: JSON.stringify({ to: bookingTarget.dataset.time })
-        });
-        const data = await response.json();
-        if (!response.ok || !data) {
-            const message = data.detail || response.statusText;
-            parent && parent.appendChild(bookingElement);
-            toast(`Error: ${message}`, "error");
 
-            if (response.status !== 400) {
-                throw new Error(message);
-            }
-        } else {
+        try {
+            const data = await makeRequest(moveUrl, { to: bookingTarget.dataset.time });
             toast('Saved: OK', 'success');
+            return data;
+        } catch (error) {
+            parent && parent.appendChild(bookingElement);
+            toast(`${error}`, "error");
+            return {};
         }
-
-        return data;
     } else {
         throw new Error("Move URL is not provided.");
     }
