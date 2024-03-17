@@ -1,3 +1,31 @@
+.calender-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 1em;
+
+  h1 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  [role="button"] {
+    padding: 0.25em;
+    line-height: 1em;
+  }
+
+  svg {
+    height: 1em;
+  }
+}
+
 .calender {
   &.grid {
     display: grid;

@@ -10,11 +10,26 @@
 
 {% block content %}
     <div id="year">
-        <h1>Bookings for {{ date|date:"Y" }}</h1>
-        <div hx-boost="true" hx-target="#year" hx-swap="outerHTML">
-            <a href="{% url 'booking_calender_year' year=prev_year %}">Previous</a>
-            <a href="{% url 'booking_calender_current'%}">Today</a>
-            <a href="{% url 'booking_calender_year' year=next_year %}">Next</a>
+        <div class="calender-controls">
+            <h1>Bookings for {{ date|date:"Y" }}</h1>
+            <div hx-boost="true" hx-target="#year" hx-swap="outerHTML">
+                {% now "Y" as current_year %}
+                <a href="{% url 'booking_calender_year' year=current_year %}">Today</a>
+                <a
+                    role="button"
+                    aria-label="Previous Year"
+                    title="{{ prev_year }}"
+                    href="{% url 'booking_calender_year' year=prev_year %}">
+                    {% include 'icons/chevron-left.svg' %}
+                </a>
+                <a
+                    role="button"
+                    aria-label="Next Year"
+                    title="{{ next_year }}"
+                    href="{% url 'booking_calender_year' year=next_year %}">
+                    {% include 'icons/chevron-right.svg' %}
+                </a>
+            </div>
         </div>
         <div class="year-calender">
             {% for name, i, booking_count in months %}

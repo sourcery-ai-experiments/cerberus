@@ -10,11 +10,25 @@
 
 {% block content %}
     <div id="calender">
-        <h1>Bookings {{ date|date:"F Y" }}</h1>
-        <div hx-boost="true" hx-target="#calender" hx-swap="outerHTML">
-            <a href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}">Previous</a>
-            <a href="{% url 'booking_calender_current'%}">Today</a>
-            <a href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}">Next</a>
+        <div class="calender-controls">
+            <h1>Bookings {{ date|date:"F Y" }}</h1>
+            <div hx-boost="true" hx-target="#calender" hx-swap="outerHTML">
+                <a href="{% url 'booking_calender_month'%}">Today</a>
+                <a role="button"
+                   aria-label="Previous Month"
+                   title="{{ prev_month|date:'F Y' }}"
+                   href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}"
+                >
+                    {% include 'icons/chevron-left.svg' %}
+                </a>
+                <a role="button"
+                   aria-label="Next Month"
+                   title="{{ next_month|date:'F Y' }}"
+                   href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"
+                >
+                    {% include 'icons/chevron-right.svg' %}
+                </a>
+            </div>
         </div>
         <div class="calender grid">
             {% for day in days %}

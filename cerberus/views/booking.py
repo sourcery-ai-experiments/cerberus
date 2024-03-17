@@ -107,8 +107,11 @@ class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
 
         return [BookingGroup(date, bookings_by_date[date]) for date in dates]
 
-    def get_context_data(self, year, month, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, year=None, month=None, **kwargs):
+        now = dt.datetime.now()
+        year = year or now.year
+        month = month or now.month
+        context = super().get_context_data(year=year, month=month, **kwargs)
 
         try:
             date = dt.datetime(year=year, month=month, day=1)
@@ -158,8 +161,12 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
 
         return [BookingGroup(t, bookings_by_date[t.time()]) for t in times]
 
-    def get_context_data(self, year, month, day, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, year=None, month=None, day=None, **kwargs):
+        now = dt.datetime.now()
+        year = year or now.year
+        month = month or now.month
+        day = day or now.day
+        context = super().get_context_data(year=year, month=month, day=day, **kwargs)
 
         try:
             date = dt.datetime(year=year, month=month, day=day)
@@ -176,6 +183,8 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
         context["year"] = year
         context["month"] = month
         context["day"] = day
+        context["next_day"] = date + dt.timedelta(days=1)
+        context["prev_day"] = date + dt.timedelta(days=-1)
         context["booking_times"] = self.organize_bookings(times)
         context["breadcrumbs"] = self.get_breadcrumbs(year, month, day)
 

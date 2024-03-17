@@ -10,8 +10,26 @@
 
 {% block content %}
     <div id="day">
-        <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
-
+        <div class="calender-controls">
+            <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
+            <div hx-boost="true" hx-target="#day" hx-swap="outerHTML">
+                <a href="{% url 'booking_calender_day'%}">Today</a>
+                <a role="button"
+                   aria-label="Previous Day"
+                   title="{{ prev_day|date:'jS F Y' }}"
+                   href="{% url 'booking_calender_day' year=prev_day.year month=prev_day.month day=prev_day.day %}"
+                >
+                    {% include 'icons/chevron-left.svg' %}
+                </a>
+                <a role="button"
+                   aria-label="Next Day"
+                   title="{{ next_day|date:'jS F Y' }}"
+                   href="{% url 'booking_calender_day' year=next_day.year month=next_day.month day=next_day.day %}"
+                >
+                    {% include 'icons/chevron-right.svg' %}
+                </a>
+            </div>
+        </div>
         <ol x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
             {% for time, bookings in booking_times %}
                 <li>

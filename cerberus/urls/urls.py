@@ -8,16 +8,21 @@ urlpatterns = (
     [
         path("", views.dashboard, name="dashboard"),
         path("booking/<int:pk>/action/<str:action>/", views.BookingStateActions.as_view(), name="booking_action"),
-        path("booking/calender/", views.BookingCalenderRedirect.as_view(), name="booking_calender_current"),
         path(
             "booking/calender/<int:year>/",
             views.BookingCalenderYear.as_view(),
             name="booking_calender_year",
         ),
+        path("booking/calender/", views.BookingCalenderMonth.as_view(), name="booking_calender_month"),
         path(
             "booking/calender/<int:year>/<int:month>/",
             views.BookingCalenderMonth.as_view(),
             name="booking_calender_month",
+        ),
+        path(
+            "booking/calender/today",
+            views.BookingCalenderDay.as_view(),
+            name="booking_calender_day",
         ),
         path(
             "booking/calender/<int:year>/<int:month>/<int:day>",
