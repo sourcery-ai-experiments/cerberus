@@ -8,6 +8,6 @@
 
 
 {% block content %}
-  <a href="{% url 'booking_calender_current'%}">Calender View</a>
+  <a href="{% url 'booking_calender_month'%}">Calender View</a>
   {% include 'cerberus/components/booking_list.html' with bookings=object_list %}
 {% endblock %}
