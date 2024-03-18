@@ -72,7 +72,7 @@
                                 data-move-url="{% url 'booking-move' booking.id %}"
                                 draggable="true"
                                 style="--display-colour: {{ booking.service.display_colour }}"
-                            >{{ booking.pet }}</li>
+                            >{{ booking.start|date:"H:i" }} - {{ booking.pet }}</li>
                         {% endfor %}
                     </ul>
                 </div>
