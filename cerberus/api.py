@@ -125,7 +125,7 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         return self.change_state("complete", request)
 
     @action(detail=True, methods=["PUT"])
-    def move_booking(self, request, pk=None):
+    def move(self, request, pk=None):
         booking: Booking = self.get_object()
         incoming = BookingMoveSerializer(data=request.data)
         incoming.is_valid()
@@ -141,7 +141,7 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         return Response({"item": serializer.data, "status": status}, status=status)
 
     @action(detail=True, methods=["PUT"])
-    def move_booking_slot(self, request, pk=None):
+    def move_slot(self, request, pk=None):
         booking: Booking = self.get_object()
         incoming = BookingSlotMoveSerializer(data=request.data)
         incoming.is_valid()

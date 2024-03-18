@@ -81,7 +81,7 @@
                                             {# fmt:on #}"
                                             data-length="{{ booking.length_minutes }}"
                                             data-id="{{ booking.id }}"
-                                            data-move-url="{% url 'booking-move-booking' booking.id %}"
+                                            data-move-url="{% url 'booking-move' booking.id %}"
                                             style="--display-colour: {{ booking.service.display_colour }}"
                                         >{{ booking.pet }}</div>
                                     {% endfor %}

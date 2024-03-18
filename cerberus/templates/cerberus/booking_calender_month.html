@@ -69,7 +69,7 @@
                                 data-time="{{ booking.start|date:'H:i:s' }}"
                                 data-length="{{ booking.length_minutes }}"
                                 data-id="{{ booking.id }}"
-                                data-move-url="{% url 'booking-move-booking' booking.id %}"
+                                data-move-url="{% url 'booking-move' booking.id %}"
                                 draggable="true"
                                 style="--display-colour: {{ booking.service.display_colour }}"
                             >{{ booking.pet }}</li>

@@ -69,8 +69,9 @@ class BookingSlot(models.Model):
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
         equal = Q(start=self.start, end=self.end)
+        contains = Q(start__gt=self.start, end__lt=self.end)
 
-        return self.__class__.objects.filter(start | end | equal).exclude(pk=self.pk)  # type: ignore
+        return self.__class__.objects.filter(start | end | equal | contains).exclude(pk=self.pk)  # type: ignore
 
     def overlaps(self) -> bool:
         others = self.get_overlapping()
@@ -93,7 +94,7 @@ class BookingSlot(models.Model):
         self.start = start
 
         if self.overlaps():
-            raise ValidationError("Slot overlaps another slot")
+            raise SlotOverlapsError("Slot overlaps another")
 
         with transaction.atomic():
             self.save()
