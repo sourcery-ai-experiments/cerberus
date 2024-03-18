@@ -22,39 +22,17 @@ const makeRequest = async (url: string, body: object): Promise<object> => {
     return data;
 }
 
-export const moveBookingDay = async (bookingElement: HTMLElement, bookingTarget: HTMLElement): Promise<object> => {
-    const container = bookingTarget.querySelector('ul') || bookingTarget;
-    const parent = bookingElement.parentElement;
-
-    const { moveUrl } = bookingElement.dataset;
-    if (moveUrl) {
-        container.appendChild(bookingElement);
-        const dateTime = `${bookingTarget.dataset.date}T${bookingElement.dataset.time}`
-
-        try {
-            const data = await makeRequest(moveUrl, { to: dateTime });
-            toast('Saved: OK', 'success');
-            return data;
-        } catch (error) {
-            parent && parent.appendChild(bookingElement);
-            toast(`${error}`, "error");
-            return {};
-        }
-    } else {
-        throw new Error("Move URL is not provided.");
-    }
-}
-
-export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement): Promise<object> => {
-    const container = bookingTarget.querySelector('.booking-group') || bookingTarget;
+export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HTMLElement, containerSelector: string): Promise<object> => {
+    const container = bookingTarget.querySelector(containerSelector) || bookingTarget;
     const parent = bookingElement.parentElement;
 
     const { moveUrl } = bookingElement.dataset;
     if (moveUrl) {
         container.appendChild(bookingElement);
 
+        const { datetime } = bookingTarget.dataset;
         try {
-            const data = await makeRequest(moveUrl, { to: bookingTarget.dataset.time });
+            const data = await makeRequest(moveUrl, { to: datetime });
             toast('Saved: OK', 'success');
             return data;
         } catch (error) {

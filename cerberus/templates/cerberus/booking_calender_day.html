@@ -41,12 +41,12 @@
                             adding = false;
                             removing = false;
                             const id = event.dataTransfer.getData('text/plain');
-                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'));
+                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'), '.booking-group');
                         {# fmt:on #}"
                         x-on:dragover.prevent="adding = true"
                         x-on:dragleave.prevent="adding = false"
                         x-data="{ adding: false, removing: false }"
-                        data-time="{{ date|date:'Y-m-d' }}T{{ time|date:'H:i' }}:00{{ date|date:'O' }}"
+                        data-datetime="{{ date|date:'Y-m-d' }}T{{ time|date:'H:i' }}:00{{ date|date:'O' }}"
                     >
                         {% if bookings %}
                             {% with slot=bookings.0.booking_slot %}

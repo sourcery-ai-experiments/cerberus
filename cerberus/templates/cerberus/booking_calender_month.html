@@ -41,12 +41,12 @@
                             adding = false;
                             removing = false;
                             const id = event.dataTransfer.getData('text/plain');
-                            moveBookingDay(document.getElementById(id), event.target.closest('.dropzone'));
+                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'), 'ul');
                         {# fmt:on #}"
                     x-on:dragover.prevent="adding = true"
                     x-on:dragleave.prevent="adding = false"
                     x-data="{ adding: false, removing: false }"
-                    data-date="{{ day|date:'Y-m-d' }}"
+                    data-datetime="{{ day|date:'Y-m-d' }}"
                     class="dropzone {% if day.month == date.month %}current{% endif %} {% if day == today %}today{% endif %}"
                 >
                     <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
@@ -66,7 +66,6 @@
                                     event.dataTransfer.effectAllowed = 'move';
                                     event.dataTransfer.setData('text/plain', event.target.id);
                                 {# fmt:on #}"
-                                data-time="{{ booking.start|date:'H:i:s' }}"
                                 data-length="{{ booking.length_minutes }}"
                                 data-id="{{ booking.id }}"
                                 data-move-url="{% url 'booking-move' booking.id %}"
