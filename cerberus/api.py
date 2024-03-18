@@ -11,7 +11,6 @@ from django.http import HttpResponse
 from django.urls import path
 
 # Third Party
-from dateutil import parser
 from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
 from django_fsm_log.helpers import FSMLogDescriptor
@@ -28,9 +27,7 @@ from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, In
 from .permissions import IsUsers
 from .serializers import (
     AddressSerializer,
-    BookingMoveSerializer,
     BookingSerializer,
-    BookingSlotMoveSerializer,
     BookingSlotSerializer,
     ChargeSerializer,
     ContactSerializer,
@@ -41,6 +38,8 @@ from .serializers import (
     PetDropDownSerializer,
     PetSerializer,
     ServiceSerializer,
+    ToDateSerializer,
+    ToDateTimeSerializer,
     UserSettingsSerializer,
     VetSerializer,
 )
@@ -127,13 +126,15 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     @action(detail=True, methods=["PUT"])
     def move(self, request, pk=None):
         booking: Booking = self.get_object()
-        incoming = BookingMoveSerializer(data=request.data)
-        incoming.is_valid()
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
             with FSMLogDescriptor(booking, "by", request.user):
-                if booking.move_booking(parser.parse(incoming.data["to"])):
+                if booking.move_booking(incoming.validated_data["to"]):
                     status = 200
 
         serializer = self.get_serializer(booking)
@@ -143,13 +144,15 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     @action(detail=True, methods=["PUT"])
     def move_slot(self, request, pk=None):
         booking: Booking = self.get_object()
-        incoming = BookingSlotMoveSerializer(data=request.data)
-        incoming.is_valid()
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
             with FSMLogDescriptor(booking, "by", request.user):
-                if booking.move_booking_slot(parser.parse(incoming.data["start"])):
+                if booking.move_booking_slot(incoming.validated_data["to"]):
                     status = 200
 
         serializer = self.get_serializer(booking)
@@ -165,13 +168,16 @@ class BookingSlotViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["PUT"])
     def move(self, request, pk=None):
         booking_slot: BookingSlot = self.get_object()
-        incoming = BookingSlotMoveSerializer(data=request.data)
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
         incoming.is_valid()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
             with FSMLogDescriptor(booking_slot, "by", request.user):
-                if booking_slot.move_slot(parser.parse(incoming.data["to"])):
+                if booking_slot.move_slot(incoming.validated_data["to"]):
                     status = 200
 
         serializer = self.get_serializer(booking_slot)

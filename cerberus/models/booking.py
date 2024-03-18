@@ -1,6 +1,6 @@
 # Standard Library
 from collections.abc import Callable, Iterable
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import TYPE_CHECKING, Self
 
 # Django
@@ -82,13 +82,17 @@ class BookingSlot(models.Model):
         if not self._valid_dates():
             raise ValidationError("end can not be before start")
 
-        print(f"Checking for other slots between {self.start} and {self.end}")
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
 
-    def move_slot(self, start: datetime, end: datetime | None = None) -> bool:
+    def move_slot(self, start: datetime | date, end: datetime | None = None) -> bool:
         if not all(b.can_move for b in self.bookings.all()):
             return False
+
+        if not isinstance(start, datetime):
+            start = make_aware(
+                datetime(start.year, start.month, start.day, self.start.hour, self.start.minute, self.start.second)
+            )
 
         self.end = start + (self.end - self.start) if end is None else end
         self.start = start
@@ -257,9 +261,12 @@ class Booking(models.Model):
     def can_complete(self) -> bool:
         return self.end < make_aware(datetime.now())
 
-    def move_booking(self, to: datetime) -> bool:
+    def move_booking(self, to: datetime | date) -> bool:
         if not self.can_move:
             return False
+
+        if not isinstance(to, datetime):
+            to = make_aware(datetime(to.year, to.month, to.day, self.start.hour, self.start.minute, self.start.second))
 
         delta = self.start - to
         self.start -= delta
@@ -270,8 +277,13 @@ class Booking(models.Model):
 
         return True
 
-    def move_booking_slot(self, start: datetime) -> bool:
+    def move_booking_slot(self, start: datetime | date) -> bool:
         if slot := self._booking_slot:
+            if not isinstance(start, datetime):
+                start = make_aware(
+                    datetime(start.year, start.month, start.day, self.start.hour, self.start.minute, self.start.second)
+                )
+
             length = slot.end - slot.start
             return slot.move_slot(start, start + length)
 

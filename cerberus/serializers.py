@@ -162,12 +162,12 @@ class BookingSerializer(DynamicFieldsModelSerializer):
         ]
 
 
-class BookingMoveSerializer(serializers.Serializer):
+class ToDateTimeSerializer(serializers.Serializer):
     to = serializers.DateTimeField()
 
 
-class BookingSlotMoveSerializer(serializers.Serializer):
-    to = serializers.DateTimeField()
+class ToDateSerializer(serializers.Serializer):
+    to = serializers.DateField()
 
 
 class AddressSerializer(DynamicFieldsModelSerializer):
