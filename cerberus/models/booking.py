@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import F, Max, Min, Q
 from django.db.models.query import QuerySet
-from django.utils.timezone import make_aware
 
 # Third Party
 import reversion
@@ -19,6 +18,7 @@ from humanize import naturaldate
 # Locals
 from ..decorators import save_after
 from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
+from ..utils import make_aware
 from .charge import Charge
 
 if TYPE_CHECKING:

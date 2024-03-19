@@ -13,6 +13,7 @@ from django.views.generic import RedirectView, TemplateView
 # Locals
 from ..forms import BookingForm
 from ..models import Booking
+from ..utils import make_aware
 from .crud_views import CRUDViews, Crumb
 from .transition_view import TransitionView
 
@@ -179,7 +180,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
         start = min(8, min_time.hour)
         end = max(16, max_time.hour + 1)
         steps = range(0, ((end - start) * (60 // step)) + 1)
-        times: list[dt.datetime] = [date + dt.timedelta(hours=start, minutes=15 * i) for i in steps]
+        times: list[dt.datetime] = [make_aware(date + dt.timedelta(hours=start, minutes=15 * i)) for i in steps]
 
         context["date"] = date
         context["year"] = year
