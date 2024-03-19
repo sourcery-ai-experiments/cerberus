@@ -173,10 +173,12 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
         except ValueError as e:
             raise Http404("date not found") from e
 
+        min_time, max_time = Booking.get_mix_max_time(date)
+
         step = 15
-        start = 6
-        end = 19
-        steps = range(0, (end - start) * (60 // step))
+        start = min(8, min_time.hour)
+        end = max(16, max_time.hour + 1)
+        steps = range(0, ((end - start) * (60 // step)) + 1)
         times: list[dt.datetime] = [date + dt.timedelta(hours=start, minutes=15 * i) for i in steps]
 
         context["date"] = date

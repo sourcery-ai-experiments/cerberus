@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import F, Q
+from django.db.models import F, Max, Min, Q
 from django.db.models.query import QuerySet
 from django.utils.timezone import make_aware
 
@@ -207,6 +207,17 @@ class Booking(models.Model):
 
             if self._previous_slot is not None and self._previous_slot.bookings.count() == 0:
                 self._previous_slot.delete()
+
+    @classmethod
+    def get_mix_max_time(cls, date: date) -> tuple[datetime, datetime]:
+        if isinstance(date, datetime):
+            date = date.date()
+        next_day = date + timedelta(days=1)
+        result = (
+            cls.objects.filter(start__gt=date, end__lt=next_day).values("start").aggregate(Min("start"), Max("end"))
+        )
+
+        return result["start__min"], result["end__max"]
 
     @property
     def booking_slot(self) -> BookingSlot:
