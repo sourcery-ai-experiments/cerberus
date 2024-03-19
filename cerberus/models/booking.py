@@ -210,11 +210,11 @@ class Booking(models.Model):
 
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime, datetime]:
-        if isinstance(date, datetime):
-            date = date.date()
-        next_day = date + timedelta(days=1)
+        date = make_aware(datetime(date.year, date.month, date.day))
+        next_date = date + timedelta(days=1)
+
         result = (
-            cls.objects.filter(start__gt=date, end__lt=next_day).values("start").aggregate(Min("start"), Max("end"))
+            cls.objects.filter(start__gt=date, end__lt=next_date).values("start").aggregate(Min("start"), Max("end"))
         )
 
         return result["start__min"], result["end__max"]
