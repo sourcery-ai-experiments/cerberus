@@ -73,6 +73,11 @@ class DataAttrSelect(forms.Select):
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
         if value:
             object = self.linked_model().objects.get(pk=f"{value}")
-            option["attrs"][f"data-{self.model_field}"] = getattr(object, self.model_field, self.default_attr_value)
+
+            value = getattr(object, self.model_field)
+            if callable(value):
+                value = value()
+
+            option["attrs"][f"data-{self.model_field}"] = value
 
         return option
