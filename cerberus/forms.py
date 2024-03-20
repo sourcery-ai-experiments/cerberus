@@ -66,7 +66,15 @@ class BookingForm(forms.ModelForm):
         ]
         widgets = {
             "state": forms.TextInput(attrs={"readonly": True}),
-            "service": DataAttrSelect("cost_value"),
+            "cost": SingleMoneyWidget(
+                attrs={"x-model": "cost", "@change": "cost_changed = $event.target.value !== ''"}
+            ),
+            "service": DataAttrSelect(
+                "cost_amount",
+                attrs={
+                    "@change": "if (!cost_changed) { $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount); cost_changed = false;}",
+                },
+            ),
         }
 
 

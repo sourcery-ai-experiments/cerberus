@@ -14,7 +14,7 @@
         <h2>Edit {{ view.model|verbose_name|capfirst }}: {{ object.name }}</h2>
     {% endif %}
 
-    <form method="post" x-data>
+    <form method="post" x-data="{cost: '', cost_changed: false }">
         {{ form|crispy }}
         {% csrf_token %}
         <input type="submit" class="button" value="Save">
