@@ -56,6 +56,10 @@ class VetForm(forms.ModelForm):
 
 
 class BookingForm(forms.ModelForm):
+    attributes = {
+        "x-data": "{cost: '', cost_changed: false }",
+    }
+
     class Meta:
         model = Booking
         fields = [
