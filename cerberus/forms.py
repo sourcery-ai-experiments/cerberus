@@ -139,7 +139,7 @@ class BookingForm(forms.ModelForm):
         ]
         widgets = {
             "state": forms.TextInput(attrs={"readonly": True}),
-            "service": DataAttrSelect("cost"),
+            "service": DataAttrSelect("cost_value"),
         }
 
 

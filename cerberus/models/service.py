@@ -33,3 +33,7 @@ class Service(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("service_detail", kwargs={"pk": self.pk})
+
+    @property
+    def cost_amount(self) -> float:
+        return self.cost.amount
