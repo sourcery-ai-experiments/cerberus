@@ -1,6 +1,5 @@
 # Standard Library
-
-# Standard Library
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 # Django
@@ -11,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
+from humanize import naturaldelta
 from taggit.managers import TaggableManager
 
 # Locals
@@ -82,3 +82,13 @@ class Pet(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("pet_detail", kwargs={"pk": self.pk})
+
+    @property
+    def name_with_owner(self) -> str:
+        return f"{self.name} ({self.customer})"
+
+    @property
+    def age(self) -> str:
+        if self.dob:
+            return naturaldelta(datetime.now().date() - self.dob)
+        return "Unknown"
