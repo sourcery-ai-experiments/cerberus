@@ -1,5 +1,7 @@
 # Standard Library
+import re
 from datetime import date, datetime
+from functools import lru_cache
 
 # Django
 from django.db import models
@@ -18,3 +20,8 @@ def make_aware(value: date, timezone=None):
         return django_make_aware(value, timezone)
     except ValueError:
         return value
+
+
+@lru_cache(maxsize=128)
+def minimize_whitespace(value: str) -> str:
+    return re.sub(r"(^\s+|[\n\r]+)", "", value, flags=re.MULTILINE).strip()

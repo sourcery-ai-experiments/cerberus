@@ -5,6 +5,7 @@ from django import forms
 
 # Locals
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
+from .utils import minimize_whitespace
 from .widgets import DataAttrSelect, SingleMoneyWidget
 
 
@@ -72,7 +73,14 @@ class BookingForm(forms.ModelForm):
             "service": DataAttrSelect(
                 "cost_amount",
                 attrs={
-                    "@change": "if (!cost_changed) { $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount); cost_changed = false;}",
+                    "@change": minimize_whitespace(
+                        """
+                        if (!cost_changed) {
+                            $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount);
+                            cost_changed = false;
+                        }
+"""
+                    ),
                 },
             ),
         }
