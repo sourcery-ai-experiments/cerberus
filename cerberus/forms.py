@@ -74,6 +74,7 @@ class BookingForm(forms.ModelForm):
             "cost": SingleMoneyWidget(
                 attrs={"x-model": "cost", "@change": "cost_changed = $event.target.value !== ''"}
             ),
+            "pet": DataAttrSelect("customer.id"),
             "service": DataAttrSelect(
                 "cost_amount",
                 attrs={
