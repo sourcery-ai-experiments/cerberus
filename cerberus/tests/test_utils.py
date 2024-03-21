@@ -10,7 +10,7 @@ from django.utils.timezone import is_aware
 import pytest
 
 # Locals
-from ..utils import choice_length, make_aware, minimize_whitespace
+from ..utils import choice_length, make_aware, minimize_whitespace, rgetattr
 
 
 def test_max_length():
@@ -97,3 +97,45 @@ def test_minimize_whitespace_with_empty_string():
     value = ""
     expected = ""
     assert minimize_whitespace(value) == expected
+
+
+def test_rgetattr_with_existing_attribute():
+    class TestClass:
+        def __init__(self):
+            self.attr = "value"
+
+    obj = TestClass()
+    assert rgetattr(obj, "attr") == "value"
+
+
+def test_rgetattr_with_nested_existing_attribute():
+    class TestClass:
+        def __init__(self):
+            self.nested = self.Nested()
+
+        class Nested:
+            def __init__(self):
+                self.attr = "value"
+
+    obj = TestClass()
+    assert rgetattr(obj, "nested.attr") == "value"
+
+
+def test_rgetattr_with_non_existing_attribute():
+    class TestClass:
+        pass
+
+    obj = TestClass()
+    assert rgetattr(obj, "non_existing_attr", "default") == "default"
+
+
+def test_rgetattr_with_nested_non_existing_attribute():
+    class TestClass:
+        def __init__(self):
+            self.nested = self.Nested()
+
+        class Nested:
+            pass
+
+    obj = TestClass()
+    assert rgetattr(obj, "nested.non_existing_attr", "default") == "default"
