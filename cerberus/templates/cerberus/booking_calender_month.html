@@ -78,7 +78,5 @@
             {% endfor %}
         </div>
     </div>
-    <a href="{% url 'booking_create' %}" class="fab">
-        {% include 'icons/plus.svg' %}
-    </a>
+    {% include 'cerberus/components/add_booking_fab.html' %}
 {% endblock %}
