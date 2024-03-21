@@ -21,6 +21,11 @@ if TYPE_CHECKING:
     from . import Booking
 
 
+class PetManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("customer")
+
+
 @reversion.register()
 class Pet(models.Model):
     bookings: "QuerySet[Booking]"
@@ -73,6 +78,8 @@ class Pet(models.Model):
         null=True,
         default=None,
     )
+
+    objects = PetManager()
 
     class Meta:
         ordering = ("name",)
