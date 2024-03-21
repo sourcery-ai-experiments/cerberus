@@ -1,4 +1,5 @@
 # Standard Library
+import functools
 import re
 from datetime import date, datetime
 from functools import lru_cache
@@ -25,3 +26,10 @@ def make_aware(value: date, timezone=None):
 @lru_cache(maxsize=128)
 def minimize_whitespace(value: str) -> str:
     return re.sub(r"(^\s+|[\n\r]+)", "", value, flags=re.MULTILINE).strip()
+
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+
+    return functools.reduce(_getattr, [obj] + attr.split("."))

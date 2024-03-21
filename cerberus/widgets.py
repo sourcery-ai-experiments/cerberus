@@ -3,10 +3,12 @@ from typing import Any
 
 # Django
 from django import forms
-from django.db.models import Model
 
 # Third Party
 from djmoney.forms import MoneyWidget
+
+# Locals
+from .utils import rgetattr
 
 
 class SingleMoneyWidget(MoneyWidget):
@@ -33,7 +35,7 @@ class SingleMoneyWidget(MoneyWidget):
 
 class DataAttrSelect(forms.Select):
     model_field: str
-    _model: Model | None = None
+    attr_name: str
     default_attr_value: Any
 
     def __init__(
@@ -47,6 +49,7 @@ class DataAttrSelect(forms.Select):
     ):
         super().__init__(attrs, choices, *args, **kwargs)
         self.model_field = model_field
+        self.attr_name = model_field.replace(".", "__")
         self.default_attr_value = default_attr_value
 
     def create_option(
@@ -62,10 +65,10 @@ class DataAttrSelect(forms.Select):
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
 
         if value and hasattr(value, "instance"):
-            value = getattr(value.instance, self.model_field, self.default_attr_value)
+            value = rgetattr(value.instance, self.model_field, self.default_attr_value)
             if callable(value):
                 value = value()
 
-            option["attrs"][f"data-{self.model_field}"] = value
+            option["attrs"][f"data-{self.attr_name}"] = value
 
         return option
