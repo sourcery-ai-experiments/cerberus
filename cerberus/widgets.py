@@ -39,7 +39,6 @@ class DataAttrSelect(forms.Select):
     def __init__(
         self,
         model_field: str,
-        model: Model | None = None,
         default_attr_value: Any = None,
         attrs=None,
         choices=(),
@@ -48,17 +47,7 @@ class DataAttrSelect(forms.Select):
     ):
         super().__init__(attrs, choices, *args, **kwargs)
         self.model_field = model_field
-        self._model = model
         self.default_attr_value = default_attr_value
-
-    def linked_model(self) -> Model:
-        if self._model is None:
-            try:
-                self._model = self.choices.queryset.model
-            except AttributeError:
-                raise ValueError("Model not set and could not be inferred from queryset")
-
-        return self._model
 
     def create_option(
         self,
@@ -71,10 +60,9 @@ class DataAttrSelect(forms.Select):
         attrs: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
-        if value:
-            object = self.linked_model().objects.get(pk=f"{value}")
 
-            value = getattr(object, self.model_field)
+        if value and hasattr(value, "instance"):
+            value = getattr(value.instance, self.model_field, self.default_attr_value)
             if callable(value):
                 value = value()
 
