@@ -4,6 +4,7 @@ from datetime import date, datetime
 
 # Django
 from django.db import models
+from django.test import override_settings
 from django.utils.timezone import is_aware
 
 # Third Party
@@ -55,6 +56,12 @@ def test_make_aware_called_twice():
 def test_make_does_not_modify_timezone():
     value = make_aware(date(2022, 1, 1), timezone=zoneinfo.ZoneInfo(key="America/New_York"))
     assert value.tzinfo == zoneinfo.ZoneInfo(key="America/New_York")
+
+
+@override_settings(DEBUG=True)
+def test_minimum_whitespace_does_nothing_in_debug():
+    value = "    This is a test string    "
+    assert minimize_whitespace(value) == value
 
 
 def test_minimize_whitespace_removes_leading_whitespace():

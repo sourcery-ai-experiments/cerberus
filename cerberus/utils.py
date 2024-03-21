@@ -5,6 +5,7 @@ from datetime import date, datetime
 from functools import lru_cache
 
 # Django
+from django.conf import settings
 from django.db import models
 from django.utils.timezone import make_aware as django_make_aware
 
@@ -25,6 +26,8 @@ def make_aware(value: date, timezone=None):
 
 @lru_cache(maxsize=128)
 def minimize_whitespace(value: str) -> str:
+    if settings.DEBUG:
+        return value
     return re.sub(r"(^\s+|[\n\r]+)", "", value, flags=re.MULTILINE).strip()
 
 
