@@ -61,13 +61,12 @@ class SelectOptionAttrs(forms.Select):
 
 
 class SelectDataAttrField(forms.Select):
-    model_field: str
-    attr_name: str
+    model_fields: list[str]
     default_attr_value: Any
 
     def __init__(
         self,
-        model_field: str,
+        model_field: str | list[str],
         default_attr_value: Any = None,
         attrs=None,
         choices=(),
@@ -75,8 +74,8 @@ class SelectDataAttrField(forms.Select):
         **kwargs,
     ):
         super().__init__(attrs, choices, *args, **kwargs)
-        self.model_field = model_field
-        self.attr_name = model_field.replace(".", "__")
+
+        self.model_fields = model_field if isinstance(model_field, list) else [model_field]
         self.default_attr_value = default_attr_value
 
     def create_option(
@@ -92,11 +91,13 @@ class SelectDataAttrField(forms.Select):
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
 
         if value and hasattr(value, "instance"):
-            value = rgetattr(value.instance, self.model_field, self.default_attr_value)
-            if callable(value):
-                value = value()
+            for model_field in self.model_fields:
+                attr_value = rgetattr(value.instance, model_field, self.default_attr_value)
+                if callable(attr_value):
+                    attr_value = attr_value()
 
-            option["attrs"][f"data-{self.attr_name}"] = value
+                attr_name = model_field.replace(".", "__")
+                option["attrs"][f"data-{attr_name}"] = attr_value
 
         return option
 
