@@ -57,7 +57,32 @@ class VetForm(forms.ModelForm):
 
 class BookingForm(forms.ModelForm):
     attributes = {
-        "x-data": "{cost: '', cost_changed: false, customer: false, pet: false, start: '', end: '' }",
+        "x-data": minimize_whitespace(
+            """
+            {
+                cost: '',
+                cost_changed: false,
+                customer: false,
+                pet: false,
+                start: '',
+                end: '',
+                length: 0,
+                end_changed: false,
+            }
+"""
+        ),
+        "x-effect": minimize_whitespace(
+            """
+            if (length > 0 && start != '') {
+                $nextTick(() => {
+                    if (!end_changed) {
+                        end = dateToString(addMinutes(start, length));
+                        end_changed = false;
+                    }
+                });
+            }
+"""
+        ),
     }
 
     customer = forms.ModelChoiceField(
@@ -86,7 +111,20 @@ class BookingForm(forms.ModelForm):
             "end",
         ]
         widgets = {
-            "state": forms.TextInput(attrs={"readonly": True}),
+            "service": SelectDataAttrField(
+                ["cost_amount", "length_minutes"],
+                attrs={
+                    "@change": minimize_whitespace(
+                        """
+                        if (!cost_changed) {
+                            $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount);
+                            cost_changed = false;
+                        }
+                        $nextTick(() => length = $event.target.options[$event.target.selectedIndex].dataset.length_minutes);
+"""
+                    ),
+                },
+            ),
             "cost": SingleMoneyWidget(
                 attrs={
                     "x-model": "cost",
@@ -106,19 +144,6 @@ class BookingForm(forms.ModelForm):
                     }
                 ),
             ),
-            "service": SelectDataAttrField(
-                "cost_amount",
-                attrs={
-                    "@change": minimize_whitespace(
-                        """
-                        if (!cost_changed) {
-                            $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount);
-                            cost_changed = false;
-                        }
-"""
-                    ),
-                },
-            ),
             "start": forms.DateTimeInput(
                 attrs={
                     "type": "datetime-local",
@@ -132,7 +157,12 @@ class BookingForm(forms.ModelForm):
                     "type": "datetime-local",
                     "step": 900,
                     "x-model": "end",
-                    "@change": "end = roundTime(end)",
+                    "@change": minimize_whitespace(
+                        """
+                        end_changed = $event.target.value !== '';
+                        end = roundTime(end);
+"""
+                    ),
                 }
             ),
         }

@@ -36,3 +36,9 @@ class Service(models.Model):
 
     def cost_amount(self) -> float:
         return self.cost.amount  # type: ignore
+
+    def length_seconds(self) -> int:
+        return int(self.length.total_seconds())
+
+    def length_minutes(self) -> int:
+        return self.length_seconds() // 60
