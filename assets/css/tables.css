@@ -1,3 +1,4 @@
+/*
 *:has(> table) {
   display: block;
   max-width: 100%;
@@ -39,3 +40,4 @@
     var(--shadow-size) 100%;
   background-attachment: local, local, scroll, scroll;
 }
+*/
