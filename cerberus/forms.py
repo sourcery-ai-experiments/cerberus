@@ -57,7 +57,7 @@ class VetForm(forms.ModelForm):
 
 class BookingForm(forms.ModelForm):
     attributes = {
-        "x-data": "{cost: '', cost_changed: false, customer: false, pet: false }",
+        "x-data": "{cost: '', cost_changed: false, customer: false, pet: false, start: '', end: '' }",
     }
 
     customer = forms.ModelChoiceField(
@@ -118,6 +118,22 @@ class BookingForm(forms.ModelForm):
 """
                     ),
                 },
+            ),
+            "start": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "step": 900,
+                    "x-model": "start",
+                    "@change": "start = roundTime(start)",
+                }
+            ),
+            "end": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "step": 900,
+                    "x-model": "end",
+                    "@change": "end = roundTime(end)",
+                }
             ),
         }
 

@@ -1,21 +1,23 @@
 const className = 'toast-container';
 
+const Document = document;
+
 const createContainer = (): HTMLElement => {
-    const container = document.createElement('div');
+    const container = Document.createElement('div');
     container.className = className;
-    document.body.appendChild(container);
+    Document.body.appendChild(container);
     return container;
 }
 
 const getContainer = (): HTMLElement => {
-    return document.querySelector(`.${className}`) || createContainer();
+    return Document.querySelector(`.${className}`) || createContainer();
 }
 
 export type ToastType = "success" | "error" | "warn" | "info";
 
 export const toast = (message: string, type: ToastType = "info", duration: number = 3000) => {
     const container = getContainer();
-    const toast = document.createElement('div');
+    const toast = Document.createElement('div');
     toast.classList.add('toast', type);
     toast.innerHTML = message;
     container.appendChild(toast);
