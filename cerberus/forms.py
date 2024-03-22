@@ -62,7 +62,17 @@ class BookingForm(forms.ModelForm):
 
     customers = forms.ModelChoiceField(
         Customer.objects.all(),
-        widget=forms.Select(attrs={"x-model": "customer", "@change": "pet = false"}),
+        widget=forms.Select(
+            attrs={
+                "x-model": "customer",
+                "@change": minimize_whitespace(
+                    """
+                const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
+                pet = pets.length == 1 ? pets[0].value : false;
+"""
+                ),
+            }
+        ),
     )
 
     class Meta:
@@ -92,7 +102,7 @@ class BookingForm(forms.ModelForm):
                 attr_callback=(
                     lambda name, value, label, attrs: {
                         **attrs,
-                        ":class": f"customer == '{value}' ? '': 'hidden'",
+                        ":class": "customer == $el.dataset.customer__id ? '': 'hidden'",
                     }
                 ),
             ),
