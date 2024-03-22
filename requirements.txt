@@ -4,9 +4,9 @@ arabic-reshaper==3.0.0 \
     --hash=sha256:3f71d5034bb694204a239a6f1ebcf323ac3c5b059de02259235e2016a1a5e2dc \
     --hash=sha256:ffcd13ba5ec007db71c072f5b23f420da92ac7f268512065d49e790e62237099
     # via xhtml2pdf
-asgiref==3.8.0 \
-    --hash=sha256:30fc07797ad71a0abb8fe34aa03c8043308a8389abc7942d797ea9911540bc28 \
-    --hash=sha256:ec75d9d0f04e2dbfedef1f20ee73a6594af80c333df47cdd31f37e6701f7c53a
+asgiref==3.8.1 \
+    --hash=sha256:3e1e3ecc849832fe52ccf2cb6686b7a55f82bb1d6aee72a58826471390335e47 \
+    --hash=sha256:c343bd80a0bec947a9860adb4c432ffa7db769836c64238fc34bdc3fec84d590
     # via
     #   django
     #   django-cors-headers
