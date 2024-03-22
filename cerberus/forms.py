@@ -89,7 +89,7 @@ class BookingForm(forms.ModelForm):
         Customer.objects.all(),
         widget=forms.Select(
             attrs={
-                "x-model": "customer",
+                "x-model.fill": "customer",
                 "@change": minimize_whitespace(
                     """
                 const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
@@ -127,7 +127,7 @@ class BookingForm(forms.ModelForm):
             ),
             "cost": SingleMoneyWidget(
                 attrs={
-                    "x-model": "cost",
+                    "x-model.fill": "cost",
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
             ),
@@ -135,7 +135,7 @@ class BookingForm(forms.ModelForm):
                 "customer.id",
                 attrs={
                     ":disabled": "!customer",
-                    "x-model": "pet",
+                    "x-model.fill": "pet",
                 },
                 attr_callback=(
                     lambda name, value, label, attrs: {
@@ -148,7 +148,7 @@ class BookingForm(forms.ModelForm):
                 attrs={
                     "type": "datetime-local",
                     "step": 900,
-                    "x-model": "start",
+                    "x-model.fill": "start",
                     "@change": "start = roundTime(start)",
                 }
             ),
@@ -156,7 +156,7 @@ class BookingForm(forms.ModelForm):
                 attrs={
                     "type": "datetime-local",
                     "step": 900,
-                    "x-model": "end",
+                    "x-model.fill": "end",
                     "@change": minimize_whitespace(
                         """
                         end_changed = $event.target.value !== '';
