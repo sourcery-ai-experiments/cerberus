@@ -1,6 +1,6 @@
-const className = 'toast-container';
+import { Document } from "./alias";
 
-const Document = document;
+const className = 'toast-container';
 
 const createContainer = (): HTMLElement => {
     const container = Document.createElement('div');

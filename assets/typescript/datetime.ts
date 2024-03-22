@@ -1,4 +1,4 @@
-const round = Math.round
+import { round } from './alias';
 
 export const roundTime = (datetime: string, roundTo: number = 15): string => {
     const rounded = new Date(datetime);
