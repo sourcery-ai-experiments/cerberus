@@ -60,7 +60,7 @@ class BookingForm(forms.ModelForm):
         "x-data": "{cost: '', cost_changed: false, customer: false, pet: false }",
     }
 
-    customers = forms.ModelChoiceField(
+    customer = forms.ModelChoiceField(
         Customer.objects.all(),
         widget=forms.Select(
             attrs={
@@ -80,7 +80,7 @@ class BookingForm(forms.ModelForm):
         fields = [
             "service",
             "cost",
-            "customers",
+            "customer",
             "pet",
             "start",
             "end",
