@@ -1,4 +1,5 @@
 # Standard Library
+from collections.abc import Callable
 from typing import Any
 
 # Django
@@ -33,7 +34,33 @@ class SingleMoneyWidget(MoneyWidget):
         return f"{id_}_0"
 
 
-class DataAttrSelect(forms.Select):
+Attr_callback = Callable[[str, Any, int | str, dict[str, Any]], dict[str, Any] | None]
+
+
+class SelectOptionAttrs(forms.Select):
+    attr_callback: Attr_callback
+
+    def __init__(self, attr_callback: Attr_callback, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.attr_callback = attr_callback
+
+    def create_option(
+        self,
+        name: str,
+        value: Any,
+        label: int | str,
+        selected: set[str] | bool,
+        index: int,
+        subindex: int | None = None,
+        attrs: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        option["attrs"] = self.attr_callback(name, value, label, option["attrs"])
+
+        return option
+
+
+class SelectDataAttrField(forms.Select):
     model_field: str
     attr_name: str
     default_attr_value: Any
@@ -72,3 +99,18 @@ class DataAttrSelect(forms.Select):
             option["attrs"][f"data-{self.attr_name}"] = value
 
         return option
+
+
+class SelectDataOptionAttr(SelectOptionAttrs, SelectDataAttrField):
+    def __init__(
+        self,
+        model_field: str,
+        attr_callback: Attr_callback,
+        default_attr_value: Any = None,
+        *args,
+        **kwargs,
+    ):
+        kwargs["model_field"] = model_field
+        kwargs["default_attr_value"] = default_attr_value
+        kwargs["attr_callback"] = attr_callback
+        super().__init__(*args, **kwargs)

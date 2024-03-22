@@ -6,7 +6,7 @@ from django import forms
 # Locals
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 from .utils import minimize_whitespace
-from .widgets import DataAttrSelect, SingleMoneyWidget
+from .widgets import SelectDataAttrField, SelectDataOptionAttr, SingleMoneyWidget
 
 
 class CustomerForm(forms.ModelForm):
@@ -57,14 +57,20 @@ class VetForm(forms.ModelForm):
 
 class BookingForm(forms.ModelForm):
     attributes = {
-        "x-data": "{cost: '', cost_changed: false }",
+        "x-data": "{cost: '', cost_changed: false, customer: false, pet: false }",
     }
+
+    customers = forms.ModelChoiceField(
+        Customer.objects.all(),
+        widget=forms.Select(attrs={"x-model": "customer", "@change": "pet = false"}),
+    )
 
     class Meta:
         model = Booking
         fields = [
             "service",
             "cost",
+            "customers",
             "pet",
             "start",
             "end",
@@ -72,10 +78,25 @@ class BookingForm(forms.ModelForm):
         widgets = {
             "state": forms.TextInput(attrs={"readonly": True}),
             "cost": SingleMoneyWidget(
-                attrs={"x-model": "cost", "@change": "cost_changed = $event.target.value !== ''"}
+                attrs={
+                    "x-model": "cost",
+                    "@change": "cost_changed = $event.target.value !== ''",
+                }
             ),
-            "pet": DataAttrSelect("customer.id"),
-            "service": DataAttrSelect(
+            "pet": SelectDataOptionAttr(
+                "customer.id",
+                attrs={
+                    ":disabled": "!customer",
+                    "x-model": "pet",
+                },
+                attr_callback=(
+                    lambda name, value, label, attrs: {
+                        **attrs,
+                        ":class": f"customer == '{value}' ? '': 'hidden'",
+                    }
+                ),
+            ),
+            "service": SelectDataAttrField(
                 "cost_amount",
                 attrs={
                     "@change": minimize_whitespace(

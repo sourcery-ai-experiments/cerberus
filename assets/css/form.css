@@ -69,3 +69,11 @@ form {
     }
   }
 }
+
+form {
+  *:has(:disabled) {
+    label {
+      color: var(--pico-muted-color);
+    }
+  }
+}
