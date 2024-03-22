@@ -102,7 +102,7 @@ class BookingForm(forms.ModelForm):
                 attr_callback=(
                     lambda name, value, label, attrs: {
                         **attrs,
-                        ":class": "customer == $el.dataset.customer__id ? '': 'hidden'",
+                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : ''",
                     }
                 ),
             ),
