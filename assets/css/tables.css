@@ -41,3 +41,8 @@
   background-attachment: local, local, scroll, scroll;
 }
 */
+*:has(> table) {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+}
