@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import F, Max, Min, Q
+from django.db.models import CheckConstraint, F, Max, Min, Q
 from django.db.models.query import QuerySet
 from django.urls import reverse
 
@@ -183,7 +183,9 @@ class Booking(models.Model):
     # Relationship Fields
     pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
     service = models.ForeignKey("cerberus.Service", on_delete=models.PROTECT, related_name="bookings")
-    _booking_slot = models.ForeignKey("cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings")
+    _booking_slot = models.ForeignKey(
+        "cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings", null=True, blank=True
+    )
     _booking_slot_id: int | None
     _previous_slot: BookingSlot | None = None
 
@@ -195,6 +197,14 @@ class Booking(models.Model):
             "pet",
             "_booking_slot",
         )
+        constraints = [
+            CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end"),
+            CheckConstraint(
+                check=(~Q(state="canceled") & Q(_booking_slot__isnull=False))
+                | (Q(state="canceled") & Q(_booking_slot__isnull=True)),
+                name="has_booking_slot",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} - {naturaldate(self.start)}"
