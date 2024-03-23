@@ -137,17 +137,6 @@ class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
 class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_day.html"
 
-    @staticmethod
-    def add_time(time: dt.time, delta: dt.timedelta) -> dt.time:
-        return (dt.datetime.combine(dt.date.today(), time) + delta).time()
-
-    @classmethod
-    def get_times(cls, start: dt.time, end: dt.time, step: dt.timedelta) -> Iterable[dt.time]:
-        cur: dt.time = start
-        while cur < end:
-            yield cur
-            cur: dt.time = cls.add_time(cur, step)
-
     def grouped_bookings(self, start: dt.datetime, end: dt.datetime) -> dict[dt.time, list[Booking]]:
         bookings = Booking.objects.filter(start__gte=start, end__lte=end).order_by("start")
 
@@ -162,6 +151,17 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
 
         return [BookingGroup(t, bookings_by_date[t.time()]) for t in times]
 
+    def get_times(self, date: dt.date, step: int = 15, start: int = 8, end: int = 17) -> list[dt.datetime]:
+        min_time, max_time = Booking.get_mix_max_time(date)
+
+        bookings_start = getattr(min_time, "hour", start + 1) - 1
+        bookings_end = getattr(max_time, "hour", end - 1) + 1
+
+        start = min(start, bookings_start)
+        end = max(end, bookings_end)
+        steps = range(0, ((end - start) * (60 // step)) + 1)
+        return [make_aware(date + dt.timedelta(hours=start, minutes=15 * i)) for i in steps]
+
     def get_context_data(self, year=None, month=None, day=None, **kwargs):
         now = dt.datetime.now()
         year = year or now.year
@@ -174,13 +174,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
         except ValueError as e:
             raise Http404("date not found") from e
 
-        min_time, max_time = Booking.get_mix_max_time(date)
-
-        step = 15
-        start = min(8, min_time.hour)
-        end = max(16, max_time.hour + 1)
-        steps = range(0, ((end - start) * (60 // step)) + 1)
-        times: list[dt.datetime] = [make_aware(date + dt.timedelta(hours=start, minutes=15 * i)) for i in steps]
+        times = self.get_times(date)
 
         context["date"] = date
         context["year"] = year

@@ -210,7 +210,7 @@ class Booking(models.Model):
                 self._previous_slot.delete()
 
     @classmethod
-    def get_mix_max_time(cls, date: date) -> tuple[datetime, datetime]:
+    def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
         date = make_aware(datetime(date.year, date.month, date.day))
         next_date = date + timedelta(days=1)
 
