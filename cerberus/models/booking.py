@@ -13,6 +13,7 @@ from django.db.models.query import QuerySet
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from djmoney.models.fields import MoneyField
 from humanize import naturaldate
 
 # Locals
@@ -167,7 +168,7 @@ class Booking(models.Model):
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     name = models.CharField(max_length=520)
-    cost = models.PositiveIntegerField()
+    cost = MoneyField(max_digits=14, default=0.0)
     start = models.DateTimeField()
     end = models.DateTimeField()
     length = models.GeneratedField(  # type: ignore
