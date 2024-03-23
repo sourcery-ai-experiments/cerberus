@@ -19,9 +19,9 @@
         <div>Service</div><div>{{ booking.service }}</div>
         <div>Start</div><div>{{ booking.start }}</div>
         <div>End</div><div>{{ booking.end }}</div>
-        <div>State</div><div>{{ booking.state }}</div>
-        <div>Length</div><div>{{ booking.length|naturaldelta }}</div>
-        <div>Cost</div><div>{% money_localize booking.cost 'GBP' %}</div>
+        <div>Length</div><div>{{ booking.length|naturaldelta|capfirst }}</div>
+        <div>State</div><div>{{ booking.state|capfirst }}</div>
+        <div>Cost</div><div>{{ booking.cost }}</div>
         <div>Charges</div><div>
             {% for charge in booking.charges.objects %}
                 <div>{{ charge.line }} - {{ charge.state }}</div>

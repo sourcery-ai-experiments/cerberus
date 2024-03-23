@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import F, Max, Min, Q
 from django.db.models.query import QuerySet
+from django.urls import reverse
 
 # Third Party
 import reversion
@@ -208,6 +209,13 @@ class Booking(models.Model):
 
             if self._previous_slot is not None and self._previous_slot.bookings.count() == 0:
                 self._previous_slot.delete()
+
+    def get_absolute_url(self):
+        return reverse("booking_detail", kwargs={"pk": self.pk})
+
+    @property
+    def customer(self):
+        return self.pet.customer
 
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
