@@ -191,6 +191,10 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ("-created",)
+        unique_together = (
+            "pet",
+            "_booking_slot",
+        )
 
     def __str__(self) -> str:
         return f"{self.name} - {naturaldate(self.start)}"
