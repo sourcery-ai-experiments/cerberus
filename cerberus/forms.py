@@ -62,8 +62,8 @@ class BookingForm(forms.ModelForm):
             {
                 cost: '',
                 cost_changed: false,
-                customer: false,
-                pet: false,
+                customer: '',
+                pet: '',
                 start: '',
                 end: '',
                 length: 0,
@@ -86,10 +86,10 @@ class BookingForm(forms.ModelForm):
     }
 
     customer = forms.ModelChoiceField(
-        Customer.objects.all(),
+        queryset=Customer.objects.all(),
         widget=forms.Select(
             attrs={
-                "x-model.fill": "customer",
+                "x-model.number.fill": "customer",
                 "@change": minimize_whitespace(
                     """
                 const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
@@ -127,7 +127,7 @@ class BookingForm(forms.ModelForm):
             ),
             "cost": SingleMoneyWidget(
                 attrs={
-                    "x-model.fill": "cost",
+                    "x-model.number.fill": "cost",
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
             ),
@@ -135,7 +135,7 @@ class BookingForm(forms.ModelForm):
                 "customer.id",
                 attrs={
                     ":disabled": "!customer",
-                    "x-model.fill": "pet",
+                    "x-model.number.fill": "pet",
                 },
                 attr_callback=(
                     lambda name, value, label, attrs: {
