@@ -14,17 +14,11 @@ from .utils import rgetattr
 
 class SingleMoneyWidget(MoneyWidget):
     def __init__(self, attrs=None, *args, **kwargs):
-        if attrs is None:
-            attrs = {}
+        attrs = attrs or {}
+        attrs.update({"step": "any"})
+
         super().__init__(
-            amount_widget=forms.NumberInput(
-                attrs={
-                    **{
-                        "step": "any",
-                    },
-                    **attrs,
-                }
-            ),  # type: ignore
+            amount_widget=forms.NumberInput(attrs=attrs),  # type: ignore
             currency_widget=forms.HiddenInput(),
             *args,
             **kwargs,
