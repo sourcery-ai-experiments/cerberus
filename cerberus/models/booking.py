@@ -159,6 +159,11 @@ class BookingStates(models.TextChoices):
         return reduce(or_, [Q(**{field: e.value}) for e in cls])
 
 
+class ActiveBookingManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(state=BookingStates.CANCELED.value)
+
+
 @reversion.register()
 class Booking(models.Model):
     STATES_MOVEABLE: list[str] = [
@@ -201,6 +206,9 @@ class Booking(models.Model):
     _previous_slot: BookingSlot | None = None
 
     charges = GenericRelation(Charge)
+
+    objects = models.Manager()
+    active = ActiveBookingManager()
 
     class Meta:
         ordering = ("-created",)

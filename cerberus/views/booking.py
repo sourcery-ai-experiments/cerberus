@@ -61,7 +61,7 @@ class BookingCalenderYear(TemplateView, CalendarBreadCrumbs):
     def get_booking_stats(self, year) -> dict[int, int]:
         month_stats: dict[int, int] = defaultdict(int)
 
-        for stats in Booking.objects.filter(start__year=year).values("start__month").annotate(count=Count("id")):
+        for stats in Booking.active.filter(start__year=year).values("start__month").annotate(count=Count("id")):
             month_stats[stats["start__month"]] = stats["count"]
 
         return month_stats
@@ -95,7 +95,7 @@ class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_month.html"
 
     def grouped_bookings(self, start: dt.date, end: dt.date) -> dict[dt.date, list[Booking]]:
-        bookings = Booking.objects.filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = Booking.active.filter(start__gte=start, end__lte=end).order_by("start")
 
         bookings_by_date: dict[dt.date, list[Booking]] = defaultdict(list)
         for booking in bookings:
@@ -138,7 +138,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_day.html"
 
     def grouped_bookings(self, start: dt.datetime, end: dt.datetime) -> dict[dt.time, list[Booking]]:
-        bookings = Booking.objects.filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = Booking.active.filter(start__gte=start, end__lte=end).order_by("start")
 
         bookings_by_date: dict[dt.time, list[Booking]] = defaultdict(list)
         for booking in bookings:
