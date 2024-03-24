@@ -1,6 +1,8 @@
 # Standard Library
 from collections.abc import Callable, Iterable
 from datetime import date, datetime, timedelta
+from functools import reduce
+from operator import or_
 from typing import TYPE_CHECKING, Self
 
 # Django
@@ -152,6 +154,10 @@ class BookingStates(models.TextChoices):
     CANCELED = "canceled"
     COMPLETED = "completed"
 
+    @classmethod
+    def to_constraints(cls, field: str) -> Q:
+        return reduce(or_, [Q(**{field: e.value}) for e in cls])
+
 
 @reversion.register()
 class Booking(models.Model):
@@ -206,6 +212,7 @@ class Booking(models.Model):
                 | (Q(state=BookingStates.CANCELED.value) & Q(_booking_slot__isnull=True)),
                 name="has_booking_slot",
             ),
+            CheckConstraint(check=BookingStates.to_constraints("state"), name="valid_state"),
         ]
 
     def __str__(self) -> str:
