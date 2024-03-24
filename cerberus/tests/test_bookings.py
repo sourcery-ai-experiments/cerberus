@@ -287,3 +287,33 @@ def test_complete():
     assert booking == charge.booking
     assert booking.pet.customer == charge.customer
     assert booking.cost == charge.amount
+
+
+@pytest.mark.django_db
+def test_booking_start_before_end():
+    booking = baker.make(Booking)
+
+    booking.start = BookingSlot.round_date_time(datetime.now() + timedelta(hours=2))
+    booking.end = BookingSlot.round_date_time(datetime.now() + timedelta(hours=1))
+
+    with pytest.raises(IntegrityError):
+        booking.save()
+
+
+@pytest.mark.django_db
+def test_booking_requires_slot():
+    booking = baker.make(Booking)
+    booking.booking_slot = None
+
+    with pytest.raises(IntegrityError):
+        booking.save()
+
+
+@pytest.mark.django_db
+def test_booking_canceled_requires_no_slot():
+    booking = baker.make(Booking)
+    booking.cancel()
+    booking.booking_slot = booking._get_new_booking_slot()
+
+    with pytest.raises(IntegrityError):
+        booking.save()
