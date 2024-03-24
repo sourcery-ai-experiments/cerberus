@@ -143,5 +143,5 @@ class Customer(models.Model):
     @property
     def upcoming_bookings(self) -> QuerySet["Booking"]:
         return self.bookings.filter(start__gte=datetime.today()).exclude(
-            state__in=[Booking.States.CANCELED.value, Booking.States.COMPLETED.value]
+            state__in=[Booking.BookingStates.CANCELED.value, Booking.BookingStates.COMPLETED.value]
         )

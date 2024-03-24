@@ -145,17 +145,26 @@ class BookingSlot(models.Model):
         return len(self.customers)
 
 
+class BookingStates(models.TextChoices):
+    ENQUIRY = "enquiry"
+    PRELIMINARY = "preliminary"
+    CONFIRMED = "confirmed"
+    CANCELED = "canceled"
+    COMPLETED = "completed"
+
+
 @reversion.register()
 class Booking(models.Model):
-    class States(models.TextChoices):
-        ENQUIRY = "enquiry"
-        PRELIMINARY = "preliminary"
-        CONFIRMED = "confirmed"
-        CANCELED = "canceled"
-        COMPLETED = "completed"
-
-    STATES_MOVEABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
-    STATES_CANCELABLE: list[str] = [States.ENQUIRY.value, States.PRELIMINARY.value, States.CONFIRMED.value]
+    STATES_MOVEABLE: list[str] = [
+        BookingStates.ENQUIRY.value,
+        BookingStates.PRELIMINARY.value,
+        BookingStates.CONFIRMED.value,
+    ]
+    STATES_CANCELABLE: list[str] = [
+        BookingStates.ENQUIRY.value,
+        BookingStates.PRELIMINARY.value,
+        BookingStates.CONFIRMED.value,
+    ]
 
     id: int
     get_all_state_transitions: Callable[[], Iterable[Transition]]
@@ -174,7 +183,7 @@ class Booking(models.Model):
         db_persist=True,
     )
 
-    state = FSMField(default=States.PRELIMINARY.value, choices=States.choices, protected=True)  # type: ignore
+    state = FSMField(default=BookingStates.PRELIMINARY.value, choices=BookingStates.choices, protected=True)  # type: ignore
 
     # Relationship Fields
     pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
@@ -193,8 +202,8 @@ class Booking(models.Model):
         constraints = [
             CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end"),
             CheckConstraint(
-                check=(~Q(state="canceled") & Q(_booking_slot__isnull=False))
-                | (Q(state="canceled") & Q(_booking_slot__isnull=True)),
+                check=(~Q(state=BookingStates.CANCELED.value) & Q(_booking_slot__isnull=False))
+                | (Q(state=BookingStates.CANCELED.value) & Q(_booking_slot__isnull=True)),
                 name="has_booking_slot",
             ),
         ]
@@ -238,7 +247,7 @@ class Booking(models.Model):
     @property
     def booking_slot(self) -> BookingSlot:
         if self._booking_slot is None:
-            if self.state == self.States.CANCELED.value:
+            if self.state == BookingStates.CANCELED.value:
                 raise (BookingSlot.DoesNotExist("Booking has been canceled"))
             self._booking_slot = self._get_new_booking_slot()
         return self._booking_slot
@@ -323,27 +332,32 @@ class Booking(models.Model):
         return self.length_seconds() // 60
 
     @save_after
-    @transition(field=state, source=States.ENQUIRY.value, target=States.PRELIMINARY.value)
+    @transition(field=state, source=BookingStates.ENQUIRY.value, target=BookingStates.PRELIMINARY.value)
     def process(self) -> None:
         pass
 
     @save_after
-    @transition(field=state, source=States.PRELIMINARY.value, target=States.CONFIRMED.value)
+    @transition(field=state, source=BookingStates.PRELIMINARY.value, target=BookingStates.CONFIRMED.value)
     def confirm(self) -> None:
         pass
 
     @save_after
-    @transition(field=state, source=STATES_CANCELABLE, target=States.CANCELED.value)  # type: ignore
+    @transition(field=state, source=STATES_CANCELABLE, target=BookingStates.CANCELED.value)  # type: ignore
     def cancel(self) -> None:
         self._booking_slot = None
 
     @save_after
-    @transition(field=state, source=States.CANCELED.value, target=States.ENQUIRY.value)
+    @transition(field=state, source=BookingStates.CANCELED.value, target=BookingStates.ENQUIRY.value)
     def reopen(self) -> None:
         self._booking_slot = self._get_new_booking_slot()
 
     @save_after
-    @transition(field=state, source=States.CONFIRMED.value, target=States.COMPLETED.value, conditions=[can_complete])
+    @transition(
+        field=state,
+        source=BookingStates.CONFIRMED.value,
+        target=BookingStates.COMPLETED.value,
+        conditions=[can_complete],
+    )
     def complete(self) -> Charge:
         return self.create_charge()
 
