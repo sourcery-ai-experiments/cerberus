@@ -56,24 +56,15 @@ def make_booking(make_pet, walk_service, now) -> Generator[Callable[[Pet | None]
     yield _make_booking
 
 
-def test_start_before_end():
-    slot = baker.prepare(
-        BookingSlot,
-        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
-    )
-
-    assert slot._valid_dates() is True
-
-
+@pytest.mark.django_db
 def test_end_before_start():
-    slot = baker.prepare(
-        BookingSlot,
-        start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=4)),
-        end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=2)),
-    )
+    booking_slot = baker.make(BookingSlot)
 
-    assert slot._valid_dates() is False
+    booking_slot.start = BookingSlot.round_date_time(datetime.now() + timedelta(hours=2))
+    booking_slot.end = BookingSlot.round_date_time(datetime.now() + timedelta(hours=1))
+
+    with pytest.raises(IntegrityError):
+        booking_slot.save()
 
 
 @pytest.mark.django_db

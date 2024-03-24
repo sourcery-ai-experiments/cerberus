@@ -44,7 +44,7 @@ class BookingSlot(models.Model):
 
     class Meta:
         unique_together = [("start", "end")]
-        constraints = [CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end")]
+        constraints = [CheckConstraint(check=Q(start__lt=F("end")), name="slot_start_before_end")]
 
     def __str__(self) -> str:
         return f"{self.id}: {self.start} - {self.end}"
@@ -81,6 +81,7 @@ class BookingSlot(models.Model):
     def clean(self) -> None:
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
+        super().clean()
 
     def move_slot(self, start: datetime | date, end: datetime | None = None) -> bool:
         if not all(b.can_move for b in self.bookings.all()):
