@@ -128,7 +128,6 @@ cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run cog
 
 db.sqlite3: .direnv $(MIGRATION_FILES)
 	python manage.py migrate
-	python manage.py dummydata
 	@touch $@
 
 dev: .direnv db.sqlite3 cog css js ## Setup the project read for development
