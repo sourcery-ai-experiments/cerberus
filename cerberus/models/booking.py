@@ -43,7 +43,8 @@ class BookingSlot(models.Model):
     )
 
     class Meta:
-        unique_together = [["start", "end"]]
+        unique_together = [("start", "end")]
+        constraints = [CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end")]
 
     def __str__(self) -> str:
         return f"{self.id}: {self.start} - {self.end}"
@@ -64,9 +65,6 @@ class BookingSlot(models.Model):
 
         return make_aware(dt)
 
-    def _valid_dates(self) -> bool:
-        return self.end > self.start
-
     def get_overlapping(self) -> QuerySet[Self]:
         start = Q(start__lt=self.start, end__gt=self.start)
         end = Q(start__lt=self.end, end__gt=self.end)
@@ -81,9 +79,6 @@ class BookingSlot(models.Model):
         return any(o.bookings.all().count() > 0 for o in others)
 
     def clean(self) -> None:
-        if not self._valid_dates():
-            raise ValidationError("end can not be before start")
-
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
 
@@ -193,10 +188,7 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ("-created",)
-        unique_together = (
-            "pet",
-            "_booking_slot",
-        )
+        unique_together = [("pet", "_booking_slot")]
         constraints = [
             CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end"),
             CheckConstraint(
