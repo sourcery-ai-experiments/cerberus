@@ -19,7 +19,7 @@ class Service(models.Model):
     length = models.DurationField(default=timedelta(minutes=60))
     booked_length = models.DurationField(default=timedelta(minutes=120))
     cost = MoneyField(max_digits=14)
-    cost_per_additional = MoneyField(max_digits=14, default=0.0)
+    cost_per_additional = MoneyField(max_digits=14, default=None, blank=True, null=True)
     max_pet = models.IntegerField(default=1)
     max_customer = models.IntegerField(default=1)
     display_colour = models.CharField(max_length=255)  # ColorField(default="#000000")
