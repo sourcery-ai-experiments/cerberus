@@ -103,10 +103,10 @@ class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = [
-            "service",
-            "cost",
             "customer",
             "pet",
+            "service",
+            "cost",
             "start",
             "end",
         ]
@@ -166,6 +166,11 @@ class BookingForm(forms.ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        if pet_id := self.initial.get("pet", None):
+            self.initial["customer"] = Pet.objects.get(id=pet_id).customer.id
 
 
 class InvoiceForm(forms.ModelForm):
