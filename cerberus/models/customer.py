@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from . import Booking, Charge, Contact, Pet, Vet
 
 # Locals
-from .booking import Booking
+from .booking import Booking, BookingStates
 from .invoice import Invoice
 
 
@@ -143,5 +143,5 @@ class Customer(models.Model):
     @property
     def upcoming_bookings(self) -> QuerySet["Booking"]:
         return self.bookings.filter(start__gte=datetime.today()).exclude(
-            state__in=[Booking.BookingStates.CANCELED.value, Booking.BookingStates.COMPLETED.value]
+            state__in=[BookingStates.CANCELED.value, BookingStates.COMPLETED.value]
         )
