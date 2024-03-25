@@ -281,7 +281,7 @@ class Booking(models.Model):
 
             super().save(*args, **kwargs)
 
-            if self._previous_slot is not None and self._previous_slot.bookings.count() == 0:
+            if self._previous_slot is not None and self._previous_slot.pk and self._previous_slot.bookings.count() == 0:
                 self._previous_slot.delete()
 
     def get_absolute_url(self):
