@@ -28,6 +28,9 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
 
     const { moveUrl } = bookingElement.dataset;
     if (moveUrl) {
+        if (bookingElement.matches(containerSelector)) {
+            console.log('TODO: Move booking to the same container');
+        }
         container.appendChild(bookingElement);
 
         const { datetime } = bookingTarget.dataset;
