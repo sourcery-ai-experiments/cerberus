@@ -24,6 +24,7 @@ from ..decorators import save_after
 from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
 from ..utils import make_aware
 from .charge import Charge
+from .service import Service
 
 if TYPE_CHECKING:
     # Locals
@@ -73,7 +74,7 @@ class BookingSlot(models.Model):
         equal = Q(start=self.start, end=self.end)
         contains = Q(start__gt=self.start, end__lt=self.end)
 
-        return self.__class__.objects.filter(start | end | equal | contains).exclude(pk=self.pk)  # type: ignore
+        return self.__class__.objects.filter(start | end | equal | contains).exclude(pk=self.pk)
 
     def overlaps(self) -> bool:
         others = self.get_overlapping()
@@ -83,6 +84,16 @@ class BookingSlot(models.Model):
     def clean(self) -> None:
         if self.overlaps():
             raise ValidationError(f"{self.__class__.__name__} overlaps another {self.__class__.__name__}")
+
+        if len({booking.service.id for booking in self.bookings.all()}) > 1:
+            raise ValidationError(f"{self.__class__.__name__} has multiple services")
+
+        if (max_pet := getattr(self.service, "max_pet")) and self.pet_count > max_pet:
+            raise ValidationError(f"{self.__class__.__name__} has max pets for service, {max_pet}")
+
+        if (max_customer := getattr(self.service, "max_customer")) and self.customer_count > max_customer:
+            raise ValidationError(f"{self.__class__.__name__} has max customers for service, {max_customer}")
+
         super().clean()
 
     def move_slot(self, start: datetime | date, end: datetime | None = None) -> bool:
@@ -97,7 +108,15 @@ class BookingSlot(models.Model):
         self.end = start + (self.end - self.start) if end is None else end
         self.start = start
 
-        if self.overlaps():
+        overlaps = self.get_overlapping()
+        if overlaps.count():
+            if overlaps.count() > 1:
+                raise SlotOverlapsError("Slot overlaps multiple slots")
+
+            if (overlapping := overlaps.first()) and self.matches(overlapping):
+                overlapping += self
+                return True
+
             raise SlotOverlapsError("Slot overlaps another")
 
         with transaction.atomic():
@@ -118,6 +137,9 @@ class BookingSlot(models.Model):
 
     def length_minutes(self) -> int:
         return self.length_seconds() // 60
+
+    def matches(self, other: Self) -> bool:
+        return self.start == other.start and self.end == other.end and self.service == other.service
 
     @classmethod
     def clean_empty_slots(cls) -> None:
@@ -145,6 +167,27 @@ class BookingSlot(models.Model):
     @property
     def customer_count(self) -> int:
         return len(self.customers)
+
+    def __add__(self, other: "Self|Booking") -> Self:
+        if isinstance(other, Booking):
+            with transaction.atomic():
+                other.booking_slot = self
+                other.start = self.start
+                other.end = self.end
+                other.save()
+            return self
+
+        if isinstance(other, self.__class__):
+            if not self.matches(other):
+                raise ValueError("Slots do not match")
+
+            with transaction.atomic():
+                for booking in other.bookings.all():
+                    booking.move_booking(self.start)
+                    booking.save()
+            return self
+
+        raise ValueError("Invalid type")
 
 
 class BookingStates(models.TextChoices):
