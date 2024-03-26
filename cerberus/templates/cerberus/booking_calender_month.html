@@ -18,6 +18,7 @@
                    aria-label="Previous Month"
                    title="{{ prev_month|date:'F Y' }}"
                    href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}"
+                   hx-trigger="keyup[key=='ArrowLeft'] from:body"
                 >
                     {% include 'icons/chevron-left.svg' %}
                 </a>
@@ -25,6 +26,7 @@
                    aria-label="Next Month"
                    title="{{ next_month|date:'F Y' }}"
                    href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"
+                   hx-trigger="keyup[key=='ArrowRight'] from:body"
                 >
                     {% include 'icons/chevron-right.svg' %}
                 </a>

@@ -18,6 +18,7 @@
                    aria-label="Previous Day"
                    title="{{ prev_day|date:'jS F Y' }}"
                    href="{% url 'booking_calender_day' year=prev_day.year month=prev_day.month day=prev_day.day %}"
+                   hx-trigger="keyup[key=='ArrowLeft'] from:body"
                 >
                     {% include 'icons/chevron-left.svg' %}
                 </a>
@@ -25,6 +26,7 @@
                    aria-label="Next Day"
                    title="{{ next_day|date:'jS F Y' }}"
                    href="{% url 'booking_calender_day' year=next_day.year month=next_day.month day=next_day.day %}"
+                   hx-trigger="keyup[key=='ArrowRight'] from:body"
                 >
                     {% include 'icons/chevron-right.svg' %}
                 </a>
