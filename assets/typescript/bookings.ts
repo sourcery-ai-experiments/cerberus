@@ -1,4 +1,3 @@
-import { dispatchEvent } from "./events";
 import { toast } from "./toast";
 
 declare global {
@@ -29,9 +28,11 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
     const { moveUrl } = bookingElement.dataset;
     if (moveUrl) {
         if (bookingElement.matches(containerSelector)) {
-            console.log('TODO: Move booking to the same container');
+            Array.from(bookingElement.children).forEach(element => container.appendChild(element));
+            bookingElement.remove();
+        } else {
+            container.appendChild(bookingElement);
         }
-        container.appendChild(bookingElement);
 
         const { datetime } = bookingTarget.dataset;
         try {
