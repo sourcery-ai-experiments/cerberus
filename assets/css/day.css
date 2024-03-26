@@ -40,7 +40,6 @@
     padding: 0 0.5em;
     line-height: var(--height);
     box-sizing: border-box;
-    cursor: grab;
     text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
     color: var(--pico-contrast);
     border-radius: 0.25em;
@@ -52,7 +51,6 @@
       padding-left: 2em;
       display: inline-flex;
       gap: 0.5em;
-      cursor: grab;
       border-radius: 0.25em;
       position: relative;
 

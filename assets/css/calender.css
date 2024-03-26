@@ -1,3 +1,11 @@
+[draggable="true"] {
+  cursor: grab;
+}
+
+[draggable="false"] {
+  cursor: not-allowed;
+}
+
 .calender-controls {
   display: flex;
   justify-content: space-between;
@@ -63,7 +71,6 @@
           background: var(--display-colour);
           text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
           border-radius: 0.25em;
-          cursor: grab;
           padding: 0 0.25em;
           line-height: 2em;
         }
