@@ -54,6 +54,30 @@
       gap: 0.5em;
       cursor: grab;
       border-radius: 0.25em;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        --grab-size: calc(var(--height) * 0.75);
+        --pattern-size: calc(var(--grab-size) / 3);
+        --dot: calc(var(--pattern-size) / 4.5);
+        --offset: calc((var(--height) - var(--grab-size)) / 2);
+        left: var(--offset);
+        top: var(--offset);
+
+        height: var(--grab-size);
+        width: var(--grab-size);
+
+        background-repeat: repeat;
+        background-image: radial-gradient(
+          #00000066 var(--dot),
+          transparent calc(var(--dot) * 1.25)
+        );
+
+        background-size: var(--pattern-size) var(--pattern-size);
+        background-color: transparent;
+      }
     }
   }
 
