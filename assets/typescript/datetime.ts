@@ -1,8 +1,11 @@
 import { round } from './alias';
+import { pad } from './utils';
 
+export const pad2 = (n: number): string => pad(n, 2);
 
 export const dateToString = (date: Date|string): string => {
-    return (new Date(date)).toISOString().slice(0,-8);
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`
 }
 
 export const roundTime = (datetime: Date|string, roundTo: number = 15): string => {
