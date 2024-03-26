@@ -27,7 +27,7 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
 
     const { moveUrl } = bookingElement.dataset;
     if (moveUrl) {
-        if (bookingElement.matches(containerSelector)) {
+        if (bookingElement.matches(containerSelector) && container.matches(containerSelector)) {
             Array.from(bookingElement.children).forEach(element => container.appendChild(element));
             bookingElement.remove();
         } else {
