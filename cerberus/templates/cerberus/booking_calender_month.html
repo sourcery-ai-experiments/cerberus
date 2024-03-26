@@ -49,7 +49,7 @@
                     x-on:dragleave.prevent="adding = false"
                     x-data="{ adding: false, removing: false }"
                     data-datetime="{{ day|date:'Y-m-d' }}"
-                    class="dropzone {% if day.month == date.month %}current{% endif %} {% if day == today %}today{% endif %}"
+                    class="dropzone {% if day.month == date.month %}current{% endif %}{% if day|date:'dmY' == today|date:'dmY' %} today{% endif %}"
                 >
                     <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
                         {{ day|date:"d" }}

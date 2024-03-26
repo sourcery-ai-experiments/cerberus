@@ -82,6 +82,7 @@
       }
 
       &.today {
+        background: var(--pico-muted-border-color);
         a {
           --day-color: var(--pico-contrast);
         }
