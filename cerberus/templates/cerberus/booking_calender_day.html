@@ -32,7 +32,15 @@
                 </a>
             </div>
         </div>
-        <ol x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
+        <ol
+            id="time-slots"
+            hx-get="{% url 'booking_calender_day' year=date.year month=date.month day=date.day %}"
+            hx-select="#time-slots"
+            hx-trigger="booking-moved"
+            hx-swap="outerHTML"
+            x-data
+            x-init="window.CSRFToken = '{{ csrf_token }}'"
+        >
             {% for time, bookings in booking_times %}
                 <li>
                     <div>{{ time|date:"H:i" }}</div>

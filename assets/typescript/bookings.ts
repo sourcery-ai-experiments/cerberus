@@ -1,4 +1,5 @@
 import { toast } from "./toast";
+import { dispatchEvent } from "./events";
 
 declare global {
     interface Window {
@@ -38,6 +39,7 @@ export const moveBooking = async (bookingElement: HTMLElement, bookingTarget: HT
         try {
             const data = await makeRequest(moveUrl, { to: datetime });
             toast('Saved: OK', 'success');
+            dispatchEvent(bookingElement, 'booking-moved', data);
             return data;
         } catch (error) {
             parent && parent.appendChild(bookingElement);
