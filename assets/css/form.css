@@ -76,4 +76,10 @@ form {
       color: var(--pico-muted-color);
     }
   }
+
+  .checkbox {
+    &:has(input.hidden) {
+      display: none;
+    }
+  }
 }

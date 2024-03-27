@@ -63,7 +63,7 @@ class BookingForm(forms.ModelForm):
                 cost: '',
                 cost_changed: false,
                 customer: '',
-                pet: '',
+                pets: [],
                 start: '',
                 end: '',
                 length: 0,
@@ -99,19 +99,14 @@ class BookingForm(forms.ModelForm):
             "customer": forms.Select(
                 attrs={
                     "x-model.number.fill": "customer",
-                    "@change": minimize_whitespace(
-                        """
-                const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
-                pet = pets.length == 1 ? pets[0].value : false;
-"""
-                    ),
+                    "@change": "pets.length = 0",
                 }
             ),
             "pets": CheckboxDataOptionAttr(
                 "customer.id",
                 attrs={
                     ":disabled": "!customer",
-                    "x-model.number.fill": "pet",
+                    "x-model.number.fill": "pets",
                 },
                 attr_callback=(
                     lambda name, value, label, attrs: {
