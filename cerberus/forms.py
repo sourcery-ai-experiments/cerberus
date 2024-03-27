@@ -104,7 +104,7 @@ class BookingForm(forms.ModelForm):
         model = Booking
         fields = [
             "customer",
-            "pet",
+            "pets",
             "service",
             "cost",
             "start",

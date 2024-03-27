@@ -240,7 +240,8 @@ class Booking(models.Model):
     state = FSMField(default=BookingStates.PRELIMINARY.value, choices=BookingStates.choices, protected=True)  # type: ignore
 
     # Relationship Fields
-    pet = models.ForeignKey("cerberus.Pet", on_delete=models.PROTECT, related_name="bookings")
+    customer = models.ForeignKey("cerberus.Customer", on_delete=models.PROTECT, related_name="bookings")
+    pets = models.ManyToManyField("cerberus.Pet", related_name="bookings")
     service = models.ForeignKey("cerberus.Service", on_delete=models.PROTECT, related_name="bookings")
     _booking_slot = models.ForeignKey(
         "cerberus.BookingSlot", on_delete=models.PROTECT, related_name="bookings", null=True, blank=True
@@ -255,7 +256,7 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ("-created",)
-        unique_together = [("pet", "_booking_slot")]
+        unique_together = [("customer", "_booking_slot")]
         constraints = [
             CheckConstraint(check=Q(start__lt=F("end")), name="start_before_end"),
             CheckConstraint(
@@ -270,7 +271,7 @@ class Booking(models.Model):
         return f"{self.name} - {naturaldate(self.start)}"
 
     def save(self, *args, **kwargs) -> None:
-        self.name = f"{self.pet.name}, {self.service.name}"
+        self.name = f"{self.customer.name}, {self.service.name}"
 
         with transaction.atomic():
             if self.pk is None and getattr(self, "_booking_slot", None) is None:
@@ -286,10 +287,6 @@ class Booking(models.Model):
 
     def get_absolute_url(self):
         return reverse("booking_detail", kwargs={"pk": self.pk})
-
-    @property
-    def customer(self):
-        return self.pet.customer
 
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
@@ -322,7 +319,7 @@ class Booking(models.Model):
             name=f"Charge for {self.name}"[:255],
             line=self.cost,
             booking=self,
-            customer=self.pet.customer,
+            customer=self.customer,
         )
         charge.save()
 
