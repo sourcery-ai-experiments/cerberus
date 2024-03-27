@@ -276,7 +276,7 @@ def test_complete():
     charge = charges[0]
 
     assert booking == charge.booking
-    assert booking.pet.customer == charge.customer
+    assert booking.customer == charge.customer
     assert booking.cost == charge.amount
 
 

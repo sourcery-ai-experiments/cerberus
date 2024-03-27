@@ -1,5 +1,5 @@
 # Standard Library
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from datetime import date, datetime, timedelta
 from functools import reduce
 from operator import or_
@@ -12,6 +12,7 @@ from django.db import models, transaction
 from django.db.models import CheckConstraint, F, Max, Min, Q
 from django.db.models.query import QuerySet
 from django.urls import reverse
+from django.utils.functional import lazy
 
 # Third Party
 import reversion
@@ -153,16 +154,18 @@ class BookingSlot(models.Model):
             return None
 
     @property
-    def pets(self) -> set["Pet"]:
-        return {b.pet for b in self.bookings.all()}
+    def pets(self) -> Iterator["Pet"]:
+        for booking in self.bookings.all():
+            yield from booking.pets.all()
 
     @property
+    @lazy
     def pet_count(self) -> int:
-        return len(self.pets)
+        return sum(booking.pets.count() for booking in self.bookings.all())
 
     @property
     def customers(self) -> set["Customer"]:
-        return {b.pet.customer for b in self.bookings.all()}
+        return {b.customer for b in self.bookings.all()}
 
     @property
     def customer_count(self) -> int:
@@ -308,7 +311,7 @@ class Booking(models.Model):
         return self._booking_slot
 
     @booking_slot.setter
-    def booking_slot(self, value: BookingSlot) -> None:
+    def booking_slot(self, value: BookingSlot | None) -> None:
         if value != self._booking_slot:
             self._previous_slot = self._booking_slot
 
@@ -334,7 +337,7 @@ class Booking(models.Model):
         if slot.pet_count >= self.service.max_pet:
             raise MaxPetsError(f"Booking has max pets for service, {self.service.max_pet}")
 
-        if slot.customer_count >= self.service.max_customer and self.pet.customer not in slot.customers:
+        if slot.customer_count >= self.service.max_customer and self.customer not in slot.customers:
             raise MaxCustomersError(f"Booking has max customers for service, {self.service.max_customer}")
 
         if slot.overlaps():
