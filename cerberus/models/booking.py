@@ -291,6 +291,15 @@ class Booking(models.Model):
     def get_absolute_url(self):
         return reverse("booking_detail", kwargs={"pk": self.pk})
 
+    def clean(self) -> None:
+        if self.customer is None and (pet := self.pets.first()):
+            self.customer = pet.customer
+
+        if set(self.pets.all().values_list("customer", flat=True)) != {self.customer.id}:
+            raise ValidationError("Booking has pets from multiple customers")
+
+        return super().clean()
+
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
         date = make_aware(datetime(date.year, date.month, date.day))
