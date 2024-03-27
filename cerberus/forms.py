@@ -6,7 +6,7 @@ from django import forms
 # Locals
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 from .utils import minimize_whitespace
-from .widgets import SelectDataAttrField, SelectDataOptionAttr, SingleMoneyWidget
+from .widgets import CheckboxDataOptionAttr, SelectDataAttrField, SingleMoneyWidget
 
 
 class CustomerForm(forms.ModelForm):
@@ -107,6 +107,19 @@ class BookingForm(forms.ModelForm):
                     ),
                 }
             ),
+            "pets": CheckboxDataOptionAttr(
+                "customer.id",
+                attrs={
+                    ":disabled": "!customer",
+                    "x-model.number.fill": "pet",
+                },
+                attr_callback=(
+                    lambda name, value, label, attrs: {
+                        **attrs,
+                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : ''",
+                    }
+                ),
+            ),
             "service": SelectDataAttrField(
                 ["cost_amount", "length_minutes"],
                 attrs={
@@ -126,19 +139,6 @@ class BookingForm(forms.ModelForm):
                     "x-model.number.fill": "cost",
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
-            ),
-            "pet": SelectDataOptionAttr(
-                "customer.id",
-                attrs={
-                    ":disabled": "!customer",
-                    "x-model.number.fill": "pet",
-                },
-                attr_callback=(
-                    lambda name, value, label, attrs: {
-                        **attrs,
-                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : ''",
-                    }
-                ),
             ),
             "start": forms.DateTimeInput(
                 attrs={

@@ -4,6 +4,7 @@ from typing import Any
 
 # Django
 from django import forms
+from django.forms import widgets
 
 # Third Party
 from djmoney.forms import MoneyWidget
@@ -31,7 +32,7 @@ class SingleMoneyWidget(MoneyWidget):
 Attr_callback = Callable[[str, Any, int | str, dict[str, Any]], dict[str, Any] | None]
 
 
-class SelectOptionAttrs(forms.Select):
+class OptionAttrs(widgets.ChoiceWidget):
     attr_callback: Attr_callback
 
     def __init__(self, attr_callback: Attr_callback, *args, **kwargs) -> None:
@@ -54,7 +55,11 @@ class SelectOptionAttrs(forms.Select):
         return option
 
 
-class SelectDataAttrField(forms.Select):
+class SelectOptionAttrs(OptionAttrs, forms.Select):
+    pass
+
+
+class DataAttrField(widgets.ChoiceWidget):
     model_fields: list[str]
     default_attr_value: Any
 
@@ -96,7 +101,26 @@ class SelectDataAttrField(forms.Select):
         return option
 
 
-class SelectDataOptionAttr(SelectOptionAttrs, SelectDataAttrField):
+class SelectDataAttrField(DataAttrField, forms.Select):
+    pass
+
+
+class SelectDataOptionAttr(OptionAttrs, DataAttrField, forms.Select):
+    def __init__(
+        self,
+        model_field: str,
+        attr_callback: Attr_callback,
+        default_attr_value: Any = None,
+        *args,
+        **kwargs,
+    ):
+        kwargs["model_field"] = model_field
+        kwargs["default_attr_value"] = default_attr_value
+        kwargs["attr_callback"] = attr_callback
+        super().__init__(*args, **kwargs)
+
+
+class CheckboxDataOptionAttr(OptionAttrs, DataAttrField, forms.CheckboxSelectMultiple):
     def __init__(
         self,
         model_field: str,
