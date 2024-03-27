@@ -13,9 +13,9 @@
   <table class="htmx-load-target">
     <thead>
       <tr>
-        <th>{% include "cerberus/components/sort_item.html" with field_name="pet" %}</th>
+        <th>{% include "cerberus/components/sort_item.html" with field_name="pets" %}</th>
         {% if hide_customer != True %}
-          <th>{% include "cerberus/components/sort_item.html" with field_name="pet__customer" field_label="Customer" %}</th>
+          <th>{% include "cerberus/components/sort_item.html" with field_name="customer__name" field_label="Customer" %}</th>
         {% endif %}
         <th>{% include "cerberus/components/sort_item.html" with field_name="service" %}</th>
         <th>{% include "cerberus/components/sort_item.html" with field_name="start" %}</th>
@@ -27,8 +27,8 @@
     <tbody>
       {% for booking in bookings %}
         <tr>
-          <td>{{ booking.pet.name }}</td>
-          {% if hide_customer != True %}<td>{{ booking.pet.customer.name }}</td>{% endif %}
+          <td>{{ booking.pets.all|join:", " }}</td>
+          {% if hide_customer != True %}<td>{{ booking.customer.name }}</td>{% endif %}
           <td>{{ booking.service }}</td>
           <td><span data-tooltip="{{ booking.start|naturaltime }}">{{ booking.start }}</span></td>
           <td><span data-tooltip="{{ booking.length|precisedelta }}">{{ booking.length|naturaldelta }}</span></td>

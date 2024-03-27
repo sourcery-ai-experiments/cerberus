@@ -85,21 +85,6 @@ class BookingForm(forms.ModelForm):
         ),
     }
 
-    customer = forms.ModelChoiceField(
-        queryset=Customer.objects.all(),
-        widget=forms.Select(
-            attrs={
-                "x-model.number.fill": "customer",
-                "@change": minimize_whitespace(
-                    """
-                const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
-                pet = pets.length == 1 ? pets[0].value : false;
-"""
-                ),
-            }
-        ),
-    )
-
     class Meta:
         model = Booking
         fields = [
@@ -111,6 +96,17 @@ class BookingForm(forms.ModelForm):
             "end",
         ]
         widgets = {
+            "customer": forms.Select(
+                attrs={
+                    "x-model.number.fill": "customer",
+                    "@change": minimize_whitespace(
+                        """
+                const pets = document.querySelectorAll(`option[data-customer__id="${customer}"]`);
+                pet = pets.length == 1 ? pets[0].value : false;
+"""
+                    ),
+                }
+            ),
             "service": SelectDataAttrField(
                 ["cost_amount", "length_minutes"],
                 attrs={

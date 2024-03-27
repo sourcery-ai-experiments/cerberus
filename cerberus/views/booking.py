@@ -23,7 +23,7 @@ BookingGroup = namedtuple("BookingDay", ["date", "bookings"])
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
-    sortable_fields = ["pet__customer", "pet", "service", "start", "length"]
+    sortable_fields = ["customer__name", "pets", "service", "start", "length"]
 
 
 class BookingCalenderRedirect(RedirectView):
