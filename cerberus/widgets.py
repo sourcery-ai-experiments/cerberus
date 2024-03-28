@@ -33,9 +33,9 @@ Attr_callback = Callable[[str, Any, int | str, dict[str, Any]], dict[str, Any] |
 
 
 class OptionAttrs(widgets.ChoiceWidget):
-    attr_callback: Attr_callback
+    attr_callback: Attr_callback | None
 
-    def __init__(self, attr_callback: Attr_callback, *args, **kwargs) -> None:
+    def __init__(self, attr_callback: Attr_callback | None = None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.attr_callback = attr_callback
 
@@ -50,7 +50,8 @@ class OptionAttrs(widgets.ChoiceWidget):
         attrs: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
-        option["attrs"] = self.attr_callback(name, value, label, option["attrs"])
+        if self.attr_callback:
+            option["attrs"] = self.attr_callback(name, value, label, option["attrs"])
 
         return option
 
@@ -109,7 +110,7 @@ class SelectDataOptionAttr(OptionAttrs, DataAttrField, forms.Select):
     def __init__(
         self,
         model_field: str,
-        attr_callback: Attr_callback,
+        attr_callback: Attr_callback | None = None,
         default_attr_value: Any = None,
         *args,
         **kwargs,
@@ -124,7 +125,7 @@ class CheckboxDataOptionAttr(OptionAttrs, DataAttrField, forms.CheckboxSelectMul
     def __init__(
         self,
         model_field: str,
-        attr_callback: Attr_callback,
+        attr_callback: Attr_callback | None = None,
         default_attr_value: Any = None,
         *args,
         **kwargs,

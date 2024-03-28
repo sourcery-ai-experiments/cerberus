@@ -99,7 +99,18 @@ class BookingForm(forms.ModelForm):
             "customer": forms.Select(
                 attrs={
                     "x-model.number.fill": "customer",
-                    "@change": "pets.length = 0",
+                    "@change": minimize_whitespace(
+                        """
+                        pets.length = 0;
+                        $nextTick(() => {
+                            $el.closest('form')
+                                .querySelectorAll('input[type=checkbox]:not([disabled])')
+                                .forEach((el) => {
+                                    pets.push(el.value);
+                                });
+                        });
+"""
+                    ),
                 }
             ),
             "pets": CheckboxDataOptionAttr(
@@ -108,13 +119,8 @@ class BookingForm(forms.ModelForm):
                     ":disabled": "!customer",
                     "x-model.number.fill": "pets",
                     "x-cloak": True,
+                    ":class": "customer != $el.dataset.customer__id ? 'hidden' : 'visible'",
                 },
-                attr_callback=(
-                    lambda name, value, label, attrs: {
-                        **attrs,
-                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : 'visible'",
-                    }
-                ),
             ),
             "service": SelectDataAttrField(
                 ["cost_amount", "length_minutes"],
