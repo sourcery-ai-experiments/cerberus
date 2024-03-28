@@ -63,7 +63,7 @@
                                 <div
                                     class="booking-group"
                                     :class="{ 'dragging': dragging }"
-                                    draggable="{% if booking.can_move %}true{% else %}false{% endif %}"
+                                    draggable="{% if slot.can_move %}true{% else %}false{% endif %}"
                                     id="booking-group-{{ slot.id }}"
                                     data-id="{{ slot.id }}"
                                     data-move-url="{% url 'bookingslot-move' slot.id %}"
