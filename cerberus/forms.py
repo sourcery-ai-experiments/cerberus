@@ -107,11 +107,12 @@ class BookingForm(forms.ModelForm):
                 attrs={
                     ":disabled": "!customer",
                     "x-model.number.fill": "pets",
+                    "x-cloak": True,
                 },
                 attr_callback=(
                     lambda name, value, label, attrs: {
                         **attrs,
-                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : ''",
+                        ":class": "customer != $el.dataset.customer__id ? 'hidden' : 'visible'",
                     }
                 ),
             ),

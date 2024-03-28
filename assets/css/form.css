@@ -78,8 +78,18 @@ form {
   }
 
   .checkbox {
-    &:has(input.hidden) {
+    &:has(input.hidden),
+    &:has([x-cloak]) {
       display: none;
+    }
+  }
+
+  label + div:not(:has(.visible)):has(.hidden) {
+    &::before {
+      content: "--";
+      color: var(--pico-muted-color);
+      padding-bottom: 0.5em;
+      display: block;
     }
   }
 }
