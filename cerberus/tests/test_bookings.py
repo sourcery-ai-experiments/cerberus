@@ -138,24 +138,22 @@ def test_no_duplicates():
 
 @pytest.mark.django_db
 def test_pet_count(walk_service, make_pet, make_customer):
-    customer1 = make_customer()
     booking_slot_1 = baker.make(
         Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
         booking_slot=None,
         service=walk_service,
-        pets=[make_pet(customer1)],
+        pets=[make_pet()],
     ).booking_slot
 
-    customer2 = make_customer()
     booking_slot_2 = baker.make(
         Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
         booking_slot=None,
         service=walk_service,
-        pets=[make_pet(customer2)],
+        pets=[make_pet()],
     ).booking_slot
 
     assert booking_slot_1.pk == booking_slot_2.pk
@@ -163,15 +161,14 @@ def test_pet_count(walk_service, make_pet, make_customer):
 
 
 @pytest.mark.django_db
-def test_customer_count(walk_service, make_pet, customer):
+def test_customer_count(walk_service):
     booking_slot_1 = baker.make(
         Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
         service=walk_service,
         booking_slot=None,
-        pets=[make_pet(customer=customer)],
-        customer=customer,
+        customer=baker.make(Customer),
     ).booking_slot
 
     booking_slot_2 = baker.make(
@@ -180,12 +177,11 @@ def test_customer_count(walk_service, make_pet, customer):
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
         service=walk_service,
         booking_slot=None,
-        pets=[make_pet(customer=customer)],
-        customer=customer,
+        customer=baker.make(Customer),
     ).booking_slot
 
     assert booking_slot_1.pk == booking_slot_2.pk
-    assert booking_slot_1.customer_count == 1
+    assert booking_slot_1.customer_count == 2
 
 
 @pytest.mark.django_db
@@ -229,7 +225,7 @@ def test_pet_list(make_pet):
         Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
         end=BookingSlot.round_date_time(datetime.now() + timedelta(hours=6)),
-        pet=pet,
+        pets=[pet],
     )
 
     assert pet in booking.booking_slot.pets
@@ -237,14 +233,19 @@ def test_pet_list(make_pet):
 
 @pytest.mark.django_db
 @pytest.mark.freeze_time("2017-05-21")
-def test_max_pet_booking(make_booking):
-    make_booking()
-    make_booking()
-    make_booking()
-    make_booking()
+def test_max_pet_booking(walk_service, now):
+    customer = baker.make(Customer)
+
+    start = BookingSlot.round_date_time(now + timedelta(hours=1))
+    end = BookingSlot.round_date_time(now + timedelta(hours=2))
+
+    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
+    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
+    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
+    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
 
     with pytest.raises(MaxPetsError):
-        make_booking()
+        baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
 
 
 @pytest.mark.django_db
