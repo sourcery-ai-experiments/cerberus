@@ -27,11 +27,6 @@ def customer() -> Generator[Customer, None, None]:
 
 
 @pytest.fixture
-def make_customer() -> Generator[Callable[[], Customer], None, None]:
-    yield partial(baker.make, Customer)
-
-
-@pytest.fixture
 def make_pet(customer: Customer) -> Generator[Callable[[], Pet], None, None]:
     yield partial(baker.make, Pet, customer=customer)
 
@@ -44,23 +39,6 @@ def booking() -> Generator[Booking, None, None]:
 @pytest.fixture
 def now() -> Generator[datetime, None, None]:
     yield datetime.now()
-
-
-@pytest.fixture
-def make_booking(make_pet, walk_service, now) -> Generator[Callable[[list[Pet] | None], Booking], None, None]:
-    def _make_booking(pets: list[Pet] | None = None, customer: Customer | None = None):
-        booking = Booking.objects.create(
-            cost=0,
-            service=walk_service,
-            start=BookingSlot.round_date_time(now + timedelta(hours=1)),
-            end=BookingSlot.round_date_time(now + timedelta(hours=2)),
-        )
-        booking.save()
-        for pet in pets or [make_pet()]:
-            booking.pets.add(pet)
-        return booking
-
-    yield _make_booking
 
 
 @pytest.mark.django_db
@@ -137,7 +115,7 @@ def test_no_duplicates():
 
 
 @pytest.mark.django_db
-def test_pet_count(walk_service, make_pet, make_customer):
+def test_pet_count(walk_service, make_pet):
     booking_slot_1 = baker.make(
         Booking,
         start=BookingSlot.round_date_time(datetime.now() + timedelta(hours=5)),
@@ -239,10 +217,9 @@ def test_max_pet_booking(walk_service, now):
     start = BookingSlot.round_date_time(now + timedelta(hours=1))
     end = BookingSlot.round_date_time(now + timedelta(hours=2))
 
-    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
-    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
-    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
-    baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
+    pets = [baker.make(Pet, customer=customer) for _ in range(4)]
+
+    baker.make(Booking, pets=pets, customer=customer, service=walk_service, start=start, end=end)
 
     with pytest.raises(MaxPetsError):
         baker.make(Booking, pets=[baker.make(Pet, customer=customer)], service=walk_service, start=start, end=end)
@@ -250,15 +227,22 @@ def test_max_pet_booking(walk_service, now):
 
 @pytest.mark.django_db
 @pytest.mark.freeze_time("2017-05-21")
-def test_max_customer_booking(make_booking, make_pet):
+def test_max_customer_booking(now, walk_service):
     c1 = baker.make(Customer)
     c2 = baker.make(Customer)
     c3 = baker.make(Customer)
-    make_booking(pets=[make_pet(customer=c1)], customer=c1)
-    make_booking(pets=[make_pet(customer=c2)], customer=c2)
+
+    def pet(c):
+        return baker.make(Pet, customer=c)
+
+    start = BookingSlot.round_date_time(now + timedelta(hours=1))
+    end = BookingSlot.round_date_time(now + timedelta(hours=2))
+
+    baker.make(Booking, pets=[pet(c1)], customer=c1, service=walk_service, start=start, end=end)
+    baker.make(Booking, pets=[pet(c2)], customer=c2, service=walk_service, start=start, end=end)
 
     with pytest.raises(MaxCustomersError):
-        make_booking(pets=[make_pet(c3)], customer=c3)
+        baker.make(Booking, pets=[pet(c3)], customer=c3, service=walk_service, start=start, end=end)
 
 
 @pytest.mark.django_db
