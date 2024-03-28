@@ -104,7 +104,7 @@ class BookingForm(forms.ModelForm):
                         pets.length = 0;
                         $nextTick(() => {
                             $el.closest('form')
-                                .querySelectorAll('input[type=checkbox]:not([disabled])')
+                                .querySelectorAll(`input[data-customer__id="${customer}"]`)
                                 .forEach((el) => {
                                     pets.push(el.value);
                                 });
