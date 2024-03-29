@@ -234,7 +234,6 @@ class Booking(models.Model):
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    name = models.CharField(max_length=520)
     cost = MoneyField(max_digits=14, default=0.0)
     cost_additional = MoneyField(max_digits=14, default=0.0, blank=True, null=True)
     start = models.DateTimeField()
@@ -279,8 +278,6 @@ class Booking(models.Model):
         return f"{self.name} - {naturaldate(self.start)}"
 
     def save(self, *args, **kwargs) -> None:
-        self.name = f"{self.customer.name}, {self.service.name}"
-
         with transaction.atomic():
             if self.pk is None and getattr(self, "_booking_slot", None) is None:
                 self._booking_slot = self._get_new_booking_slot()
@@ -312,6 +309,10 @@ class Booking(models.Model):
         )
 
         return result["start__min"], result["end__max"]
+
+    @property
+    def name(self) -> str:
+        return f"{", ".join(str(p) for p in self.pets.all())} - {self.service}"
 
     @property
     def booking_slot(self) -> BookingSlot:
