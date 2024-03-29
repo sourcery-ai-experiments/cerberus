@@ -1,4 +1,4 @@
-{% load paginator_tags string_utils %}
+{% load paginator_tags string_utils includes %}
 <a
     href="{{ base_url }}?{% querystring sort=field_name sort_order=alt_sort_order %}"
     class="sort-item" :class="sort == '{{field_name}}' ? 'sorting' : ''"
@@ -6,9 +6,9 @@
 >
     <span>{{ field_label|default:field_name|unslug|title }}</span>
     <template class="sort-icon" x-if="sort == '{{field_name}}' && sort_order == 'asc'" >
-        {% include "icons/chevron-up.svg" %}
+        {% include_static "icons/chevron-up.svg" %}
     </template>
     <template class="sort-icon" x-if="sort == '{{field_name}}' && sort_order == 'desc'" >
-        {% include "icons/chevron-down.svg" %}
+        {% include_static "icons/chevron-down.svg" %}
     </template>
 </a>
