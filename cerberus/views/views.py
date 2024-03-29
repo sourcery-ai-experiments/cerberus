@@ -5,22 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Locals
-from ..filters import CustomerFilter, PetFilter, ServiceFilter, VetFilter
-from ..forms import CustomerForm, PetForm, ServiceForm, VetForm
-from ..models import Customer, Pet, Service, Vet
+from ..filters import PetFilter, ServiceFilter, VetFilter
+from ..forms import PetForm, ServiceForm, VetForm
+from ..models import Pet, Service, Vet
 from .crud_views import CRUDViews
 
 
 @login_required
 def dashboard(request):
     return render(request, "cerberus/dashboard.html", {})
-
-
-class CustomerCRUD(CRUDViews):
-    model = Customer
-    form_class = CustomerForm
-    filter_class = CustomerFilter
-    sortable_fields = ["name"]
 
 
 class PetCRUD(CRUDViews):

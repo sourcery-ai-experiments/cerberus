@@ -299,6 +299,9 @@ class Booking(models.Model):
         if any(pet.customer != self.customer for pet in self.pets.all()):
             raise ValidationError("Booking has pets from a different customer")
 
+    def natural_date(self):
+        return naturaldate(self.start)
+
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
         date = make_aware(datetime(date.year, date.month, date.day))

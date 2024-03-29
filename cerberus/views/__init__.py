@@ -7,8 +7,9 @@ from .booking import (
     BookingCRUD,
     BookingStateActions,
 )
+from .customer import CustomerCRUD
 from .invoice import InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
-from .views import CustomerCRUD, PetCRUD, ServiceCRUD, VetCRUD, dashboard
+from .views import PetCRUD, ServiceCRUD, VetCRUD, dashboard
 
 __all__ = [
     "dashboard",

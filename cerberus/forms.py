@@ -226,3 +226,13 @@ class ServiceForm(forms.ModelForm):
             "cost_per_additional": SingleMoneyWidget(),
             "display_colour": forms.TextInput(attrs={"type": "color"}),
         }
+
+
+class UninvoicedChargesForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop("customer")
+        super().__init__(*args, **kwargs)
+        uninvoiced_charges = customer.charges.filter(invoice=None)
+        self.fields["charges"] = forms.ModelMultipleChoiceField(
+            queryset=uninvoiced_charges, widget=forms.CheckboxSelectMultiple, required=False
+        )

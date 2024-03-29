@@ -15,9 +15,7 @@ from django.urls.resolvers import URLPattern
 
 # Third Party
 from django_filters import FilterSet
-from vanilla import CreateView as VanillaCreateView
-from vanilla import DeleteView, DetailView, GenericModelView, ListView
-from vanilla import UpdateView as VanillaUpdateView
+from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
 
 
 class Actions(Enum):
@@ -197,14 +195,6 @@ class SafeFormSave:
             return self.form_invalid(form)
 
 
-class CreateView(SafeFormSave, VanillaCreateView):
-    pass
-
-
-class UpdateView(SafeFormSave, VanillaUpdateView):
-    pass
-
-
 class CRUDViews(GenericModelView):
     model = Model
     delete_success_url: str | None = None
@@ -258,6 +248,7 @@ class CRUDViews(GenericModelView):
                 [
                     LoginRequiredMixin if cls.requires_login else None,
                     BreadcrumbMixin,
+                    SafeFormSave if action in [Actions.CREATE, Actions.UPDATE] else None,
                     FilterableMixin if action == Actions.LIST else None,
                     SortableViewMixin if action == Actions.LIST else None,
                     DefaultTemplateMixin.create_class(cls.model_name()),
