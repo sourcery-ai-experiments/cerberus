@@ -1,5 +1,7 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
+{% load includes %}
+
 {% block page_title %}Vets{% endblock %}
 
 {% block subtitle %}
@@ -9,5 +11,5 @@
 
 {% block content %}
   {% include 'cerberus/components/vet_list.html' with vets=object_list %}
-  <a href="{% url 'vet_create' %}" title="New Vet" class="fab">{% include 'icons/plus.svg' %}</a>
+  <a href="{% url 'vet_create' %}" title="New Vet" class="fab">{% include_static 'icons/plus.svg' %}</a>
 {% endblock %}

@@ -1,5 +1,7 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
+{% load includes %}
+
 {% block page_title %}Pets{% endblock %}
 
 {% block subtitle %}
@@ -9,7 +11,7 @@
 
 {% block content %}
   {% include 'cerberus/components/pet_list.html' with pets=object_list %}
-  <a href="{% url 'pet_create' %}" title="New Pet" class="fab">{% include 'icons/plus.svg' %}</a>
+  <a href="{% url 'pet_create' %}" title="New Pet" class="fab">{% include_static 'icons/plus.svg' %}</a>
 {% endblock %}
 
 06:45

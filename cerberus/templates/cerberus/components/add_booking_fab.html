@@ -1,5 +1,6 @@
+{% load includes %}
 {% if not request.htmx %}
     <a href="{% url 'booking_create' %}" class="fab">
-        {% include 'icons/plus.svg' %}
+        {% include_static 'icons/plus.svg' %}
     </a>
 {% endif %}
