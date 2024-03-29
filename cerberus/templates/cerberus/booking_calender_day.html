@@ -93,7 +93,14 @@
                                             data-id="{{ booking.id }}"
                                             data-move-url="{% url 'booking-move' booking.id %}"
                                             style="--display-colour: {{ booking.service.display_colour }}"
-                                        >{{ booking.pets.all|join:", " }}</div>
+                                        >
+                                            <div>
+                                                <span>{{ booking.pets.all|join:", " }}</span>
+                                                <a href="{% url 'booking_detail' booking.id %}" class="icon">
+                                                    {% include 'icons/info.svg' %}
+                                                </a>
+                                            </div>
+                                        </div>
                                     {% endfor %}
                                 </div>
                             {% endwith %}

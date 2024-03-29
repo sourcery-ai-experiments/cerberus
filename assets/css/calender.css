@@ -68,9 +68,6 @@
           list-style: none;
           padding: 0;
           margin: 0;
-          background: var(--display-colour);
-          text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
-          border-radius: 0.25em;
           padding: 0 0.25em;
           line-height: 2em;
         }
