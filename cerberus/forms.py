@@ -61,7 +61,9 @@ class BookingForm(forms.ModelForm):
             """
             {
                 cost: '',
+                cost_additional: '',
                 cost_changed: false,
+                cost_additional_changed: false,
                 customer: '',
                 pets: [],
                 start: '',
@@ -92,6 +94,7 @@ class BookingForm(forms.ModelForm):
             "pets",
             "service",
             "cost",
+            "cost_additional",
             "start",
             "end",
         ]
@@ -142,6 +145,12 @@ class BookingForm(forms.ModelForm):
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
             ),
+            "cost_additional": SingleMoneyWidget(
+                attrs={
+                    "x-model.number.fill": "cost_additional",
+                    "@change": "cost_additional_changed = $event.target.value !== ''",
+                }
+            ),
             "start": forms.DateTimeInput(
                 attrs={
                     "type": "datetime-local",
@@ -164,11 +173,6 @@ class BookingForm(forms.ModelForm):
                 }
             ),
         }
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        if pet_id := self.initial.get("pet", None):
-            self.initial["customer"] = Pet.objects.get(id=pet_id).customer.id
 
 
 class InvoiceForm(forms.ModelForm):

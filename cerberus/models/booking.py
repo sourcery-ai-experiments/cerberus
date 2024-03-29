@@ -236,6 +236,7 @@ class Booking(models.Model):
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     name = models.CharField(max_length=520)
     cost = MoneyField(max_digits=14, default=0.0)
+    cost_additional = MoneyField(max_digits=14, default=0.0, blank=True, null=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
     length = models.GeneratedField(  # type: ignore
