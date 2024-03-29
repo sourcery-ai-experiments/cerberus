@@ -288,6 +288,8 @@ class Booking(models.Model):
                 self._booking_slot.save()
 
             super().save(*args, **kwargs)
+            self.refresh_from_db(fields=["pets"])
+            self.check_valid()
 
             if self._previous_slot is not None and self._previous_slot.pk and self._previous_slot.bookings.count() == 0:
                 self._previous_slot.delete()
@@ -295,9 +297,9 @@ class Booking(models.Model):
     def get_absolute_url(self):
         return reverse("booking_detail", kwargs={"pk": self.pk})
 
-    def is_valid(self) -> None:
-        if set(self.pets.all().values_list("customer", flat=True)) != {self.customer.id}:
-            raise ValidationError("Booking has pets from multiple customers")
+    def check_valid(self) -> None:
+        if any(pet.customer != self.customer for pet in self.pets.all()):
+            raise ValidationError("Booking has pets from a different customer")
 
     @classmethod
     def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
