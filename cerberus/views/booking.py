@@ -5,6 +5,7 @@ from collections import defaultdict, namedtuple
 from collections.abc import Iterable
 
 # Django
+from django.contrib.humanize.templatetags import humanize
 from django.db.models import Count
 from django.http import Http404
 from django.urls import reverse_lazy
@@ -46,7 +47,7 @@ class CalendarBreadCrumbs:
             Crumb("Bookings", reverse_lazy("booking_list")),
             Crumb(year, reverse_lazy("booking_calender_year", kwargs={"year": year})),
             Crumb(month_name[month], month_url) if month is not None else None,
-            Crumb(day, day_url) if day is not None else None,
+            Crumb(humanize.ordinal(day), day_url) if day is not None else None,
         ]
 
         return list(filter(lambda crumb: crumb is not None, crumbs))
