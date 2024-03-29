@@ -24,7 +24,7 @@
         <div>State</div><div>{{ booking.state|capfirst }}</div>
         <div>Cost</div><div>{{ booking.cost }}</div>
         {% if booking.pets.count > 1 %}
-            <div>Cost per additional</div><div>{{ booking.cost_additional }}</div>
+            <div>Cost per additional</div><div>{{ booking.cost_per_additional }}</div>
         {% endif %}
         <div>Charges</div><div>
             {% for charge in booking.charges.objects %}

@@ -34,9 +34,6 @@ class Service(models.Model):
     def get_absolute_url(self) -> str:
         return reverse("service_detail", kwargs={"pk": self.pk})
 
-    def cost_amount(self) -> float:
-        return self.cost.amount  # type: ignore
-
     def length_seconds(self) -> int:
         return int(self.length.total_seconds())
 

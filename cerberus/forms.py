@@ -61,9 +61,9 @@ class BookingForm(forms.ModelForm):
             """
             {
                 cost: '',
-                cost_additional: '',
+                cost_per_additional: '',
                 cost_changed: false,
-                cost_additional_changed: false,
+                cost_per_additional_changed: false,
                 customer: '',
                 pets: [],
                 start: '',
@@ -94,7 +94,7 @@ class BookingForm(forms.ModelForm):
             "pets",
             "service",
             "cost",
-            "cost_additional",
+            "cost_per_additional",
             "start",
             "end",
         ]
@@ -126,13 +126,18 @@ class BookingForm(forms.ModelForm):
                 },
             ),
             "service": SelectDataAttrField(
-                ["cost_amount", "length_minutes"],
+                ["cost.amount", "length_minutes", "cost_per_additional.amount"],
                 attrs={
                     "@change": minimize_whitespace(
                         """
                         if (!cost_changed) {
-                            $nextTick(() => cost = $event.target.options[$event.target.selectedIndex].dataset.cost_amount);
+                            $nextTick(() => {
+                                const { dataset } = $event.target.options[$event.target.selectedIndex];
+                                cost = dataset.cost__amount;
+                                cost_per_additional = dataset.cost_per_additional__amount;
+                            });
                             cost_changed = false;
+                            cost_per_additional_changed = false;
                         }
                         $nextTick(() => length = $event.target.options[$event.target.selectedIndex].dataset.length_minutes);
 """
@@ -145,10 +150,10 @@ class BookingForm(forms.ModelForm):
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
             ),
-            "cost_additional": SingleMoneyWidget(
+            "cost_per_additional": SingleMoneyWidget(
                 attrs={
-                    "x-model.number.fill": "cost_additional",
-                    "@change": "cost_additional_changed = $event.target.value !== ''",
+                    "x-model.number.fill": "cost_per_additional",
+                    "@change": "cost_per_additional_changed = $event.target.value !== ''",
                 }
             ),
             "start": forms.DateTimeInput(
