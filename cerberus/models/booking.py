@@ -329,16 +329,26 @@ class Booking(models.Model):
 
         self._booking_slot = value
 
-    def create_charge(self) -> Charge:
-        charge = BookingCharge(
-            name=f"Charge for {self.name}"[:255],
-            line=self.cost,
-            booking=self,
-            customer=self.customer,
-        )
-        charge.save()
+    def create_charges(self) -> list[Charge]:
+        cost = self.cost
+        if self.cost_per_additional is None:
+            name = f"{self.service} for {", ".join(str(p) for p in self.pets.all())}"[:255]
+            charge = BookingCharge(name=name, line=cost, booking=self, customer=self.customer)
+            charge.save()
+            return [charge]
 
-        return charge
+        charges = []
+        for pet in self.pets.all():
+            name = f"{self.service} for {pet}"[:255]
+            charge = BookingCharge(name=name, line=cost, booking=self, customer=self.customer)
+            charge.save()
+            charges.append(charge)
+
+            cost = self.cost_per_additional
+            if self.cost_per_additional is None:
+                break
+
+        return charges
 
     def _get_new_booking_slot(self) -> BookingSlot:
         slot = BookingSlot.get_slot(self.start, self.end)
@@ -428,8 +438,8 @@ class Booking(models.Model):
         target=BookingStates.COMPLETED.value,
         conditions=[can_complete],
     )
-    def complete(self) -> Charge:
-        return self.create_charge()
+    def complete(self) -> list[Charge]:
+        return self.create_charges()
 
     @property
     def available_state_transitions(self) -> list[str]:
