@@ -1,18 +1,23 @@
 # Standard Library
 from collections import namedtuple
+from collections.abc import Iterable
 from enum import Enum
-from typing import Any
+from typing import Any, Protocol
 
 # Django
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Model
 from django.urls import path, reverse_lazy
 from django.urls.resolvers import URLPattern
 
 # Third Party
 from django_filters import FilterSet
-from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
+from vanilla import CreateView as VanillaCreateView
+from vanilla import DeleteView, DetailView, GenericModelView, ListView
+from vanilla import UpdateView as VanillaUpdateView
 
 
 class Actions(Enum):
@@ -169,6 +174,35 @@ def extra_view(
         return func
 
     return decorator
+
+
+class EditViewProtocol(Protocol):
+    def form_valid(self, form):
+        ...
+
+    def form_invalid(self, form):
+        ...
+
+
+class SafeFormSave:
+    def form_valid(self: EditViewProtocol, form):
+        try:
+            with transaction.atomic():
+                return super().form_valid(form)
+        except (ValueError, ValidationError) as exception:
+            errors = exception if isinstance(exception, Iterable) else [exception]
+            for error in errors:
+                form.add_error(None, str(error))
+
+            return self.form_invalid(form)
+
+
+class CreateView(SafeFormSave, VanillaCreateView):
+    pass
+
+
+class UpdateView(SafeFormSave, VanillaUpdateView):
+    pass
 
 
 class CRUDViews(GenericModelView):
