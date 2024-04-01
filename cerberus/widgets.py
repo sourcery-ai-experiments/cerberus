@@ -134,3 +134,37 @@ class CheckboxDataOptionAttr(OptionAttrs, DataAttrField, forms.CheckboxSelectMul
         kwargs["default_attr_value"] = default_attr_value
         kwargs["attr_callback"] = attr_callback
         super().__init__(*args, **kwargs)
+
+
+class CheckboxTable(forms.CheckboxSelectMultiple):
+    model_fields: list[str]
+
+    crispy_template = "cerberus/widgets/checkbox_table.html"
+
+    def __init__(self, model_fields: list[str], *args, **kwargs):
+        self.model_fields = model_fields
+        super().__init__(*args, **kwargs)
+
+    def create_option(
+        self,
+        name: str,
+        value: Any,
+        label: int | str,
+        selected: set[str] | bool,
+        index: int,
+        subindex: int | None = None,
+        attrs: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+
+        option["columns"] = {}
+        if value and hasattr(value, "instance"):
+            for model_field in self.model_fields:
+                col_value = rgetattr(value.instance, model_field, None)
+                if callable(col_value):
+                    col_value = col_value()
+
+                col_name = model_field.replace(".", "__")
+                option["columns"][f"{col_name}"] = col_value
+
+        return option

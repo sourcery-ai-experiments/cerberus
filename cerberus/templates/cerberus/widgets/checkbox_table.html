@@ -1,0 +1,35 @@
+{% load crispy_forms_filters %}
+{% load l10n %}
+
+<div class="{{ field_class }}"{% if flat_attrs %} {{ flat_attrs }}{% endif %}>
+  {% include 'pico/layout/field_errors_block.html' %}
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        {% for key in field.field.widget.model_fields %}
+          <th>
+            {{ key|capfirst }}
+          </th>
+        {% endfor %}
+      </thead>
+      {% for group, options, index in field|optgroups %}
+        <tr>
+          {% if group %}
+            <tr><td colspan="{{ field.field.widget.columns|length }}"><strong>{{ group }}</strong></td></tr>{% endif %}
+          {% for option in options %}
+            <td>
+              <input type="checkbox" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "pico/layout/attrs.html" with widget=option %}>
+            </td>
+            {% for key, val in option.columns.items %}
+              <td class="column_{{ key }}">
+                <label for="{{ option.attrs.id }}">{{ val }}</label>
+              </td>
+            {% endfor %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+    {% include 'pico/layout/help_text.html' %}
+  </div>

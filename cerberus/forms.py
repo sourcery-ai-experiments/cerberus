@@ -1,12 +1,10 @@
-# Standard Library
-
 # Django
 from django import forms
 
 # Locals
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
 from .utils import minimize_whitespace
-from .widgets import CheckboxDataOptionAttr, SelectDataAttrField, SingleMoneyWidget
+from .widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget
 
 
 class CustomerForm(forms.ModelForm):
@@ -233,6 +231,9 @@ class UninvoicedChargesForm(forms.Form):
         customer = kwargs.pop("customer")
         super().__init__(*args, **kwargs)
         uninvoiced_charges = customer.charges.filter(invoice=None)
+
         self.fields["charges"] = forms.ModelMultipleChoiceField(
-            queryset=uninvoiced_charges, widget=forms.CheckboxSelectMultiple, required=False
+            queryset=uninvoiced_charges,
+            widget=CheckboxTable(["name", "amount"]),
+            required=False,
         )
