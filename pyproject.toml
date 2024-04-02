@@ -32,6 +32,7 @@ dependencies = [
     "wheel",
     "whitenoise",
     "xhtml2pdf",
+    "pytz",
 ]
 authors = [{ name = "Ben Gosney", email = "bengosney@googlemail.com" }]
 requires-python = ">=3.12"
