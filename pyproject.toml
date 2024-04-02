@@ -59,6 +59,7 @@ dev = [
     "model_bakery",
     "pytest",
     "pytest-clarity",
+    "pytest-cov",
     "pytest-django",
     "pytest-django-queries",
     "pytest-freezegun",
@@ -113,3 +114,6 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "UP", "DJ", "C90", "N"]
+
+[tool.coverage.run]
+source = ["cerberus", "cerberus_crm"]

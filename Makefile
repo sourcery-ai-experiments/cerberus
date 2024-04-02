@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev css js cog
+.PHONY: help clean test install all init dev css js cog coverage
 .DEFAULT_GOAL := dev
 .PRECIOUS: requirements.%.in
 .FORCE:
@@ -135,3 +135,8 @@ dev: .direnv db.sqlite3 cog css js ## Setup the project read for development
 node_modules: package.json package-lock.json
 	npm install
 	@touch $@
+
+lcov.info: .direnv cerberus/tests/test_*.py
+	pytest --cov --cov-report=lcov:$@
+
+coverage: lcov.info
