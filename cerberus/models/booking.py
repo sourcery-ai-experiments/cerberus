@@ -336,7 +336,8 @@ class Booking(models.Model):
     def create_charges(self) -> list[Charge]:
         cost = self.cost
         if self.cost_per_additional is None:
-            name = f"{self.service} for {", ".join(str(p) for p in self.pets.all())}"[:255]
+            pet_names = ", ".join(str(p) for p in self.pets.all())
+            name = f"{self.service} for {pet_names}"[:255]
             charge = BookingCharge(name=name, line=cost, booking=self, customer=self.customer)
             charge.save()
             return [charge]
