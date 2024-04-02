@@ -341,15 +341,22 @@ class Booking(models.Model):
             return [charge]
 
         charges = []
-        for pet in self.pets.all():
-            name = f"{self.service} for {pet}"[:255]
+
+        if self.pets.count():
+            for pet in self.pets.all():
+                name = f"{self.service} for {pet}"[:255]
+                charge = BookingCharge(name=name, line=cost, booking=self, customer=self.customer)
+                charge.save()
+                charges.append(charge)
+
+                cost = self.cost_per_additional
+                if self.cost_per_additional is None:
+                    break
+        else:
+            name = f"{self.service}"[:255]
             charge = BookingCharge(name=name, line=cost, booking=self, customer=self.customer)
             charge.save()
             charges.append(charge)
-
-            cost = self.cost_per_additional
-            if self.cost_per_additional is None:
-                break
 
         return charges
 
