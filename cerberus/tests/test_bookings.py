@@ -6,6 +6,7 @@ from functools import partial
 # Django
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.utils.timezone import make_aware
 
 # Third Party
 import pytest
@@ -33,7 +34,9 @@ def make_pet(customer: Customer) -> Generator[Callable[[], Pet], None, None]:
 
 @pytest.fixture
 def booking() -> Generator[Booking, None, None]:
-    yield baker.make(Booking)
+    start = make_aware(datetime.now()) + timedelta(hours=-3)
+    end = start + timedelta(hours=1)
+    yield baker.make(Booking, start=start, end=end)
 
 
 @pytest.fixture
@@ -332,3 +335,35 @@ def test_booking_pets_and_customers_mismatch(customer, walk_service):
 
     with pytest.raises(ValidationError):
         booking.clean()
+
+
+@pytest.mark.django_db
+def test_can_move(booking):
+    assert booking.can_move is True
+
+    booking.confirm()
+    booking.complete()
+
+    assert booking.can_move is False
+
+
+@pytest.mark.django_db
+def test_can_complete(booking):
+    assert booking.can_complete() is True
+    booking.end = make_aware(datetime.now()) + timedelta(minutes=1)
+    assert booking.can_complete() is False
+
+
+@pytest.mark.django_db
+def test_move_booking(booking):
+    old_start = booking.start
+    old_end = booking.end
+    to = old_start - timedelta(hours=1)
+    assert booking.move_booking(to) is True
+    assert booking.start == old_start - timedelta(hours=1)
+    assert booking.end == old_end - timedelta(hours=1)
+
+
+@pytest.mark.django_db
+def test_length_seconds(booking):
+    assert booking.length_seconds() == 3600  # 1 hour = 3600 seconds
