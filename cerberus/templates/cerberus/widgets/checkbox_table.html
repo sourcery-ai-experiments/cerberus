@@ -4,13 +4,14 @@
 <div class="checkbox_table {{ field_class }}"{% if flat_attrs %} {{ flat_attrs }}{% endif %}>
   {% include 'pico/layout/field_errors_block.html' %}
 
-  <table x-data="{ selected: [], selectAll: false, allValues: [] }"
-         x-effect="selectAll = selected.length == allValues.length"
-         x-init="allValues = Array.from($root.querySelectorAll('input[type=checkbox][value]')).map((el) => el.value)"
+  <table
+    x-data="{ selected: [], selectAll: false, allValues: [] }"
+    x-effect="selectAll = selected.length == allValues.length && allValues.length > 0"
+    x-init="allValues = Array.from($root.querySelectorAll('input[type=checkbox][value]')).map((el) => el.value)"
   >
     <thead>
       <tr>
-        <th><input type="checkbox" x-model.fill="selectAll" @click="selected = $el.checked ? allValues : []" /></th>
+        <th><input type="checkbox" :disabled="allValues.length == 0" x-model.fill="selectAll" @click="selected = $el.checked ? allValues : []" /></th>
         {% for key in field.field.widget.model_titles %}
           <th>{{ key|capfirst }}</th>
         {% endfor %}
