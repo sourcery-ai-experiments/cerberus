@@ -59,24 +59,6 @@
                         <button type="submit">Create Invoice</button>
                     </form>
                 </div>
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Booking</th>
-                    </tr>
-                    {% for charge in uninvoiced_charges %}
-                        <tr>
-                            <td>{{ charge.name }}</td>
-                            <td>{{ charge.amount }}</td>
-                            <td>{{ charge.booking.id }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3">No charges</td>
-                        </tr>
-                    {% endfor %}
-                </table>
             </section>
             <section id="invoices" class="tab-content" x-show="active == 'invoices'">
                 <h3>Invoices</h3>
