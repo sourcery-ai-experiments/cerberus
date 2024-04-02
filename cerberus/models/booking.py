@@ -315,7 +315,8 @@ class Booking(models.Model):
 
     @property
     def name(self) -> str:
-        return f"{", ".join(str(p) for p in self.pets.all())} - {self.service}"
+        pet_names = ", ".join(str(p) for p in self.pets.all())
+        return f"{pet_names} - {self.service}"
 
     @property
     def booking_slot(self) -> BookingSlot:
