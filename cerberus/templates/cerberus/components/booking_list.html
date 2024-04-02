@@ -5,7 +5,7 @@
 {% url 'booking_list' as pagi_url %}
 
 {% if not request.htmx %}
-  <div class="htmx-container">
+  <div class="htmx-container" x-data="{sort: '{{ sort }}', sort_order: '{{ sort_order }}'}">
     {% include 'cerberus/components/filters.html' with url=pagi_url target="#booking-list" clear_url=pagi_url %}
 {% endif %}
 <div id="booking-list" {% if bookings is None %}hx-get="{{ pagi_url }}" hx-trigger="load"{% endif %}>

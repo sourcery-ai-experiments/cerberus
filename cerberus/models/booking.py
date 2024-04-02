@@ -417,6 +417,9 @@ class Booking(models.Model):
 
         return False
 
+    def date(self):
+        return self.start.date()
+
     def length_seconds(self) -> int:
         return int(self.length.total_seconds())
 

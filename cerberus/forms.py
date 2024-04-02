@@ -234,6 +234,6 @@ class UninvoicedChargesForm(forms.Form):
 
         self.fields["charges"] = forms.ModelMultipleChoiceField(
             queryset=uninvoiced_charges,
-            widget=CheckboxTable(["name", "amount"]),
+            widget=CheckboxTable(["name", "amount", "booking.date"]),
             required=False,
         )
