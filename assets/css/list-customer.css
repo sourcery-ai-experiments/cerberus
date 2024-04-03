@@ -6,30 +6,65 @@
       font-size: 0.3rem;
       margin-left: 0.5em;
       display: inline-block;
-      width: 1em;
+      width: 3em;
       height: 1em;
       border-radius: 50%;
     }
+  }
 
-    &.uninvoiced {
-      &::after {
-        content: " ";
-        background: var(--uninvoiced);
-      }
-    }
+  /* prettier-ignore */
+  .customer {
+/*[[[cog
+import cog
+from itertools import combinations
 
-    &.unpaid {
-      &:after {
-        content: " ";
-        background: var(--outstanding);
-      }
-    }
+items = [
+  ('uninvoiced', 'blue'),
+  ('unpaid', 'orange'),
+  ('overdue', 'red'),
+]
 
-    &.overdue {
-      &:after {
-        content: " ";
-        background: var(--overdue);
-      }
-    }
+for size in range(1, len(items) + 1):
+    for circles in combinations(items, size):
+        classes = "".join([f".{circle[0]}" for circle in circles])
+        width = 100 * len(circles)
+        svg = ""
+        for i, circle in enumerate(circles):
+            svg += f'<circle fill="{circle[1]}" cx="{50 + (100 * i)}" cy="50" r="50"/>'
+
+        cog.outl(f"""&{classes}:after {{
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 {width} 100" xmlns="http://www.w3.org/2000/svg">{svg}</svg>');
+          width: {len(circles)}em;
+        }}""")
+]]]*/
+&.uninvoiced:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="blue" cx="50" cy="50" r="50"/></svg>');
+          width: 1em;
+        }
+&.unpaid:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="orange" cx="50" cy="50" r="50"/></svg>');
+          width: 1em;
+        }
+&.overdue:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="red" cx="50" cy="50" r="50"/></svg>');
+          width: 1em;
+        }
+&.uninvoiced.unpaid:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><circle fill="blue" cx="50" cy="50" r="50"/><circle fill="orange" cx="150" cy="50" r="50"/></svg>');
+          width: 2em;
+        }
+&.uninvoiced.overdue:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><circle fill="blue" cx="50" cy="50" r="50"/><circle fill="red" cx="150" cy="50" r="50"/></svg>');
+          width: 2em;
+        }
+&.unpaid.overdue:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><circle fill="orange" cx="50" cy="50" r="50"/><circle fill="red" cx="150" cy="50" r="50"/></svg>');
+          width: 2em;
+        }
+&.uninvoiced.unpaid.overdue:after {
+          content: url('data:image/svg+xml; utf8,<svg width="100%" height="100%" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg"><circle fill="blue" cx="50" cy="50" r="50"/><circle fill="orange" cx="150" cy="50" r="50"/><circle fill="red" cx="250" cy="50" r="50"/></svg>');
+          width: 3em;
+        }
+/*[[[end]]] (checksum: 400f65f76c3557afa4b69743378da28c)*/
   }
 }
