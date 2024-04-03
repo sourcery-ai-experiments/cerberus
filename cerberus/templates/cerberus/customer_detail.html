@@ -53,11 +53,7 @@
             <section id="charges" class="tab-content" x-show="active == 'charges'">
                 <h3>Charges</h3>
                 <div>
-                    <form method="post" {{ uninvoiced_charge_form.attributes|attributes|safe }}>
-                        {{ uninvoiced_charge_form|crispy }}
-                        {% csrf_token %}
-                        <button type="submit">Create Invoice</button>
-                    </form>
+                    {% include "cerberus/components/charge_form.html" with form=uninvoiced_charge_form %}
                 </div>
             </section>
             <section id="invoices" class="tab-content" x-show="active == 'invoices'">

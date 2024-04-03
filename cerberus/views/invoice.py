@@ -5,7 +5,7 @@ from typing import Self
 
 # Django
 from django.forms import modelformset_factory
-from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
@@ -14,7 +14,7 @@ from vanilla import CreateView, UpdateView
 
 # Locals
 from ..filters import InvoiceFilter
-from ..forms import ChargeForm, InvoiceForm
+from ..forms import ChargeForm, InvoiceForm, UninvoicedChargesForm
 from ..models import Charge, Invoice
 from .crud_views import Actions, CRUDViews, extra_view
 
@@ -88,3 +88,15 @@ class InvoiceCRUD(CRUDViews):
         invoice: Invoice = get_object_or_404(Invoice, pk=pk)
 
         return invoice.get_pdf_response()
+
+    @extra_view(detail=False, methods=["post"], url_name="invoice_from_charges")
+    def from_charges(self: Self, request: HttpRequest) -> HttpResponse:
+        charge_form = UninvoicedChargesForm(request.POST)
+
+        if charge_form.is_valid():
+            # charges = charge_form.cleaned_data["charges"]
+            invoice = Invoice()
+
+            return HttpResponseRedirect(reverse_lazy("invoice_detail", kwargs={"pk": invoice.pk}))
+
+        return render(request, "cerberus/components/charge_form.html", {"form": charge_form})

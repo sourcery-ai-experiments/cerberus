@@ -227,13 +227,19 @@ class ServiceForm(forms.ModelForm):
 
 
 class UninvoicedChargesForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        customer = kwargs.pop("customer")
-        super().__init__(*args, **kwargs)
-        uninvoiced_charges = customer.charges.filter(invoice=None)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput, required=True)
+    charges = forms.ModelMultipleChoiceField(
+        queryset=Charge.objects.none(),
+        widget=CheckboxTable(["name", "amount", "booking.date"]),
+    )
 
-        self.fields["charges"] = forms.ModelMultipleChoiceField(
-            queryset=uninvoiced_charges,
-            widget=CheckboxTable(["name", "amount", "booking.date"]),
-            required=False,
-        )
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop("customer", None)
+        super().__init__(*args, **kwargs)
+        if customer:
+            self.set_customer(customer)
+
+    def set_customer(self, customer: Customer) -> None:
+        self.fields["customer"].initial = customer.id
+        uninvoiced_charges = customer.charges.filter(invoice=None)
+        self.fields["charges"].queryset = uninvoiced_charges
