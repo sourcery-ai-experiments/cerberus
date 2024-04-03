@@ -22,9 +22,11 @@
         <tr>
           <td>
             <span
-              class="customer{% if customer.unpaid_count %} unpaid{% endif %}{% if customer.overdue_count %} overdue{% endif %}"
+              class="customer{% if customer.unpaid_count %} unpaid{% endif %}{% if customer.overdue_count %} overdue{% endif %}{% if customer.uninvoiced_count %} uninvoiced{% endif %}"
               data-unpaid="{{ customer.unpaid_count }}"
-              data-overdue="{{ customer.overdue_count }}">
+              data-overdue="{{ customer.overdue_count }}"
+              data-uninvoiced="{{ customer.uninvoiced_count }}"
+            >
               {{ customer.name }}
             </span>
           </td>

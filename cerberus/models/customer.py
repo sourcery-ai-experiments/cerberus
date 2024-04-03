@@ -124,6 +124,9 @@ class Customer(models.Model):
     def outstanding_invoices(self):
         return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
 
+    def uninvoiced_count(self):
+        return self.charges.filter(invoice=None).count()
+
     @property
     def issues(self):
         issues = []

@@ -13,6 +13,8 @@
   --warning-hover: #ff9800;
 
   --overdue: var(--negative);
+  --outstanding: var(--warning);
+  --uninvoiced: #1976d2;
 
   --fab-size: 3em;
 
