@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from . import Charge, Customer
 
 
-# self.state == self.States.UNPAID.value and self.due is not None and self.due < date.today()
 class InvoiceManager(models.Manager["Invoice"]):
     def get_queryset(self):
         return (
