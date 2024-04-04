@@ -289,6 +289,21 @@ class CRUDViews(GenericModelView):
             return cls.requires_login
         return cls.extra_requires_login
 
+    def get_breadcrumbs(self, obj: Model | None) -> list[Crumb]:
+        model_name = self.model._meta.model_name or ""
+        verbose_name_plural = (self.model._meta.verbose_name_plural or "").title()
+
+        list_name = f"{model_name}_{Actions.LIST.value}"
+        detail_name = f"{model_name}_{Actions.DETAIL.value}"
+
+        crumbs = [
+            Crumb("Dashboard", reverse_lazy("dashboard")),
+            Crumb(verbose_name_plural, reverse_lazy(list_name)),
+            Crumb(str(obj), reverse_lazy(detail_name, kwargs={"pk": obj.pk})) if obj else None,
+        ]
+
+        return [crumb for crumb in crumbs if crumb is not None]
+
     @classmethod
     def extra_views(cls, model_name: str) -> list[URLPattern]:
         views: list[URLPattern] = []

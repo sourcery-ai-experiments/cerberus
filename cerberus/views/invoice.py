@@ -107,4 +107,4 @@ class InvoiceCRUD(CRUDViews):
                 return HttpResponseClientRedirect(success_url)
             return HttpResponseRedirect(success_url)
 
-        return render(request, "cerberus/components/charge_form.html", {"form": charge_form})
+        return render(request, "cerberus/customer_charges.html", {"form": charge_form})

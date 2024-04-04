@@ -1,3 +1,11 @@
+# Standard Library
+from typing import Self
+
+# Django
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
+
 # Third Party
 from vanilla import DetailView
 
@@ -5,7 +13,7 @@ from vanilla import DetailView
 from ..filters import CustomerFilter
 from ..forms import CustomerForm, UninvoicedChargesForm
 from ..models import Customer
-from .crud_views import Actions, CRUDViews
+from .crud_views import Actions, CRUDViews, Crumb, extra_view
 
 
 class CustomerDetail(DetailView):
@@ -28,3 +36,21 @@ class CustomerCRUD(CRUDViews):
         if action == Actions.DETAIL:
             return CustomerDetail
         return super().get_view_class(action)
+
+    @extra_view(detail=True)
+    def uninvoiced_charges(self: Self, request: HttpRequest, pk: int) -> HttpResponse:
+        customer = get_object_or_404(Customer, pk=pk)
+        form = UninvoicedChargesForm(customer=customer)
+
+        return render(
+            request,
+            "cerberus/customer_charges.html",
+            {
+                "form": form,
+                "customer": customer,
+                "breadcrumbs": self.get_breadcrumbs(customer)
+                + [
+                    Crumb("Uninvoiced Charges", reverse_lazy("customer_uninvoiced_charges", kwargs={"pk": customer.pk}))
+                ],
+            },
+        )

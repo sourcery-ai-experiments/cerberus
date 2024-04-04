@@ -239,8 +239,10 @@ class UninvoicedChargesForm(forms.Form):
 
         if self.is_bound and (customer_id := self.data.get("customer", None)):
             self.set_customer(customer_id)
-        elif customer and isinstance(customer, Customer):
+        elif isinstance(customer, Customer):
             self.set_customer(customer.pk)
+        elif isinstance(customer, int):
+            self.set_customer(customer)
         else:
             raise ValueError("No customer provided")
 
