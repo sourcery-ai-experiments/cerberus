@@ -4,12 +4,14 @@
 from typing import Self
 
 # Django
+from django.db import transaction
 from django.forms import modelformset_factory
 from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
 # Third Party
+from django_htmx.http import HttpResponseClientRedirect
 from vanilla import CreateView, UpdateView
 
 # Locals
@@ -94,9 +96,15 @@ class InvoiceCRUD(CRUDViews):
         charge_form = UninvoicedChargesForm(request.POST)
 
         if charge_form.is_valid():
-            # charges = charge_form.cleaned_data["charges"]
-            invoice = Invoice()
+            with transaction.atomic():
+                invoice = Invoice.from_customer(charge_form.cleaned_data["customer"])
+                for charge in charge_form.cleaned_data["charges"]:
+                    charge.invoice = invoice
+                    charge.save()
 
-            return HttpResponseRedirect(reverse_lazy("invoice_detail", kwargs={"pk": invoice.pk}))
+            success_url = reverse_lazy("invoice_detail", kwargs={"pk": invoice.pk})
+            if request.htmx:  # type: ignore
+                return HttpResponseClientRedirect(success_url)
+            return HttpResponseRedirect(success_url)
 
         return render(request, "cerberus/components/charge_form.html", {"form": charge_form})

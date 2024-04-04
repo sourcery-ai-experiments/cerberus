@@ -1,6 +1,12 @@
 {% load field_tags components string_utils crispy_forms_tags field_tags %}
 
-<form action="{% url 'invoice_from_charges' %}" method="post" {{ form.attributes|attributes|safe }}>
+<form
+    method="post"
+    action="{% url 'invoice_from_charges' %}"
+    hx-post="{% url 'invoice_from_charges' %}"
+    hx-swap="outerHTML"
+    {{ form.attributes|attributes|safe }}
+>
     {{ form|crispy }}
     {% csrf_token %}
     <button type="submit">Create Invoice</button>

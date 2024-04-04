@@ -107,6 +107,12 @@ class Invoice(models.Model):
 
         super().save(*args, **kwargs)
 
+    @classmethod
+    def from_customer(cls, customer: "Customer"):
+        invoice = cls(customer=customer, customer_name=customer.name, invoice_address=customer.invoice_address)
+        invoice.save()
+        return invoice
+
     def can_send(self) -> bool:
         return self.customer is not None and len(self.customer.issues) == 0
 

@@ -236,10 +236,14 @@ class UninvoicedChargesForm(forms.Form):
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop("customer", None)
         super().__init__(*args, **kwargs)
-        if customer:
-            self.set_customer(customer)
 
-    def set_customer(self, customer: Customer) -> None:
-        self.fields["customer"].initial = customer.id
-        uninvoiced_charges = customer.charges.filter(invoice=None)
-        self.fields["charges"].queryset = uninvoiced_charges
+        if self.is_bound and (customer_id := self.data.get("customer", None)):
+            self.set_customer(customer_id)
+        elif customer and isinstance(customer, Customer):
+            self.set_customer(customer.pk)
+        else:
+            raise ValueError("No customer provided")
+
+    def set_customer(self, customer_id: int | None) -> None:
+        self.fields["customer"].initial = customer_id
+        self.fields["charges"].queryset = Charge.objects.filter(customer_id=customer_id, invoice__isnull=True)
