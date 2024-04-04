@@ -175,11 +175,9 @@ def extra_view(
 
 
 class EditViewProtocol(Protocol):
-    def form_valid(self, form):
-        ...
+    def form_valid(self, form): ...
 
-    def form_invalid(self, form):
-        ...
+    def form_invalid(self, form): ...
 
 
 class SafeFormSave:

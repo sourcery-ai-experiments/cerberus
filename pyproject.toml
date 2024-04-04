@@ -1,110 +1,95 @@
 [project]
-name = "Cerberus"
+name = "cerberus"
 description = "Cerberus, the dog walkers CRM"
+readme = "README.rst"
 license = { file = "LICENSE" }
-dependencies = [
-    "crispy-bulma",
-    "dj-database-url",
-    "django-cors-headers",
-    "django-crispy-forms",
-    "django-filter",
-    "django-fsm",
-    "django-fsm-admin2",
-    "django-fsm-log",
-    "django-htmx",
-    "django-model-utils",
-    "django-money",
-    "django-polymorphic",
-    "django-vanilla-views",
-    "django-reversion",
-    "django-taggit",
-    "django>=4",
-    "djangorestframework",
-    "djangorestframework-simplejwt[crypto]",
-    "drf-spectacular",
-    "gunicorn",
-    "humanize",
-    "markdown",
-    "mjml-python",
-    "psycopg2",
-    "reportlab==4.0.9",
-    "uritemplate",
-    "wheel",
-    "whitenoise",
-    "xhtml2pdf",
-    "pytz",
-]
 authors = [{ name = "Ben Gosney", email = "bengosney@googlemail.com" }]
 requires-python = ">=3.12"
-dynamic = ["version"]
-readme = "README.rst"
-
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "crispy-bulma",
+  "dj-database-url",
+  "django>=4",
+  "django-cors-headers",
+  "django-crispy-forms",
+  "django-filter",
+  "django-fsm",
+  "django-fsm-admin2",
+  "django-fsm-log",
+  "django-htmx",
+  "django-model-utils",
+  "django-money",
+  "django-polymorphic",
+  "django-reversion",
+  "django-taggit",
+  "django-vanilla-views",
+  "djangorestframework",
+  "djangorestframework-simplejwt[crypto]",
+  "drf-spectacular",
+  "gunicorn",
+  "humanize",
+  "markdown",
+  "mjml-python",
+  "psycopg2",
+  "pytz",
+  "reportlab==4.0.9",
+  "uritemplate",
+  "wheel",
+  "whitenoise",
+  "xhtml2pdf",
+]
 [project.optional-dependencies]
 dev = [
-    "black",
-    "cogapp",
-    "django-debug-toolbar",
-    "django-debugtools",
-    "django-extensions",
-    "django-stubs",
-    "django-browser-reload",
-    "django-debug-toolbar",
-    "djangorestframework-stubs",
-    "hypothesis[django]",
-    "icecream",
-    "mypy",
-    "pip-tools",
-    "pre-commit",
-    "faker",
-    "freezegun",
-    "model_bakery",
-    "pytest",
-    "pytest-clarity",
-    "pytest-cov",
-    "pytest-django",
-    "pytest-django-queries",
-    "pytest-freezegun",
-    "types-python-dateutil",
-    "setuptools_scm",
-    "graphviz",
-    "ruff",
+  "black",
+  "cogapp",
+  "django-browser-reload",
+  "django-debug-toolbar",
+  "django-debug-toolbar",
+  "django-debugtools",
+  "django-extensions",
+  "django-stubs",
+  "djangorestframework-stubs",
+  "faker",
+  "freezegun",
+  "graphviz",
+  "hypothesis[django]",
+  "icecream",
+  "model_bakery",
+  "mypy",
+  "pip-tools",
+  "pre-commit",
+  "pytest",
+  "pytest-clarity",
+  "pytest-cov",
+  "pytest-django",
+  "pytest-django-queries",
+  "pytest-freezegun",
+  "ruff",
+  "setuptools_scm",
+  "types-python-dateutil",
 ]
-
 [project.urls]
 homepage = "https://cerberus.stretchtheirlegs.co.uk/"
 repository = "http://www.github.com/bengosney/cerberus"
 
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
-
-
-[tool.setuptools_scm]
+requires = [
+  "setuptools",
+  "setuptools_scm",
+  "wheel",
+]
 
 [tool.setuptools.package-data]
 cerberus = ["templates/cerberus/*.html", "templates/cerberus/*.svg"]
 
-[tool.mypy]
-plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
-check_untyped_defs = true
-disallow_any_generics = true
-disallow_untyped_calls = true
-#disallow_untyped_decorators = true
-ignore_errors = false
-ignore_missing_imports = true
-implicit_reexport = false
-strict_optional = true
-strict_equality = true
-no_implicit_optional = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unreachable = true
-warn_no_return = true
-
-
-[tool.django-stubs]
-django_settings_module = "cerberus_crm.settings"
+[tool.setuptools_scm]
 
 [tool.ruff]
 line-length = 120
@@ -118,3 +103,23 @@ select = ["E4", "E7", "E9", "F", "UP", "DJ", "C90", "N"]
 
 [tool.coverage.run]
 source = ["cerberus", "cerberus_crm"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+strict_optional = true
+strict_equality = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = true
+
+[tool.django-stubs]
+django_settings_module = "cerberus_crm.settings"
