@@ -156,9 +156,9 @@ class Invoice(models.Model):
         source=States.DRAFT.value,
         target=States.UNPAID.value,
         conditions=[can_send],
-        custom={"icon": "icons/mail.svg"},
+        custom={"icon": "icons/mail.svg", "url": "invoice_send_form"},
     )
-    def send(self, to=None, send_email=True, send_notes=None):
+    def send(self, to: str | None = None, send_email: bool = True, send_notes: str | None = None):
         if not self.customer:
             raise Exception("no customer set")
         self._can_edit = True

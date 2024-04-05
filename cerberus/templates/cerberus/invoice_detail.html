@@ -28,7 +28,8 @@
                 <li>
                     <a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">
                         {% include 'icons/mail.svg' %}Resend Email
-                    </a></li>
+                    </a>
+                </li>
             {% endif %}
             {% for action in invoice.get_available_state_transitions %}
                 <li>
