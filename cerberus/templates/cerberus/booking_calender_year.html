@@ -1,6 +1,6 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load date_utils includes %}
+{% load date_utils %}
 
 {% block page_title %}Bookings{% endblock %}
 
@@ -20,14 +20,14 @@
                     aria-label="Previous Year"
                     title="{{ prev_year }}"
                     href="{% url 'booking_calender_year' year=prev_year %}">
-                    {% include_static 'icons/chevron-left.svg' %}
+                    {% include 'icons/chevron-left.svg' %}
                 </a>
                 <a
                     role="button"
                     aria-label="Next Year"
                     title="{{ next_year }}"
                     href="{% url 'booking_calender_year' year=next_year %}">
-                    {% include_static 'icons/chevron-right.svg' %}
+                    {% include 'icons/chevron-right.svg' %}
                 </a>
             </div>
         </div>

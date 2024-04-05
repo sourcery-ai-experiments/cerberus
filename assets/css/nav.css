@@ -9,4 +9,13 @@ nav {
   svg {
     height: 1em;
   }
+
+  a {
+    white-space: nowrap;
+    &:has(svg) {
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load date_utils includes %}
+{% load date_utils %}
 
 {% block page_title %}Bookings{% endblock %}
 
@@ -20,7 +20,7 @@
                    href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}"
                    hx-trigger="keyup[key=='ArrowLeft'] from:body"
                 >
-                    {% include_static 'icons/chevron-left.svg' %}
+                    {% include 'icons/chevron-left.svg' %}
                 </a>
                 <a role="button"
                    aria-label="Next Month"
@@ -28,7 +28,7 @@
                    href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"
                    hx-trigger="keyup[key=='ArrowRight'] from:body"
                 >
-                    {% include_static 'icons/chevron-right.svg' %}
+                    {% include 'icons/chevron-right.svg' %}
                 </a>
             </div>
         </div>

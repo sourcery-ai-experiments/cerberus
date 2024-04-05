@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% load includes %}
-
 {% load field_tags components string_utils crispy_forms_tags field_tags %}
 
 {% block page_title %}{{ customer.name }}{% endblock %}
@@ -101,5 +99,5 @@
         </div>
     {% endcomponent %}
 
-    <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include_static 'icons/plus.svg' %}</a>
+    <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>
 {% endblock %}

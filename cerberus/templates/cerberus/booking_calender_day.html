@@ -1,6 +1,6 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load date_utils includes %}
+{% load date_utils %}
 
 {% block page_title %}Bookings{% endblock %}
 
@@ -20,7 +20,7 @@
                    href="{% url 'booking_calender_day' year=prev_day.year month=prev_day.month day=prev_day.day %}"
                    hx-trigger="keyup[key=='ArrowLeft'] from:body"
                 >
-                    {% include_static 'icons/chevron-left.svg' %}
+                    {% include 'icons/chevron-left.svg' %}
                 </a>
                 <a role="button"
                    aria-label="Next Day"
@@ -28,7 +28,7 @@
                    href="{% url 'booking_calender_day' year=next_day.year month=next_day.month day=next_day.day %}"
                    hx-trigger="keyup[key=='ArrowRight'] from:body"
                 >
-                    {% include_static 'icons/chevron-right.svg' %}
+                    {% include 'icons/chevron-right.svg' %}
                 </a>
             </div>
         </div>
@@ -97,7 +97,7 @@
                                             <div>
                                                 <span>{{ booking.pets.all|join:", " }}</span>
                                                 <a href="{% url 'booking_detail' booking.id %}" class="icon">
-                                                    {% include_static 'icons/info.svg' %}
+                                                    {% include 'icons/info.svg' %}
                                                 </a>
                                             </div>
                                         </div>
