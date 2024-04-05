@@ -6,7 +6,11 @@ from .. import views
 
 urlpatterns = (
     [
-        path("", views.dashboard, name="dashboard"),
+        path(
+            "",
+            views.dashboard,
+            name="dashboard",
+        ),
         path(
             "booking/<int:pk>/action/<str:action>/",
             views.BookingStateActions.as_view(),
@@ -36,6 +40,11 @@ urlpatterns = (
             "booking/calender/<int:year>/<int:month>/<int:day>",
             views.BookingCalenderDay.as_view(),
             name="booking_calender_day",
+        ),
+        path(
+            "invoice/<int:pk>/action/<str:action>/",
+            views.InvoiceActionsView.as_view(),
+            name="invoice_action",
         ),
     ]
     + views.CustomerCRUD.get_urls()

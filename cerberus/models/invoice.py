@@ -117,7 +117,7 @@ class Invoice(models.Model):
         return self.customer is not None and len(self.customer.issues) == 0
 
     def can_resend_email(self) -> bool:
-        return self.can_send() and self.sent_to is not None
+        return self.can_send() and self.sent_to != ""
 
     @property
     def can_edit(self) -> bool:
@@ -156,6 +156,7 @@ class Invoice(models.Model):
         source=States.DRAFT.value,
         target=States.UNPAID.value,
         conditions=[can_send],
+        custom={"icon": "icons/mail.svg"},
     )
     def send(self, to=None, send_email=True, send_notes=None):
         if not self.customer:
@@ -216,7 +217,12 @@ class Invoice(models.Model):
         return (self.total or 0) - self.paid
 
     @save_after
-    @transition(field=state, source=States.UNPAID.value, target=States.PAID.value)
+    @transition(
+        field=state,
+        source=States.UNPAID.value,
+        target=States.PAID.value,
+        custom={"icon": "icons/pay.svg"},
+    )
     def pay(self):
         for charge in self.charges.all():
             charge.pay()
@@ -225,7 +231,12 @@ class Invoice(models.Model):
         payment.save()
 
     @save_after
-    @transition(field=state, source=(States.DRAFT.value, States.UNPAID.value), target=States.VOID.value)  # type: ignore
+    @transition(
+        field=state,
+        source=(States.DRAFT.value, States.UNPAID.value),
+        target=States.VOID.value,
+        custom={"icon": "icons/invoice-void.svg"},
+    )  # type: ignore
     def void(self) -> None:
         pass
 

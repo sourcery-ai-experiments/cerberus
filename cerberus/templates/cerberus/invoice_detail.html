@@ -5,18 +5,41 @@
 {% block page_title %}Invoice {{ invoice.name }}{% endblock %}
 
 {% block content %}
-    {% component "cerberus/components/dropdown.html" %}
-        <ul role="listbox">
+    <nav>
+        <ul>
             {% if invoice.can_edit %}
-                <li><a href="{% url 'invoice_update' invoice.id %}">Edit</a></li>
-                <li><a hx-get="{% url 'invoice_delete' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">Delete</a></li>
+                <li>
+                    <a href="{% url 'invoice_update' invoice.id %}">
+                        {% include 'icons/edit.svg' %}Edit
+                    </a>
+                </li>
+                <li>
+                    <a hx-get="{% url 'invoice_delete' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_delete' invoice.id %}">
+                        {% include 'icons/delete.svg' %}Delete
+                    </a>
+                </li>
             {% endif %}
-            <li><a href="{% url 'invoice_pdf' invoice.id %}">Download</a></li>
+            <li>
+                <a href="{% url 'invoice_pdf' invoice.id %}">
+                    {% include 'icons/download.svg' %}Download
+                </a>
+            </li>
             {% if invoice.can_resend_email %}
-                <li><a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">Resend Email</a></li>
+                <li>
+                    <a hx-get="{% url 'invoice_email' invoice.id %}" hx-target="main" hx-swap="afterend" href="{% url 'invoice_email' invoice.id %}">
+                        {% include 'icons/mail.svg' %}Resend Email
+                    </a></li>
             {% endif %}
+            {% for action in invoice.get_available_state_transitions %}
+                <li>
+                    <a href="{% url 'invoice_action' invoice.id action.name %}">
+                        {% if action.custom.icon %}{% include action.custom.icon %}{% endif %}
+                        {{ action.name|title }}
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
-    {% endcomponent %}
+    </nav>
     <section class="grid pair">
         <div>Customer</div><div>{% if invoice.customer %}<a href="{% url 'customer_detail' invoice.customer.id %}">{{ invoice.customer }}</a>{% else %}-{% endif %}</div>
         <div>Sent to</div><div>{{ invoice.sent_to|default:"-" }}</div>

@@ -8,7 +8,7 @@ from .booking import (
     BookingStateActions,
 )
 from .customer import CustomerCRUD
-from .invoice import InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
+from .invoice import InvoiceActionsView, InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
 from .views import PetCRUD, ServiceCRUD, VetCRUD, dashboard
 
 __all__ = [
@@ -26,4 +26,5 @@ __all__ = [
     "InvoiceUpdateView",
     "InvoiceCreateView",
     "InvoiceCRUD",
+    "InvoiceActionsView",
 ]

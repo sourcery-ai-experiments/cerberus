@@ -19,6 +19,7 @@ from ..filters import InvoiceFilter
 from ..forms import ChargeForm, InvoiceForm, UninvoicedChargesForm
 from ..models import Charge, Invoice
 from .crud_views import Actions, CRUDViews, extra_view
+from .transition_view import TransitionView
 
 
 class InvoiceUpdateView(UpdateView):
@@ -108,3 +109,8 @@ class InvoiceCRUD(CRUDViews):
             return HttpResponseRedirect(success_url)
 
         return render(request, "cerberus/customer_charges.html", {"form": charge_form})
+
+
+class InvoiceActionsView(TransitionView):
+    model = Invoice
+    field = "state"
