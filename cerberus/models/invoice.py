@@ -233,10 +233,10 @@ class Invoice(models.Model):
     @save_after
     @transition(
         field=state,
-        source=(States.DRAFT.value, States.UNPAID.value),
+        source=(States.DRAFT.value, States.UNPAID.value),  # type: ignore
         target=States.VOID.value,
         custom={"icon": "icons/invoice-void.svg"},
-    )  # type: ignore
+    )
     def void(self) -> None:
         pass
 
