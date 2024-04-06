@@ -8,7 +8,7 @@
 
 {% block content %}
     {% if request.htmx %}
-        <dialog open id="confirmation-modal" data>
+        <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
             <article>
     {% endif %}
     <p>Are you sure you want to send {{ invoice }}?</p>
@@ -24,7 +24,6 @@
                 href="{% url 'invoice_detail' invoice.id %}"
                 {% if request.htmx %}
                     @click.prevent="$el.closest('dialog').remove()"
-                    @click.outside="$el.closest('dialog').remove()"
                 {% endif %}
             >
                 No

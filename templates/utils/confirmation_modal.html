@@ -1,5 +1,5 @@
 {% if request.htmx %}
-    <dialog open id="confirmation-modal">
+    <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
         <article>
 {% endif %}
 <h3>Are you sure you want to {{ question }} '{{ object.name }}'?</h3>
@@ -13,7 +13,6 @@
                 href="{% url cancel object.id %}"
                 {% if request.htmx %}
                     @click.prevent="$el.closest('dialog').remove()"
-                    @click.outside="$el.closest('dialog').remove()"
                 {% endif %}
             >
                 No
