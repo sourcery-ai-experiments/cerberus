@@ -43,7 +43,7 @@ form {
 form {
   .button-row {
     display: flex;
-    gap: var(--form-element-spacing-horizontal);
+    gap: var(--pico-form-element-spacing-horizontal);
 
     & > * {
       flex-grow: 1;
@@ -56,6 +56,8 @@ form {
     input[type="button"],
     input[type="reset"],
     input[type="submit"] {
+      margin-bottom: 0;
+
       &
         + :is(
           [role="button"],
