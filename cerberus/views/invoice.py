@@ -16,7 +16,7 @@ from vanilla import CreateView, UpdateView
 
 # Locals
 from ..filters import InvoiceFilter
-from ..forms import ChargeForm, InvoiceForm, UninvoicedChargesForm
+from ..forms import ChargeForm, InvoiceForm, InvoiceSendForm, UninvoicedChargesForm
 from ..models import Charge, Invoice
 from .crud_views import Actions, CRUDViews, extra_view
 from .transition_view import TransitionView
@@ -92,7 +92,7 @@ class InvoiceCRUD(CRUDViews):
 
         return invoice.get_pdf_response()
 
-    @extra_view(detail=False, methods=["post"], url_name="invoice_from_charges")
+    @extra_view(detail=False, methods=["get", "post"], url_name="invoice_from_charges")
     def from_charges(self: Self, request: HttpRequest) -> HttpResponse:
         charge_form = UninvoicedChargesForm(request.POST)
 
@@ -109,6 +109,18 @@ class InvoiceCRUD(CRUDViews):
             return HttpResponseRedirect(success_url)
 
         return render(request, "cerberus/customer_charges.html", {"form": charge_form})
+
+    @extra_view(detail=True, methods=["get", "post"], url_name="invoice_send")
+    def send_form(self, request, pk):
+        invoice = get_object_or_404(Invoice, pk=pk)
+        inital = {"to": getattr(invoice.customer, "invoice_email", ""), "send_email": True}
+        form = InvoiceSendForm(request.POST or inital)
+
+        if request.POST and form.is_valid():
+            invoice.send(form.cleaned_data["to"], form.cleaned_data["send_email"])
+            return HttpResponseRedirect(reverse_lazy("invoice_detail", kwargs={"pk": invoice.pk}))
+
+        return render(request, "cerberus/invoice_send_form.html", {"invoice": invoice, "form": form})
 
 
 class InvoiceActionsView(TransitionView):

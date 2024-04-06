@@ -33,10 +33,19 @@
             {% endif %}
             {% for action in invoice.get_available_state_transitions %}
                 <li>
-                    <a href="{% url 'invoice_action' invoice.id action.name %}">
-                        {% if action.custom.icon %}{% include action.custom.icon %}{% endif %}
-                        {{ action.name|title }}
-                    </a>
+                    {% if action.custom.url %}
+                        <a
+                            href="{% url action.custom.url invoice.id %}"
+                            hx-get="{% url action.custom.url invoice.id %}"
+                            hx-target="main"
+                            hx-swap="afterend"
+                        >
+                    {% else %}
+                        <a href="{% url 'invoice_action' invoice.id action.name %}">
+                    {% endif %}
+                    {% if action.custom.icon %}{% include action.custom.icon %}{% endif %}
+                    {{ action.name|title }}
+                </a>
                 </li>
             {% endfor %}
         </ul>

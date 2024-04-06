@@ -156,7 +156,7 @@ class Invoice(models.Model):
         source=States.DRAFT.value,
         target=States.UNPAID.value,
         conditions=[can_send],
-        custom={"icon": "icons/mail.svg", "url": "invoice_send_form"},
+        custom={"icon": "icons/mail.svg", "url": "invoice_send"},
     )
     def send(self, to: str | None = None, send_email: bool = True, send_notes: str | None = None):
         if not self.customer:

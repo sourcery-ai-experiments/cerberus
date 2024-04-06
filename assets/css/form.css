@@ -109,4 +109,8 @@ form {
       }
     }
   }
+
+  & > div:has(.display-none) {
+    display: none;
+  }
 }

@@ -249,3 +249,11 @@ class UninvoicedChargesForm(forms.Form):
     def set_customer(self, customer_id: int | None) -> None:
         self.fields["customer"].initial = customer_id
         self.fields["charges"].queryset = Charge.objects.filter(customer_id=customer_id, invoice__isnull=True)
+
+
+class InvoiceSendForm(forms.Form):
+    attributes = {"x-data": minimize_whitespace("""{ send: true }""")}
+
+    send_email = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"x-model.boolean.fill": "send"}))
+    to = forms.EmailField(required=True, widget=forms.EmailInput(attrs={":class": "{ 'display-none': ! send }"}))
+    send_notes = forms.CharField(required=False, widget=forms.Textarea(attrs={":class": "{ 'display-none': ! send }"}))
