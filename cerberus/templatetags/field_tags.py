@@ -11,7 +11,7 @@ def fields(model: Model):
     for field in model._meta.get_fields():
         value = getattr(model, field.name, None)
         try:
-            yield capfirst(field.verbose_name), value
+            yield capfirst(field.verbose_name), value  # type: ignore
         except AttributeError:
             yield capfirst(field.name), value
 
