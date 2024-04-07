@@ -1,0 +1,85 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load date_utils %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+    <h2>Bookings {{ date|date:"F Y" }}</h2>
+{% endblock %}
+
+{% block content %}
+    <div id="calender">
+        <div class="calender-controls">
+            <h1>Bookings {{ date|date:"F Y" }}</h1>
+            <div hx-boost="true" hx-target="#calender" hx-swap="outerHTML">
+                <a href="{% url 'booking_calender_month'%}">Today</a>
+                <a role="button"
+                   aria-label="Previous Month"
+                   title="{{ prev_month|date:'F Y' }}"
+                   href="{% url 'booking_calender_month' year=prev_month.year month=prev_month.month %}"
+                   hx-trigger="keyup[key=='ArrowLeft'] from:body"
+                >
+                    {% include 'icons/chevron-left.svg' %}
+                </a>
+                <a role="button"
+                   aria-label="Next Month"
+                   title="{{ next_month|date:'F Y' }}"
+                   href="{% url 'booking_calender_month' year=next_month.year month=next_month.month %}"
+                   hx-trigger="keyup[key=='ArrowRight'] from:body"
+                >
+                    {% include 'icons/chevron-right.svg' %}
+                </a>
+            </div>
+        </div>
+        <div class="calender grid" x-data x-init="window.CSRFToken = '{{ csrf_token }}'">
+            {% for day in days %}
+                <div class="heading">{{ day|day_of_week }}</div>
+            {% endfor %}
+            {% for day, bookings in calendar %}
+                <div
+                    :class="{ 'adding': adding }"
+                    x-on:drop.prevent="{# fmt:off #}
+                            adding = false;
+                            removing = false;
+                            const id = event.dataTransfer.getData('text/plain');
+                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'), 'ul');
+                        {# fmt:on #}"
+                    x-on:dragover.prevent="adding = true"
+                    x-on:dragleave.prevent="adding = false"
+                    x-data="{ adding: false, removing: false }"
+                    data-datetime="{{ day|date:'Y-m-d' }}"
+                    class="dropzone {% if day.month == date.month %}current{% endif %}{% if day|date:'dmY' == today|date:'dmY' %} today{% endif %}"
+                >
+                    <a href="{% url 'booking_calender_day' year=day.year month=day.month day=day.day %}">
+                        {{ day|date:"d" }}
+                    </a>
+                    <ul>
+                        {% for booking in bookings %}
+                            <li
+                                id="booking-{{ booking.id }}"
+                                class="booking"
+                                :class="{ 'dragging': dragging }"
+                                draggable="{% if booking.can_move %}true{% else %}false{% endif %}"
+                                x-data="{ dragging: false }"
+                                x-on:dragend="dragging = false"
+                                x-on:dragstart.self="{# fmt:off #}
+                                    dragging = true;
+                                    event.dataTransfer.effectAllowed = 'move';
+                                    event.dataTransfer.setData('text/plain', event.target.id);
+                                {# fmt:on #}"
+                                data-length="{{ booking.length_minutes }}"
+                                data-id="{{ booking.id }}"
+                                data-move-url="{% url 'booking-move' booking.id %}"
+                                style="--display-colour: {{ booking.service.display_colour }}"
+                            >
+                                {{ booking.start|date:"H:i" }} - {{ booking.pets.all|join:", " }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% include 'cerberus/components/add_booking_fab.html' %}
+{% endblock %}

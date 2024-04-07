@@ -333,3 +333,4 @@ cython_debug/
 .vscode
 /tmp
 /staticfiles
+/lcov.info

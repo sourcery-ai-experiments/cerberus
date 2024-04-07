@@ -1,0 +1,38 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load crispy_forms_tags field_tags %}
+
+{% block page_title %}
+    {% include 'utils/page_title.html' with object_name=view.model|verbose_name|capfirst %}
+{% endblock %}
+
+{% block content %}
+    {% if request.htmx %}
+        <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
+            <article>
+    {% endif %}
+    <p>Are you sure you want to send {{ invoice }}?</p>
+    <form action="{% url 'invoice_action' invoice.pk 'send' %}" method="post" {{ form.attributes|attributes|safe }}>
+        <p>
+            {{ form|crispy }}
+            {% csrf_token %}
+        </p>
+        <div class="button-row">
+            <a
+                class="negative"
+                role="button"
+                href="{% url 'invoice_detail' invoice.id %}"
+                {% if request.htmx %}
+                    @click.prevent="$el.closest('dialog').remove()"
+                {% endif %}
+            >
+                Cancel
+            </a>
+            <input type="submit" class="button" :value="send ? 'Send' : 'Mark as sent'" />
+        </div>
+    </form>
+    {% if request.htmx %}
+        </article>
+        </dialog>
+    {% endif %}
+{% endblock %}

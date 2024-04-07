@@ -1,32 +1,21 @@
 # Standard Library
 from collections import namedtuple
+from collections.abc import Iterable
 from enum import Enum
-from typing import Any
+from typing import Any, Protocol
 
 # Django
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Model
-from django.forms import modelformset_factory
-from django.http import Http404, HttpResponseNotAllowed
-from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse_lazy
 from django.urls.resolvers import URLPattern
-from django.views import View
 
 # Third Party
 from django_filters import FilterSet
 from vanilla import CreateView, DeleteView, DetailView, GenericModelView, ListView, UpdateView
-
-# Locals
-from .filters import CustomerFilter, InvoiceFilter, PetFilter, ServiceFilter, VetFilter
-from .forms import BookingForm, ChargeForm, CustomerForm, InvoiceForm, PetForm, ServiceForm, VetForm
-from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
-
-
-@login_required
-def dashboard(request):
-    return render(request, "cerberus/dashboard.html", {})
 
 
 class Actions(Enum):
@@ -128,19 +117,19 @@ class BreadcrumbMixin(GenericModelView):
         obj = getattr(self, "object", None)
         obj_id = getattr(obj, "id", 0)
 
-        def list_crumb():
+        def list_crumb() -> Crumb:
             return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
-        def detail_crumb():
+        def detail_crumb() -> Crumb:
             return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
 
-        def update_crumb():
+        def update_crumb() -> Crumb:
             return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
 
-        def create_crumb():
+        def create_crumb() -> Crumb:
             return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
 
-        def delete_crumb():
+        def delete_crumb() -> Crumb:
             return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
 
         match self.__class__.__name__.split("_"):
@@ -164,28 +153,13 @@ class BreadcrumbMixin(GenericModelView):
         return context
 
 
-class TransitionView(View):
-    model = Model
-    field = str
-
-    def get(self, request, pk: int, action: str):
-        model = get_object_or_404(self.model, pk=pk)
-        transitions = getattr(model, f"get_all_{self.field}_transitions")()
-        available_transitions = getattr(model, f"get_all_{self.field}_transitions")()
-
-        if action not in [t.name for t in transitions]:
-            raise Http404(f"{action} is not a valid action on {self.model._meta.model_name}")
-
-        if action not in [t.name for t in available_transitions]:
-            raise Http404(f"{action} is not currently available on {self.model._meta.model_name}")
-
-        getattr(model, action)()
-        redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
-
-        return redirect(redirect_url)
-
-
-def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwargs):
+def extra_view(
+    detail: bool,
+    methods: list[str] | None = None,
+    url_path: str | None = None,
+    url_name: str | None = None,
+    **kwargs,
+):
     methods = ["get"] if methods is None else methods
     methods = [method.lower() for method in methods]
 
@@ -198,6 +172,25 @@ def extra_view(detail: bool, methods=None, url_path=None, url_name=None, **kwarg
         return func
 
     return decorator
+
+
+class EditViewProtocol(Protocol):
+    def form_valid(self, form): ...
+
+    def form_invalid(self, form): ...
+
+
+class SafeFormSave:
+    def form_valid(self: EditViewProtocol, form):
+        try:
+            with transaction.atomic():
+                return super().form_valid(form)
+        except (ValueError, ValidationError) as exception:
+            errors = exception if isinstance(exception, Iterable) else [exception]
+            for error in errors:
+                form.add_error(None, str(error))
+
+            return self.form_invalid(form)
 
 
 class CRUDViews(GenericModelView):
@@ -253,6 +246,7 @@ class CRUDViews(GenericModelView):
                 [
                     LoginRequiredMixin if cls.requires_login else None,
                     BreadcrumbMixin,
+                    SafeFormSave if action in [Actions.CREATE, Actions.UPDATE] else None,
                     FilterableMixin if action == Actions.LIST else None,
                     SortableViewMixin if action == Actions.LIST else None,
                     DefaultTemplateMixin.create_class(cls.model_name()),
@@ -295,6 +289,21 @@ class CRUDViews(GenericModelView):
             return cls.requires_login
         return cls.extra_requires_login
 
+    def get_breadcrumbs(self, obj: Model | None) -> list[Crumb]:
+        model_name = self.model._meta.model_name or ""
+        verbose_name_plural = (self.model._meta.verbose_name_plural or "").title()
+
+        list_name = f"{model_name}_{Actions.LIST.value}"
+        detail_name = f"{model_name}_{Actions.DETAIL.value}"
+
+        crumbs = [
+            Crumb("Dashboard", reverse_lazy("dashboard")),
+            Crumb(verbose_name_plural, reverse_lazy(list_name)),
+            Crumb(str(obj), reverse_lazy(detail_name, kwargs={"pk": obj.pk})) if obj else None,
+        ]
+
+        return [crumb for crumb in crumbs if crumb is not None]
+
     @classmethod
     def extra_views(cls, model_name: str) -> list[URLPattern]:
         views: list[URLPattern] = []
@@ -306,129 +315,11 @@ class CRUDViews(GenericModelView):
                 else:
                     route = f"{model_name}/{view.url_path}/"
 
-                url_name = view.url_name or f"{model_name}_{view.__name__}"
                 view_func = getattr(cls(), name)
+                url_name = view.url_name or f"{model_name}_{view.__name__}"
                 if cls._extra_requires_login():
                     view_func = login_required(view_func)
 
                 views.append(path(route, view_func, name=url_name))  # type: ignore
 
         return views
-
-
-class CustomerCRUD(CRUDViews):
-    model = Customer
-    form_class = CustomerForm
-    filter_class = CustomerFilter
-    sortable_fields = ["name"]
-
-
-class PetCRUD(CRUDViews):
-    model = Pet
-    form_class = PetForm
-    filter_class = PetFilter
-    sortable_fields = ["name", "customer"]
-
-
-class VetCRUD(CRUDViews):
-    model = Vet
-    form_class = VetForm
-    filter_class = VetFilter
-    sortable_fields = ["name"]
-
-
-class ServiceCRUD(CRUDViews):
-    model = Service
-    form_class = ServiceForm
-    filter_class = ServiceFilter
-    sortable_fields = [
-        "name",
-        "length",
-        "cost",
-        "cost_per_additional",
-        "max_pet",
-        "max_customer",
-        "display_colour",
-    ]
-
-
-class BookingCRUD(CRUDViews):
-    model = Booking
-    form_class = BookingForm
-    sortable_fields = ["pet__customer", "pet", "service", "start", "length"]
-
-
-class BookingStateActions(TransitionView):
-    model = Booking
-    field = "state"
-
-
-class InvoiceUpdateView(UpdateView):
-    def get_success_url(self):
-        return reverse_lazy("invoice_detail", kwargs={"pk": self.object.id})
-
-    def get_formset(self):
-        return modelformset_factory(Charge, form=ChargeForm, extra=1)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        formset = self.get_formset()
-        context["formset"] = formset(queryset=context["object"].charges.all())
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-        formset = self.get_formset()(data=request.POST, files=request.FILES)
-        if formset.is_valid():
-            formset.save()
-            return super().post(request, *args, **kwargs)
-
-        form = self.get_form(
-            data=request.POST,
-            files=request.FILES,
-            instance=self.object,
-        )
-        return self.form_invalid(form)
-
-
-class InvoiceCreateView(CreateView):
-    def get(self, request, *args, **kwargs):
-        form = self.get_form(initial={k: str(v) for k, v in request.GET.items()})
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
-
-
-class InvoiceCRUD(CRUDViews):
-    model = Invoice
-    form_class = InvoiceForm
-    filter_class = InvoiceFilter
-    sortable_fields = ["id", "customer", "total"]
-
-    @classmethod
-    def get_view_class(cls, action: Actions):
-        match action:
-            case Actions.UPDATE:
-                return InvoiceUpdateView
-            case Actions.CREATE:
-                return InvoiceCreateView
-            case _:
-                return super().get_view_class(action)
-
-    @extra_view(detail=True, methods=["get", "post"])
-    def email(self, request, pk):
-        invoice = get_object_or_404(Invoice, pk=pk)
-        if request.method != "POST":
-            return render(request, "cerberus/invoice_email_confirm.html", {"object": invoice, "invoice": invoice})
-        try:
-            invoice.resend_email()
-        except AssertionError as e:
-            return HttpResponseNotAllowed(f"Email not sent: {e}")
-
-        return render(request, "cerberus/invoice_email_sent.html", {"object": invoice, "invoice": invoice})
-
-    @extra_view(detail=True, methods=["get"], url_name="invoice_pdf")
-    def download(self, request, pk: int):
-        invoice: Invoice = get_object_or_404(Invoice, pk=pk)
-
-        return invoice.get_pdf_response()

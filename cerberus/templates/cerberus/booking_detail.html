@@ -15,13 +15,22 @@
         </ul>
     {% endcomponent %}
     <div class="grid pair">
-        <div>Pet</div><div>{{ booking.pet }}</div>
+        <div>Pets</div>
+        <div>
+            {% for pet in booking.pets.all %}
+                <a href="{% url 'pet_detail' pet.pk %}">{{ pet }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' booking.customer.pk %}">{{ booking.customer }}</a></div>
         <div>Service</div><div>{{ booking.service }}</div>
         <div>Start</div><div>{{ booking.start }}</div>
         <div>End</div><div>{{ booking.end }}</div>
-        <div>State</div><div>{{ booking.state }}</div>
-        <div>Length</div><div>{{ booking.length|naturaldelta }}</div>
-        <div>Cost</div><div>{% money_localize booking.cost 'GBP' %}</div>
+        <div>Length</div><div>{{ booking.length|naturaldelta|capfirst }}</div>
+        <div>State</div><div>{{ booking.state|capfirst }}</div>
+        <div>Cost</div><div>{{ booking.cost }}</div>
+        {% if booking.pets.count > 1 %}
+            <div>Cost per additional</div><div>{{ booking.cost_per_additional }}</div>
+        {% endif %}
         <div>Charges</div><div>
             {% for charge in booking.charges.objects %}
                 <div>{{ charge.line }} - {{ charge.state }}</div>

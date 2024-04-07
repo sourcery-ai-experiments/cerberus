@@ -11,7 +11,6 @@ from django.http import HttpResponse
 from django.urls import path
 
 # Third Party
-from dateutil import parser
 from django_filters import rest_framework as filters
 from django_fsm import TransitionNotAllowed
 from django_fsm_log.helpers import FSMLogDescriptor
@@ -28,9 +27,7 @@ from .models import Address, Booking, BookingSlot, Charge, Contact, Customer, In
 from .permissions import IsUsers
 from .serializers import (
     AddressSerializer,
-    BookingMoveSerializer,
     BookingSerializer,
-    BookingSlotMoveSerializer,
     BookingSlotSerializer,
     ChargeSerializer,
     ContactSerializer,
@@ -41,6 +38,8 @@ from .serializers import (
     PetDropDownSerializer,
     PetSerializer,
     ServiceSerializer,
+    ToDateSerializer,
+    ToDateTimeSerializer,
     UserSettingsSerializer,
     VetSerializer,
 )
@@ -125,15 +124,17 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         return self.change_state("complete", request)
 
     @action(detail=True, methods=["PUT"])
-    def move_booking(self, request, pk=None):
-        booking = self.get_object()
-        incoming = BookingMoveSerializer(data=request.data)
-        incoming.is_valid()
+    def move(self, request, pk=None):
+        booking: Booking = self.get_object()
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
             with FSMLogDescriptor(booking, "by", request.user):
-                if booking.move_booking(parser.parse(incoming.data["to"])):
+                if booking.move_booking(incoming.validated_data["to"]):
                     status = 200
 
         serializer = self.get_serializer(booking)
@@ -141,15 +142,17 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         return Response({"item": serializer.data, "status": status}, status=status)
 
     @action(detail=True, methods=["PUT"])
-    def move_booking_slot(self, request, pk=None):
-        booking = self.get_object()
-        incoming = BookingSlotMoveSerializer(data=request.data)
-        incoming.is_valid()
+    def move_slot(self, request, pk=None):
+        booking: Booking = self.get_object()
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
         status = 400
 
         with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
             with FSMLogDescriptor(booking, "by", request.user):
-                if booking.move_booking_slot(parser.parse(incoming.data["start"])):
+                if booking.move_booking_slot(incoming.validated_data["to"]):
                     status = 200
 
         serializer = self.get_serializer(booking)
@@ -161,6 +164,25 @@ class BookingSlotViewSet(viewsets.ModelViewSet):
     queryset = BookingSlot.objects.all()
     serializer_class = BookingSlotSerializer
     permission_classes = default_permissions
+
+    @action(detail=True, methods=["PUT"])
+    def move(self, request, pk=None):
+        booking_slot: BookingSlot = self.get_object()
+        incoming = ToDateSerializer(data=request.data)
+        if not incoming.is_valid():
+            incoming = ToDateTimeSerializer(data=request.data)
+            incoming.is_valid()
+        incoming.is_valid()
+        status = 400
+
+        with transaction.atomic(), contextlib.suppress(TransitionNotAllowed):
+            with FSMLogDescriptor(booking_slot, "by", request.user):
+                if booking_slot.move_slot(incoming.validated_data["to"]):
+                    status = 200
+
+        serializer = self.get_serializer(booking_slot)
+
+        return Response({"item": serializer.data, "status": status}, status=status)
 
 
 class ChargeViewSet(viewsets.ModelViewSet):
@@ -327,14 +349,17 @@ class PetViewSet(viewsets.ModelViewSet, ActiveMixin):
 
     @action(detail=False, methods=["get"])
     def dropdown(self, request):
-        serializer = PetDropDownSerializer(self.queryset.filter(active=True), many=True)
+        if self.queryset:
+            serializer_data = PetDropDownSerializer(self.queryset.filter(active=True), many=True).data
+        else:
+            serializer_data = []
 
         return Response(
             {
-                "results": serializer.data,
+                "results": serializer_data,
                 "next": None,
                 "previous": None,
-                "count": len(serializer.data),
+                "count": len(serializer_data),
             }
         )
 
