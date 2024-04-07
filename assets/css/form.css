@@ -116,3 +116,9 @@ form {
     display: none;
   }
 }
+
+form {
+  textarea {
+    height: clamp(5em, 25vh, 15em);
+  }
+}
