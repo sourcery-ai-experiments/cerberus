@@ -12,7 +12,7 @@ ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
 
 def strtobool(value: str) -> bool:
-    return value.lower() in ("yes", "true", "y", "t", "1")
+    return value.lower() in {"yes", "true", "y", "t", "1"}
 
 
 class Switch(forms.widgets.Input):

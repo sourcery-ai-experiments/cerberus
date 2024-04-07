@@ -91,8 +91,9 @@ class DataAttrField(widgets.ChoiceWidget):
         option = super().create_option(name, value, label, selected, index, subindex, attrs)
 
         if value and hasattr(value, "instance"):
+            instance = value.instance
             for model_field in self.model_fields:
-                attr_value = rgetattr(value.instance, model_field, self.default_attr_value)
+                attr_value = rgetattr(instance, model_field, self.default_attr_value)
                 if callable(attr_value):
                     attr_value = attr_value()
 

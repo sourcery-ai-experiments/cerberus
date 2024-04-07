@@ -160,7 +160,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
 
         start = min(start, bookings_start)
         end = max(end, bookings_end)
-        steps = range(0, ((end - start) * (60 // step)) + 1)
+        steps = range(((end - start) * (60 // step)) + 1)
         return [make_aware(date + dt.timedelta(hours=start, minutes=15 * i)) for i in steps]
 
     def get_context_data(self, year=None, month=None, day=None, **kwargs):
