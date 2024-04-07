@@ -12,7 +12,7 @@
             <article>
     {% endif %}
     <p>Are you sure you want to send {{ invoice }}?</p>
-    <form method="post" {{ form.attributes|attributes|safe }}>
+    <form action="{% url 'invoice_action' invoice.pk 'send' %}" method="post" {{ form.attributes|attributes|safe }}>
         <p>
             {{ form|crispy }}
             {% csrf_token %}

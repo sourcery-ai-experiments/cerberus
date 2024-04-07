@@ -110,7 +110,7 @@ class InvoiceCRUD(CRUDViews):
 
         return render(request, "cerberus/customer_charges.html", {"form": charge_form})
 
-    @extra_view(detail=True, methods=["get", "post"], url_name="invoice_send")
+    @extra_view(detail=True, methods=["get", "post"], url_path="send", url_name="invoice_send")
     def send_form(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
         inital = {"to": getattr(invoice.customer, "invoice_email", ""), "send_email": True}
