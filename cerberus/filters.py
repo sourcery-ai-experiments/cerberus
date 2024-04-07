@@ -1,3 +1,7 @@
+# Standard Library
+from datetime import datetime
+from enum import Enum
+
 # Django
 from django import forms
 
@@ -52,6 +56,17 @@ class PetFilter(FilterDefaults):
 
 
 class CustomerFilter(FilterDefaults):
+    class Statuses(Enum):
+        BOOKINGS = "Bookings"
+        UNINVOICED = "Uninvoiced"
+        UNPAID = "Unpaid"
+        OVERDUE = "Overdue"
+
+        @classmethod
+        def pairs(cls, filter: list = []) -> list[tuple[str, str]]:
+            return [(status.name, status.value) for status in cls if status not in filter]
+
+    status = filters.ChoiceFilter(choices=Statuses.pairs([Statuses.BOOKINGS]), method="filter_status", label="Status")
     active = filters.TypedChoiceFilter(choices=ACTIVE_CHOICES, coerce=strtobool, widget=Switch)
     name = filters.CharFilter(lookup_expr="icontains", label="Name")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
@@ -63,6 +78,19 @@ class CustomerFilter(FilterDefaults):
     class Meta:
         model = Customer
         fields = ["active"]
+
+    def filter_status(self, queryset, name, value):
+        match value:
+            case self.Statuses.BOOKINGS.name:
+                return queryset.filter(bookings__isnull=False, bookings__end__gte=datetime.now())
+            case self.Statuses.UNINVOICED.name:
+                return queryset.filter(charges__isnull=False, charges__invoice=None)
+            case self.Statuses.UNPAID.name:
+                return queryset.filter(invoices__state=Invoice.States.UNPAID)
+            case self.Statuses.OVERDUE.name:
+                return queryset.filter(invoices__state=Invoice.States.UNPAID, invoices__due__lt=datetime.now())
+            case _:
+                return queryset
 
 
 class BookingFilter(FilterDefaults):
