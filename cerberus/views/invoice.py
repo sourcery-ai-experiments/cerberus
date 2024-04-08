@@ -62,7 +62,7 @@ class InvoiceCRUD(CRUDViews):
     model = Invoice
     form_class = InvoiceForm
     filter_class = InvoiceFilter
-    sortable_fields = ["id", "customer", "total"]
+    sortable_fields = ["id", "customer", "total", "state"]
 
     @classmethod
     def get_view_class(cls, action: Actions):
