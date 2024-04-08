@@ -105,9 +105,6 @@ install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development
 cerberus_crm/static/js/htmx.min.js:
 	curl -sL https://unpkg.com/htmx.org > $@
 
-cerberus_crm/static/js/alpine.min.js:
-	curl -sL https://unpkg.com/alpinejs > $@
-
 $(ESBUILD_PATH): node_modules
 
 cerberus_crm/static/js/%.min.js: assets/typescript/%.ts $(TS_FILES) $(ESBUILD_PATH)

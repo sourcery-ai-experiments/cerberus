@@ -15,5 +15,11 @@
   "devDependencies": {
     "esbuild": "^0.20.2",
     "lightningcss-cli": "^1.21.2"
+  },
+  "dependencies": {
+    "@alpinejs/collapse": "^3.13.8",
+    "@alpinejs/focus": "^3.13.8",
+    "@alpinejs/mask": "^3.13.8",
+    "alpinejs": "^3.13.8"
   }
 }
