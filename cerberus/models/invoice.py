@@ -14,6 +14,7 @@ from django.db.models import F, Q, Sum
 from django.http import HttpResponse
 from django.template import loader
 from django.template.loader import get_template
+from django.urls import reverse
 
 # Third Party
 from django_fsm import FSMField, Transition, transition
@@ -106,6 +107,9 @@ class Invoice(models.Model):
         self._can_edit = False
 
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("invoice_detail", kwargs={"pk": self.pk})
 
     @classmethod
     def from_customer(cls, customer: "Customer"):
