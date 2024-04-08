@@ -8,8 +8,8 @@
 
 {% block content %}
     {% if request.htmx %}
-        <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
-            <article>
+        <dialog open id="confirmation-modal" x-data>
+            <article @click.outside="$root.remove()">
     {% endif %}
     <p>Are you sure you want to send {{ invoice }}?</p>
     <form action="{% url 'invoice_action' invoice.pk 'send' %}" method="post" {{ form.attributes|attributes|safe }}>
