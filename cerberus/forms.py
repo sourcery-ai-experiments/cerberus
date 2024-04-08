@@ -144,13 +144,15 @@ class BookingForm(forms.ModelForm):
             ),
             "cost": SingleMoneyWidget(
                 attrs={
-                    "x-model.number.fill": "cost",
+                    "x-model.fill": "cost",
+                    "@focus": "!cost_changed && $event.target.select()",
                     "@change": "cost_changed = $event.target.value !== ''",
                 }
             ),
             "cost_per_additional": SingleMoneyWidget(
                 attrs={
-                    "x-model.number.fill": "cost_per_additional",
+                    "x-model.fill": "cost_per_additional",
+                    "@focus": "!cost_changed && $event.target.select()",
                     "@change": "cost_per_additional_changed = $event.target.value !== ''",
                 }
             ),
@@ -201,7 +203,7 @@ class ChargeForm(forms.ModelForm):
         model = Charge
         fields = ["name", "line", "quantity"]
         widgets = {
-            "line": SingleMoneyWidget(attrs={"x-model.number.fill": "line", "min": "0"}),
+            "line": SingleMoneyWidget(attrs={"x-model.fill": "line", "min": "0"}),
             "quantity": forms.NumberInput(attrs={"x-model.number.fill": "quantity"}),
         }
 

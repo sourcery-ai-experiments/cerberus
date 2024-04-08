@@ -16,10 +16,10 @@ from .utils import rgetattr
 class SingleMoneyWidget(MoneyWidget):
     def __init__(self, attrs=None, *args, **kwargs):
         attrs = attrs or {}
-        attrs.update({"step": "any", "min": "0"})
+        attrs.update({"x-mask:dynamic": "$money($input)"})
 
         super().__init__(
-            amount_widget=forms.NumberInput(attrs=attrs),  # type: ignore
+            amount_widget=forms.TextInput(attrs=attrs),  # type: ignore
             currency_widget=forms.HiddenInput(),
             *args,
             **kwargs,
