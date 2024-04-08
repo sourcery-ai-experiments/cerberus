@@ -85,8 +85,14 @@ class SortableViewMixin(GenericModelView):
 
         if sort := self.request.GET.get("sort"):
             if sort in self.sortable_fields:
-                sort_order = "-" if self.request.GET.get("sort_order", "desc") == "desc" else ""
-                queryset = queryset.order_by(f"{sort_order}{sort}")
+                sort_order = self.request.GET.get("sort_order", "desc")
+
+                if callable(getattr(self.model, f"sort_{sort}", None)):
+                    queryset = getattr(self.model, f"sort_{sort}")(queryset, sort_order)
+                else:
+                    sort_order_symbol = "-" if sort_order == "desc" else ""
+                    queryset = queryset.order_by(f"{sort_order_symbol}{sort}")
+
             elif sort != "None":
                 raise SortableFieldError(
                     f"Invalid sort field '{sort}', must be one of {', '.join(self.sortable_fields)}"
