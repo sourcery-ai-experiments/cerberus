@@ -131,8 +131,8 @@ class BookingForm(forms.ModelForm):
                         if (!cost_changed) {
                             $nextTick(() => {
                                 const { dataset } = $event.target.options[$event.target.selectedIndex];
-                                cost = dataset.cost__amount;
-                                cost_per_additional = dataset.cost_per_additional__amount;
+                                cost = (parseFloat(dataset.cost__amount) || 0.0).toFixed(2);
+                                cost_per_additional = (parseFloat(dataset.cost_per_additional__amount) || 0.0).toFixed(2);
                             });
                             cost_changed = false;
                             cost_per_additional_changed = false;
