@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
 # Third Party
-from vanilla import DetailView
+from vanilla import DetailView, ListView
 
 # Locals
 from ..filters import CustomerFilter
@@ -25,6 +25,13 @@ class CustomerDetail(DetailView):
         return context
 
 
+class CustomerList(ListView):
+    def get_queryset(self):
+        if self.model is not None:
+            return self.model._default_manager.with_counts()
+        return super().get_queryset()
+
+
 class CustomerCRUD(CRUDViews):
     model = Customer
     form_class = CustomerForm
@@ -35,6 +42,8 @@ class CustomerCRUD(CRUDViews):
     def get_view_class(cls, action: Actions):
         if action == Actions.DETAIL:
             return CustomerDetail
+        if action == Actions.LIST:
+            return CustomerList
         return super().get_view_class(action)
 
     @extra_view(detail=True)

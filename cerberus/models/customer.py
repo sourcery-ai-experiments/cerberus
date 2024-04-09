@@ -1,11 +1,11 @@
 # Standard Library
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 # Django
 from django.conf import settings
 from django.db import models
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, F, Prefetch, Q, Sum
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -17,18 +17,23 @@ from moneyed import Money
 from taggit.managers import TaggableManager
 
 if TYPE_CHECKING:
-    from . import Booking, Charge, Contact, Pet, Vet
+    from . import Booking, Charge, Contact, Vet
 
 # Locals
 from .booking import Booking, BookingStates
 from .invoice import Invoice
+from .pet import Pet
 
 
 class CustomerManager(models.Manager["Customer"]):
-    def get_queryset(self):
+    def with_pets(self) -> Self:
+        return self.prefetch_related("pets")
+
+    def with_counts(self) -> Self:
+        active_pets_prefetch = Prefetch("pets", queryset=Pet.objects.filter(active=True), to_attr="active_pets")
+
         return (
-            super()
-            .get_queryset()
+            self.prefetch_related(active_pets_prefetch)
             .annotate(
                 invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
                 + Sum(
@@ -54,6 +59,13 @@ class CustomerManager(models.Manager["Customer"]):
                     ),
                 )
             )
+            .annotate(
+                uninvoiced_count=Count(
+                    "charges",
+                    distinct=True,
+                    filter=Q(charges__invoice=None),
+                )
+            )
             .order_by(*Customer._meta.ordering or list())
         )
 
@@ -66,7 +78,6 @@ class Customer(models.Model):
     charges: "QuerySet[Charge]"
     invoices: "QuerySet[Invoice]"
     unpaid_count: int
-    overdue_count: int
 
     # Fields
     first_name = models.CharField(max_length=125)
@@ -110,10 +121,6 @@ class Customer(models.Model):
         return reverse("customer_detail", kwargs={"pk": self.pk})
 
     @property
-    def active_pets(self):
-        return self.pets.filter(active=True)
-
-    @property
     def invoiced_unpaid(self):
         return self._invoiced_unpaid
 
@@ -121,11 +128,21 @@ class Customer(models.Model):
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
-    def outstanding_invoices(self):
+    # todo: make these fall back properties
+    def _active_pets(self):
+        return self.pets.filter(active=True)
+
+    def _unpaid_count(self):
+        return self.invoices.filter(state=Invoice.States.UNPAID.value).count()
+
+    def _outstanding_invoices(self):
         return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
 
-    def uninvoiced_count(self):
+    def _uninvoiced_count(self):
         return self.charges.filter(invoice=None).count()
+
+    def _overdue_count(self):
+        return self.invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today()).count()
 
     @property
     def issues(self):
