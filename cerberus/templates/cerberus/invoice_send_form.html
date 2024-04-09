@@ -8,7 +8,7 @@
 
 {% block content %}
     {% if request.htmx %}
-        <dialog open id="confirmation-modal" x-data>
+        <dialog open id="confirmation-modal" x-data x-trap="true">
             <article @click.outside="$root.remove()">
     {% endif %}
     <p>Are you sure you want to send {{ invoice }}?</p>

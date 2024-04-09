@@ -1,5 +1,5 @@
 {% if request.htmx %}
-    <dialog open id="confirmation-modal" x-data>
+    <dialog open id="confirmation-modal" x-data x-trap="true">
         <article @click.outside="$root.remove()">
 {% endif %}
 <h3>Are you sure you want to {{ question }} '{{ object.name }}'?</h3>
