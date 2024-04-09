@@ -52,6 +52,10 @@ class VetForm(forms.ModelForm):
             "details",
         ]
 
+        widgets = {
+            "phone": forms.TextInput(attrs={"x-mask": "99999 999999", "x-data": ""}),
+        }
+
 
 class BookingForm(forms.ModelForm):
     attributes = {
