@@ -1,0 +1,38 @@
+.booking {
+  background: var(--display-colour);
+  text-shadow: 0 0 0.3em var(--pico-contrast-inverse);
+  color: var(--pico-contrast);
+  border-radius: 0.25em;
+
+  div {
+    display: inline-flex;
+    gap: 1em;
+    align-items: center;
+    justify-content: space-between;
+
+    a {
+      display: block;
+      width: 1em;
+      height: 1em;
+      flex-basis: 1em;
+      color: inherit;
+
+      svg {
+        color: inherit;
+        display: block;
+        transition: all 0.2s ease-in-out;
+        filter: drop-shadow(0 0 0.3em var(--pico-contrast-inverse));
+
+        path {
+          stroke-width: 2;
+        }
+      }
+
+      &:hover {
+        svg {
+          filter: drop-shadow(0 0 0.6em var(--pico-contrast-inverse));
+        }
+      }
+    }
+  }
+}

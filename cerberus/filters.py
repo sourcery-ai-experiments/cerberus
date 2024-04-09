@@ -1,6 +1,3 @@
-# Standard Library
-from distutils.util import strtobool
-
 # Django
 from django import forms
 
@@ -12,6 +9,10 @@ from django_filters.widgets import RangeWidget
 from .models import Booking, Customer, Invoice, Pet, Service, Vet
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
+
+
+def strtobool(value: str) -> bool:
+    return value.lower() in ("yes", "true", "y", "t", "1")
 
 
 class Switch(forms.widgets.Input):
@@ -68,6 +69,8 @@ class BookingFilter(FilterDefaults):
     from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
     to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
     on_date = filters.DateFilter(field_name="start", lookup_expr="date")
+    customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
+    pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 
     class Meta:
         model = Booking

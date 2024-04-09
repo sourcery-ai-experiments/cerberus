@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from . import Booking, Charge, Contact, Pet, Vet
 
 # Locals
-from .booking import Booking
+from .booking import Booking, BookingStates
 from .invoice import Invoice
 
 
@@ -124,6 +124,9 @@ class Customer(models.Model):
     def outstanding_invoices(self):
         return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
 
+    def uninvoiced_count(self):
+        return self.charges.filter(invoice=None).count()
+
     @property
     def issues(self):
         issues = []
@@ -143,5 +146,5 @@ class Customer(models.Model):
     @property
     def upcoming_bookings(self) -> QuerySet["Booking"]:
         return self.bookings.filter(start__gte=datetime.today()).exclude(
-            state__in=[Booking.States.CANCELED.value, Booking.States.COMPLETED.value]
+            state__in=[BookingStates.CANCELED.value, BookingStates.COMPLETED.value]
         )

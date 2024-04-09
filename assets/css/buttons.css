@@ -10,8 +10,12 @@ input[type="submit"] {
   }
 
   &.negative {
-    --primary-focus: color-mix(in srgb, var(--negative), transparent 80%);
-    --primary: var(--negative);
-    --primary-hover: var(--negative-hover);
+    --pico-background-color: var(--negative);
+    --pico-border-color: var(--negative);
+
+    &:hover {
+      --pico-background-color: var(--negative-hover);
+      --pico-border-color: var(--negative-hover);
+    }
   }
 }

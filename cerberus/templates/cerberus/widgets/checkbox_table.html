@@ -1,0 +1,40 @@
+{% load crispy_forms_filters %}
+{% load l10n %}
+
+<div class="checkbox_table {{ field_class }}"{% if flat_attrs %} {{ flat_attrs }}{% endif %}>
+  {% include 'pico/layout/field_errors_block.html' %}
+
+  <table
+    x-data="{ selected: [], selectAll: false, allValues: [] }"
+    x-effect="selectAll = selected.length == allValues.length && allValues.length > 0"
+    x-init="allValues = Array.from($root.querySelectorAll('input[type=checkbox][value]')).map((el) => el.value)"
+  >
+    <thead>
+      <tr>
+        <th><input type="checkbox" :disabled="allValues.length == 0" x-model.fill="selectAll" @click="selected = $el.checked ? allValues : []" /></th>
+        {% for key in field.field.widget.model_titles %}
+          <th>{{ key|capfirst }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for group, options, index in field|optgroups %}
+        <tr>
+          {% if group %}
+            <tr><td colspan="{{ field.field.widget.columns|length }}"><strong>{{ group }}</strong></td></tr>{% endif %}
+          {% for option in options %}
+            <td>
+              <input type="checkbox" x-model.fill="selected" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "pico/layout/attrs.html" with widget=option %}>
+            </td>
+            {% for key, val in option.columns.items %}
+              <td class="column_{{ key }}">
+                <label for="{{ option.attrs.id }}">{{ val }}</label>
+              </td>
+            {% endfor %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include 'pico/layout/help_text.html' %}
+</div>

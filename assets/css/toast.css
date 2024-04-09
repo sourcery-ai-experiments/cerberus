@@ -1,0 +1,75 @@
+.toast-container {
+  position: fixed;
+  bottom: var(--pico-spacing);
+  right: var(--pico-spacing);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--pico-spacing) / 2);
+  max-height: calc(100vh - calc(var(--pico-spacing) * 2));
+  overflow-y: visible;
+
+  & > * {
+    border-radius: calc(var(--pico-spacing) / 2);
+    background: var(--pico-background-color);
+    padding: calc(var(--pico-spacing) / 3) calc(var(--pico-spacing) / 2);
+
+    --border-color: var(--pico-primary-border);
+    border: 1px solid var(--border-color);
+    pointer-events: none;
+
+    animation: add 0.2s ease-in-out;
+
+    &.remove {
+      animation: remove 0.3s ease-in-out;
+    }
+
+    &::after {
+      content: "\2715";
+      margin-left: calc(var(--pico-spacing) / 2);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    &.error {
+      --border-color: var(--negative);
+    }
+    &.success {
+      --border-color: var(--positive);
+    }
+    &.warn {
+      --border-color: var(--warning);
+    }
+  }
+}
+
+@keyframes add {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(var(--pico-spacing) + 100%));
+  }
+
+  50% {
+    transform: translateY(0%);
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes remove {
+  0% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+
+  75% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(calc(var(--pico-spacing) + 100%));
+  }
+}

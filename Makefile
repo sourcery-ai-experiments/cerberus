@@ -1,12 +1,16 @@
-.PHONY: help clean test install all init dev css js cog
+.PHONY: help clean test install all init dev css js cog coverage
 .DEFAULT_GOAL := dev
 .PRECIOUS: requirements.%.in
+.FORCE:
 
 HOOKS=$(.git/hooks/pre-commit)
 REQS=$(wildcard requirements.*.txt)
 
 CSS_FILES:=$(shell find assets -name *.css)
 COG_FILE:=.cogfiles
+
+TS_FILES:=$(wildcard assets/typescript/*.ts)
+JS_FILES:=$(patsubst %.ts,%.js,$(TS_FILES))
 
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
@@ -16,6 +20,7 @@ UV_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/uv
 COG_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/cog
 COGABLE_FILES:=$(shell find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \;)
 MIGRATION_FILES:=$(shell ls -d -- **/migrations/*.py)
+ESBUILD_PATH:=./node_modules/.bin/esbuild
 
 help: ## Display this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -86,11 +91,11 @@ cerberus_crm/static/css/%.min.css: assets/css/%.css $(CSS_FILES)
 
 css: cerberus_crm/static/css/main.min.css ## Build the css
 
-watch-css: ## Watch and build the css
+watch-assets: ## Watch and build the css and js
 	@echo "Watching scss"
-	$(MAKE) css
+	$(MAKE) css js
 	@while inotifywait -qr -e close_write assets/; do \
-		$(MAKE) css; \
+		$(MAKE) css js; \
 	done
 
 install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
@@ -103,22 +108,35 @@ cerberus_crm/static/js/htmx.min.js:
 cerberus_crm/static/js/alpine.min.js:
 	curl -sL https://unpkg.com/alpinejs > $@
 
-js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js ## Fetch the js
+$(ESBUILD_PATH): node_modules
+
+cerberus_crm/static/js/%.min.js: assets/typescript/%.ts $(TS_FILES) $(ESBUILD_PATH)
+	$(ESBUILD_PATH) $< --bundle --minify --sourcemap --outfile=$@
+
+js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.min.js ## Fetch and build the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
 
 $(COG_FILE): $(COGABLE_FILES)
-	find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
+	@find assets -maxdepth 4 -type f -exec grep -l "\[\[\[cog" {} \; > $@
 
-$(COGABLE_FILES): $(COG_PATH)
-	cog -rc $?
+$(COGABLE_FILES): .FORCE
+	@cog -rc $@
 
-cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run co
+cog: $(COG_PATH) $(COG_FILE) $(COGABLE_FILES) ## Run cog
 
 db.sqlite3: .direnv $(MIGRATION_FILES)
 	python manage.py migrate
-	python manage.py dummydata
 	@touch $@
 
 dev: .direnv db.sqlite3 cog css js ## Setup the project read for development
+
+node_modules: package.json package-lock.json
+	npm install
+	@touch $@
+
+lcov.info: .direnv cerberus/tests/test_*.py
+	pytest --cov --cov-report=lcov:$@
+
+coverage: lcov.info

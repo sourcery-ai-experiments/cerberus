@@ -6,6 +6,7 @@
   box-shadow: var(--pico-box-shadow);
 
   position: fixed;
+  z-index: 999;
   display: flex;
   bottom: var(--pico-spacing);
   right: var(--pico-spacing);
