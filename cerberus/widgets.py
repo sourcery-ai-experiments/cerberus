@@ -16,7 +16,7 @@ from .utils import rgetattr
 class SingleMoneyWidget(MoneyWidget):
     def __init__(self, attrs=None, *args, **kwargs):
         attrs = attrs or {}
-        attrs.update({"x-mask:dynamic": "$money($input)"})
+        attrs.update({"x-mask:dynamic": "$money($input)", "x-data": ""})
 
         super().__init__(
             amount_widget=forms.TextInput(attrs=attrs),  # type: ignore
