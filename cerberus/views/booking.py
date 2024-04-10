@@ -11,20 +11,36 @@ from django.http import Http404
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
+# Third Party
+from vanilla import ListView
+
 # Locals
 from ..forms import BookingForm
 from ..models import Booking
 from ..utils import make_aware
-from .crud_views import CRUDViews, Crumb
+from .crud_views import Actions, CRUDViews, Crumb
 from .transition_view import TransitionView
 
 BookingGroup = namedtuple("BookingDay", ["date", "bookings"])
+
+
+class BookingList(ListView):
+    def get_queryset(self):
+        if self.model is not None:
+            return self.model._default_manager.with_pets().with_customers().with_service()
+        return super().get_queryset()
 
 
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
     sortable_fields = ["customer__name", "pets", "service", "start", "length"]
+
+    @classmethod
+    def get_view_class(cls, action: Actions):
+        if action == Actions.LIST:
+            return BookingList
+        return super().get_view_class(action)
 
 
 class BookingCalenderRedirect(RedirectView):
@@ -62,7 +78,8 @@ class BookingCalenderYear(TemplateView, CalendarBreadCrumbs):
     def get_booking_stats(self, year) -> dict[int, int]:
         month_stats: dict[int, int] = defaultdict(int)
 
-        for stats in Booking.active.filter(start__year=year).values("start__month").annotate(count=Count("id")):
+        bookings = Booking.objects.active().filter(start__year=year).values("start__month").annotate(count=Count("id"))
+        for stats in bookings:
             month_stats[stats["start__month"]] = stats["count"]
 
         return month_stats
@@ -96,7 +113,7 @@ class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_month.html"
 
     def grouped_bookings(self, start: dt.date, end: dt.date) -> dict[dt.date, list[Booking]]:
-        bookings = Booking.active.filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = Booking.objects.active().filter(start__gte=start, end__lte=end).order_by("start")
 
         bookings_by_date: dict[dt.date, list[Booking]] = defaultdict(list)
         for booking in bookings:
@@ -139,7 +156,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_day.html"
 
     def grouped_bookings(self, start: dt.datetime, end: dt.datetime) -> dict[dt.time, list[Booking]]:
-        bookings = Booking.active.filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = Booking.objects.active().filter(start__gte=start, end__lte=end).order_by("start")
 
         bookings_by_date: dict[dt.time, list[Booking]] = defaultdict(list)
         for booking in bookings:

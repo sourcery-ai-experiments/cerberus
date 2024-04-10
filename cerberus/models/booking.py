@@ -209,9 +209,24 @@ class BookingStates(models.TextChoices):
         return reduce(or_, [Q(**{field: e.value}) for e in cls])
 
 
-class ActiveBookingManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().exclude(state=BookingStates.CANCELED.value)
+class BookingQuerySet(models.QuerySet):
+    def with_pets(self):
+        return self.prefetch_related("pets")
+
+    def with_service(self):
+        return self.prefetch_related("service")
+
+    def with_booking_slot(self):
+        return self.prefetch_related("_booking_slot")
+
+    def with_charges(self):
+        return self.prefetch_related("charges")
+
+    def with_customers(self):
+        return self.prefetch_related("customer")
+
+    def active(self):
+        return self.exclude(state=BookingStates.CANCELED.value)
 
 
 @reversion.register()
@@ -258,8 +273,7 @@ class Booking(models.Model):
 
     charges = GenericRelation(Charge)
 
-    objects = models.Manager()
-    active = ActiveBookingManager()
+    objects = BookingQuerySet.as_manager()
 
     class Meta:
         ordering = ("-created",)
