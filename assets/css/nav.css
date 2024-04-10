@@ -5,4 +5,17 @@ nav {
     padding: 0.3rem 0.5rem;
     margin-bottom: 0;
   }
+
+  svg {
+    height: 1em;
+  }
+
+  a {
+    white-space: nowrap;
+    &:has(svg) {
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
+    }
+  }
 }

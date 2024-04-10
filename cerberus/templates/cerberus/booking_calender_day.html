@@ -1,0 +1,114 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% load date_utils %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+    <h2>Bookings {{ date|date:"l jS F Y" }}</h2>
+{% endblock %}
+
+{% block content %}
+    <div id="day">
+        <div class="calender-controls">
+            <h1>Bookings {{ date|date:"l jS F Y" }}</h1>
+            <div hx-boost="true" hx-target="#day" hx-swap="outerHTML">
+                <a href="{% url 'booking_calender_day'%}">Today</a>
+                <a role="button"
+                   aria-label="Previous Day"
+                   title="{{ prev_day|date:'jS F Y' }}"
+                   href="{% url 'booking_calender_day' year=prev_day.year month=prev_day.month day=prev_day.day %}"
+                   hx-trigger="keyup[key=='ArrowLeft'] from:body"
+                >
+                    {% include 'icons/chevron-left.svg' %}
+                </a>
+                <a role="button"
+                   aria-label="Next Day"
+                   title="{{ next_day|date:'jS F Y' }}"
+                   href="{% url 'booking_calender_day' year=next_day.year month=next_day.month day=next_day.day %}"
+                   hx-trigger="keyup[key=='ArrowRight'] from:body"
+                >
+                    {% include 'icons/chevron-right.svg' %}
+                </a>
+            </div>
+        </div>
+        <ol
+            id="time-slots"
+            hx-get="{% url 'booking_calender_day' year=date.year month=date.month day=date.day %}"
+            hx-select="#time-slots"
+            hx-trigger="booking-moved"
+            hx-swap="outerHTML"
+            x-data
+            x-init="window.CSRFToken = '{{ csrf_token }}'"
+        >
+            {% for time, bookings in booking_times %}
+                <li>
+                    <div>{{ time|date:"H:i" }}</div>
+                    <div
+                        class="dropzone"
+                        :class="{ 'adding': adding }"
+                        x-on:drop.prevent="{# fmt:off #}
+                            adding = false;
+                            removing = false;
+                            const id = event.dataTransfer.getData('text/plain');
+                            moveBooking(document.getElementById(id), event.target.closest('.dropzone'), '.booking-group');
+                        {# fmt:on #}"
+                        x-on:dragover.prevent="adding = true"
+                        x-on:dragleave.prevent="adding = false"
+                        x-data="{ adding: false, removing: false }"
+                        data-datetime="{{ date|date:'Y-m-d' }}T{{ time|date:'H:i' }}:00{{ date|date:'O' }}"
+                    >
+                        {% if bookings %}
+                            {% with slot=bookings.0.booking_slot %}
+                                <div
+                                    class="booking-group"
+                                    :class="{ 'dragging': dragging }"
+                                    draggable="{% if slot.can_move %}true{% else %}false{% endif %}"
+                                    id="booking-group-{{ slot.id }}"
+                                    data-id="{{ slot.id }}"
+                                    data-move-url="{% url 'bookingslot-move' slot.id %}"
+                                    data-length="{{ slot.length_minutes }}"
+                                    x-data="{ dragging: false }"
+                                    x-on:dragend="dragging = false"
+                                    x-on:dragstart.self="{# fmt:off #}
+                                        dragging = true;
+                                        event.dataTransfer.effectAllowed = 'move';
+                                        event.dataTransfer.setData('text/plain', event.target.id);
+                                    {# fmt:on #}"
+                                >
+                                    {% for booking in bookings %}
+                                        <div
+                                            id="booking-{{ booking.id }}"
+                                            class="booking"
+                                            :class="{ 'dragging': dragging }"
+                                            draggable="{% if booking.can_move %}true{% else %}false{% endif %}"
+                                            x-data="{ dragging: false }"
+                                            x-on:dragend="dragging = false"
+                                            x-on:dragstart.self="{# fmt:off #}
+                                                dragging = true;
+                                                event.dataTransfer.effectAllowed = 'move';
+                                                event.dataTransfer.setData('text/plain', event.target.id);
+                                            {# fmt:on #}"
+                                            data-length="{{ booking.length_minutes }}"
+                                            data-id="{{ booking.id }}"
+                                            data-move-url="{% url 'booking-move' booking.id %}"
+                                            style="--display-colour: {{ booking.service.display_colour }}"
+                                        >
+                                            <div>
+                                                <span>{{ booking.pets.all|join:", " }}</span>
+                                                <a href="{% url 'booking_detail' booking.id %}" class="icon">
+                                                    {% include 'icons/info.svg' %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+    {% include 'cerberus/components/add_booking_fab.html' %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block page_title %}{{ customer.name }} Uninvoiced Charges{% endblock %}
+
+{% block content %}
+    {% include "cerberus/components/charge_form.html" with form=form %}
+{% endblock %}

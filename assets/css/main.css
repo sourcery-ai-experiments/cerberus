@@ -12,9 +12,14 @@
 @import "links.css";
 @import "nav.css";
 @import "card.css";
+@import "toast.css";
 @import "icons.css";
 @import "FAB.css";
 @import "dropdown.css";
+@import "calender.css";
+@import "day.css";
+@import "year.css";
+@import "booking.css";
 
 @import "list.css";
 @import "list-customer.css";
@@ -32,6 +37,7 @@ body {
   overflow-y: scroll;
 }
 
-[x-cloak] {
+[x-cloak],
+.hidden {
   display: none !important;
 }

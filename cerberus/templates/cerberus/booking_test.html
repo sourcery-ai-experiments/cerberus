@@ -1,0 +1,69 @@
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+
+{% block page_title %}Bookings{% endblock %}
+
+{% block subtitle %}
+  <h2>Bookings drag drop test</h2>
+{% endblock %}
+
+{% block content %}
+  <h1>Drag and Drop Test = {{ year }} - {{ month }}</h1>
+  <div class="grid dnd" x-data>
+    {% for j in '12345'|make_list %}
+      <ul
+        :class="{ 'adding': adding }"
+        x-on:drop.prevent="
+                           const id = event.dataTransfer.getData('text/plain');
+                           const target = event.target.closest('ul');
+                           const element = document.getElementById(id);
+                           target.appendChild(element);
+                           adding = false;
+                           removing = false;
+                          "
+        x-on:dragover.prevent="adding = true"
+        x-on:dragleave.prevent="adding = false"
+        x-data="{ adding: false, removing: false }"
+      >
+        {% for i in '12345'|make_list %}
+          <li
+            id="item-{{ j }}-{{ i }}"
+            :class="{ 'dragging': dragging }"
+            draggable="true"
+            x-data="{ dragging: false }"
+            x-on:dragend="dragging = false"
+            x-on:dragstart.self="
+                                 dragging = true;
+                                 event.dataTransfer.effectAllowed = 'move';
+                                 event.dataTransfer.setData('text/plain', event.target.id);
+                                "
+          >
+            Item {{ i }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </div>
+  <style>
+    .grid {
+      display: flex;
+      gap: 1em;
+      & > * {
+        flex: 1;
+      }
+    }
+    .dnd {
+      ul {
+        min-height: 100px;
+        background-color: pink;
+        li {
+          background-color: yellow;
+          color: black;
+        }
+      }
+
+      .adding {
+        background-color: lightgreen;
+      }
+    }
+  </style>
+{% endblock %}

@@ -5,3 +5,12 @@ button:has(svg) {
     display: block;
   }
 }
+
+.icon {
+  &:is(button, a) {
+    display: inline-block;
+  }
+  svg {
+    display: inline-block;
+  }
+}

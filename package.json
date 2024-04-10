@@ -13,6 +13,7 @@
   },
   "homepage": "https://github.com/bengosney/cerberus#readme",
   "devDependencies": {
+    "esbuild": "^0.20.2",
     "lightningcss-cli": "^1.21.2"
   }
 }

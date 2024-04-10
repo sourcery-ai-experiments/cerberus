@@ -2,7 +2,7 @@
 <a
     href="{{ base_url }}?{% querystring sort=field_name sort_order=alt_sort_order %}"
     class="sort-item" :class="sort == '{{field_name}}' ? 'sorting' : ''"
-    x-on:click="sort_order = sort_order == 'desc' || sort != '{{field_name}}' ? 'asc' : 'desc';sort = '{{field_name}}';$nextTick(() => {htmx.trigger('.filter-form', 'change');})"
+    @click.prevent="sort_order = sort_order == 'desc' || sort != '{{field_name}}' ? 'asc' : 'desc';sort = '{{field_name}}';$nextTick(() => {htmx.trigger('.filter-form', 'change');})"
 >
     <span>{{ field_label|default:field_name|unslug|title }}</span>
     <template class="sort-icon" x-if="sort == '{{field_name}}' && sort_order == 'asc'" >
