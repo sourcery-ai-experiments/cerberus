@@ -7,7 +7,7 @@ from django.db import transaction
 
 # Third Party
 from django_fsm_log.models import StateLog
-from djmoney.contrib.django_rest_framework import MoneyField
+from djmoney.contrib.django_rest_framework.fields import MoneyField
 from rest_framework import serializers
 from taggit.serializers import TaggitSerializer, TagListSerializerField
 
@@ -138,6 +138,7 @@ class ServiceSerializer(DynamicFieldsModelSerializer):
 class BookingSerializer(DynamicFieldsModelSerializer):
     id = serializers.ReadOnlyField()
     service = ServiceSerializer()
+    booking_slot = BookingSlotSerializer()
 
     class Meta:
         model = Booking
@@ -150,7 +151,8 @@ class BookingSerializer(DynamicFieldsModelSerializer):
             "created",
             "last_updated",
             "state",
-            "pet",
+            "customer",
+            "pets",
             "service",
             "booking_slot",
             "can_move",
@@ -161,12 +163,12 @@ class BookingSerializer(DynamicFieldsModelSerializer):
         ]
 
 
-class BookingMoveSerializer(serializers.Serializer):
+class ToDateTimeSerializer(serializers.Serializer):
     to = serializers.DateTimeField()
 
 
-class BookingSlotMoveSerializer(serializers.Serializer):
-    start = serializers.DateTimeField()
+class ToDateSerializer(serializers.Serializer):
+    to = serializers.DateField()
 
 
 class AddressSerializer(DynamicFieldsModelSerializer):

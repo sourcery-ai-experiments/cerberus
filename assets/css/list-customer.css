@@ -1,30 +1,68 @@
 #customer-list {
   .customer {
     display: inline-flex;
-    &.unpaid {
-      &:after {
-        font-size: 0.3rem;
-        margin-left: 0.5em;
-        content: " ";
-        display: inline-block;
-        background: orange;
-        width: 1em;
-        height: 1em;
-        border-radius: 50%;
-      }
-    }
 
-    &.overdue {
-      &:after {
-        font-size: 0.3rem;
-        margin-left: 0.5em;
-        content: " ";
-        display: inline-block;
-        background: var(--overdue);
-        width: 1em;
-        height: 1em;
-        border-radius: 50%;
-      }
+    &:after {
+      font-size: 0.25rem;
+      margin-left: 0.5em;
+      display: inline-block;
+      width: auto;
     }
+  }
+
+  /* prettier-ignore */
+  .customer {
+/*[[[cog
+import cog
+from itertools import combinations
+
+items = [
+  ('uninvoiced', '%231976d2'),
+  ('unpaid', '%23f57c00'),
+  ('overdue', '%23b71c1c'),
+]
+
+for size in range(1, len(items) + 1):
+    for circles in combinations(items, size):
+        classes = "".join([f".{circle[0]}" for circle in circles])
+        width = 100 + (125 * (len(circles) - 1))
+        svg = ""
+        for i, circle in enumerate(circles):
+            svg += f'<circle fill="{circle[1]}" cx="{50 + (125 * i)}" cy="50" r="50"/>'
+
+        cog.outl(f"""
+&{classes}:after {{
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="{width/100}em" height="1em" viewBox="0 0 {width} 100" xmlns="http://www.w3.org/2000/svg">{svg}</svg>');
+}}""")
+]]]*/
+
+&.uninvoiced:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="1.0em" height="1em" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%231976d2" cx="50" cy="50" r="50"/></svg>');
+}
+
+&.unpaid:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="1.0em" height="1em" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%23f57c00" cx="50" cy="50" r="50"/></svg>');
+}
+
+&.overdue:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="1.0em" height="1em" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%23b71c1c" cx="50" cy="50" r="50"/></svg>');
+}
+
+&.uninvoiced.unpaid:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="2.25em" height="1em" viewBox="0 0 225 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%231976d2" cx="50" cy="50" r="50"/><circle fill="%23f57c00" cx="175" cy="50" r="50"/></svg>');
+}
+
+&.uninvoiced.overdue:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="2.25em" height="1em" viewBox="0 0 225 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%231976d2" cx="50" cy="50" r="50"/><circle fill="%23b71c1c" cx="175" cy="50" r="50"/></svg>');
+}
+
+&.unpaid.overdue:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="2.25em" height="1em" viewBox="0 0 225 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%23f57c00" cx="50" cy="50" r="50"/><circle fill="%23b71c1c" cx="175" cy="50" r="50"/></svg>');
+}
+
+&.uninvoiced.unpaid.overdue:after {
+  content: url('data:image/svg+xml; utf8,<svg style="font-size: 0.25rem" width="3.5em" height="1em" viewBox="0 0 350 100" xmlns="http://www.w3.org/2000/svg"><circle fill="%231976d2" cx="50" cy="50" r="50"/><circle fill="%23f57c00" cx="175" cy="50" r="50"/><circle fill="%23b71c1c" cx="300" cy="50" r="50"/></svg>');
+}
+/*[[[end]]] (checksum: 39e181318672bd2322992e8c6c70b710)*/
   }
 }

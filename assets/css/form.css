@@ -43,7 +43,7 @@ form {
 form {
   .button-row {
     display: flex;
-    gap: var(--form-element-spacing-horizontal);
+    gap: var(--pico-form-element-spacing-horizontal);
 
     & > * {
       flex-grow: 1;
@@ -56,6 +56,8 @@ form {
     input[type="button"],
     input[type="reset"],
     input[type="submit"] {
+      margin-bottom: 0;
+
       &
         + :is(
           [role="button"],
@@ -67,5 +69,56 @@ form {
         margin-left: 0em;
       }
     }
+  }
+}
+
+form {
+  *:has(:disabled) {
+    label {
+      color: var(--pico-muted-color);
+    }
+  }
+
+  .checkbox {
+    &:has(input.hidden),
+    &:has([x-cloak]) {
+      display: none;
+    }
+  }
+
+  label + div:not(:has(.visible)):has(.hidden) {
+    &::before {
+      content: "--";
+      color: var(--pico-muted-color);
+      padding-bottom: 0.5em;
+      display: block;
+    }
+  }
+
+  .checkbox_table {
+    table {
+      td,
+      th {
+        &:first-child {
+          width: 0;
+          padding-right: 0;
+        }
+      }
+
+      label {
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
+
+  & > div:has(.display-none) {
+    display: none;
+  }
+}
+
+form {
+  textarea {
+    height: clamp(5em, 25vh, 15em);
   }
 }

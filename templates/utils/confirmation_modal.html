@@ -1,5 +1,5 @@
 {% if request.htmx %}
-    <dialog open id="confirmation-modal">
+    <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
         <article>
 {% endif %}
 <h3>Are you sure you want to {{ question }} '{{ object.name }}'?</h3>
@@ -7,7 +7,16 @@
     <form action="{% url action object.id %}" method="post">
         {% csrf_token %}
         <div class="button-row">
-            <a class="negative" role="button" href="{% url cancel object.id %}" x-on:click.prevent="document.getElementById('confirmation-modal').remove()">No</a>
+            <a
+                class="negative"
+                role="button"
+                href="{% url cancel object.id %}"
+                {% if request.htmx %}
+                    @click.prevent="$el.closest('dialog').remove()"
+                {% endif %}
+            >
+                No
+            </a>
             <button class="positive" type="submit">Yes</button>
         </div>
     </form>

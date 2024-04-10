@@ -1,6 +1,5 @@
 # Standard Library
-
-# Standard Library
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 # Django
@@ -11,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
+from humanize import naturaldelta
 from taggit.managers import TaggableManager
 
 # Locals
@@ -19,6 +19,11 @@ from ..utils import choice_length
 if TYPE_CHECKING:
     # Locals
     from . import Booking
+
+
+class PetManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("customer")
 
 
 @reversion.register()
@@ -74,6 +79,8 @@ class Pet(models.Model):
         default=None,
     )
 
+    objects = PetManager()
+
     class Meta:
         ordering = ("name",)
 
@@ -82,3 +89,13 @@ class Pet(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("pet_detail", kwargs={"pk": self.pk})
+
+    @property
+    def name_with_owner(self) -> str:
+        return f"{self.name} ({self.customer})"
+
+    @property
+    def age(self) -> str:
+        if self.dob:
+            return naturaldelta(datetime.now().date() - self.dob)
+        return "Unknown"

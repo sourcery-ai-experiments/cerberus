@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.db.models import QuerySet
-from django.utils.timezone import make_aware
 
 # Third Party
 from faker import Faker
 
 # Locals
 from ...models import Charge, Contact, Customer, Invoice, Pet, Service, Vet
+from ...utils import make_aware
 
 try:
     # Third Party

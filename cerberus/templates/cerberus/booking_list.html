@@ -8,5 +8,7 @@
 
 
 {% block content %}
+  {% if not request.htmx %}<a href="{% url 'booking_calender_month'%}">Calender View</a>{% endif %}
   {% include 'cerberus/components/booking_list.html' with bookings=object_list %}
+  {% include 'cerberus/components/add_booking_fab.html' %}
 {% endblock %}

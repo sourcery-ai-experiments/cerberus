@@ -1,33 +1,10 @@
 # Django
 from django import forms
 
-# Third Party
-from djmoney.forms import MoneyWidget
-
 # Locals
 from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
-
-
-class SingleMoneyWidget(MoneyWidget):
-    def __init__(self, attrs=None, *args, **kwargs):
-        if attrs is None:
-            attrs = {}
-        super().__init__(
-            amount_widget=forms.NumberInput(
-                attrs={
-                    **{
-                        "step": "any",
-                    },
-                    **attrs,
-                }
-            ),  # type: ignore
-            currency_widget=forms.HiddenInput(),
-            *args,
-            **kwargs,
-        )
-
-    def id_for_label(self, id_):
-        return f"{id_}_0"
+from .utils import minimize_whitespace
+from .widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget
 
 
 class CustomerForm(forms.ModelForm):
@@ -77,18 +54,128 @@ class VetForm(forms.ModelForm):
 
 
 class BookingForm(forms.ModelForm):
+    attributes = {
+        "x-data": minimize_whitespace(
+            """
+            {
+                cost: '',
+                cost_per_additional: '',
+                cost_changed: false,
+                cost_per_additional_changed: false,
+                customer: '',
+                pets: [],
+                start: '',
+                end: '',
+                length: 0,
+                end_changed: false,
+            }
+"""
+        ),
+        "x-effect": minimize_whitespace(
+            """
+            if (length > 0 && start != '') {
+                $nextTick(() => {
+                    if (!end_changed) {
+                        end = dateToString(addMinutes(start, length));
+                        end_changed = false;
+                    }
+                });
+            }
+"""
+        ),
+    }
+
     class Meta:
         model = Booking
         fields = [
-            "name",
+            "customer",
+            "pets",
+            "service",
             "cost",
+            "cost_per_additional",
             "start",
             "end",
-            "state",
-            "pet",
-            "service",
         ]
-        widgets = {"state": forms.TextInput(attrs={"readonly": True})}
+        widgets = {
+            "customer": forms.Select(
+                attrs={
+                    "x-model.number.fill": "customer",
+                    "@change": minimize_whitespace(
+                        """
+                        pets.length = 0;
+                        $nextTick(() => {
+                            $el.closest('form')
+                                .querySelectorAll(`input[data-customer__id="${customer}"]`)
+                                .forEach((el) => {
+                                    pets.push(el.value);
+                                });
+                        });
+"""
+                    ),
+                }
+            ),
+            "pets": CheckboxDataOptionAttr(
+                "customer.id",
+                attrs={
+                    ":disabled": "!customer",
+                    "x-model.number.fill": "pets",
+                    "x-cloak": True,
+                    ":class": "customer != $el.dataset.customer__id ? 'hidden' : 'visible'",
+                },
+            ),
+            "service": SelectDataAttrField(
+                ["cost.amount", "length_minutes", "cost_per_additional.amount"],
+                attrs={
+                    "@change": minimize_whitespace(
+                        """
+                        if (!cost_changed) {
+                            $nextTick(() => {
+                                const { dataset } = $event.target.options[$event.target.selectedIndex];
+                                cost = dataset.cost__amount;
+                                cost_per_additional = dataset.cost_per_additional__amount;
+                            });
+                            cost_changed = false;
+                            cost_per_additional_changed = false;
+                        }
+                        $nextTick(() => length = $event.target.options[$event.target.selectedIndex].dataset.length_minutes);
+"""
+                    ),
+                },
+            ),
+            "cost": SingleMoneyWidget(
+                attrs={
+                    "x-model.number.fill": "cost",
+                    "@change": "cost_changed = $event.target.value !== ''",
+                }
+            ),
+            "cost_per_additional": SingleMoneyWidget(
+                attrs={
+                    "x-model.number.fill": "cost_per_additional",
+                    "@change": "cost_per_additional_changed = $event.target.value !== ''",
+                }
+            ),
+            "start": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "step": 900,
+                    "x-model.fill": "start",
+                    "@change": "start = roundTime(start)",
+                }
+            ),
+            "end": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "step": 900,
+                    "x-model.fill": "end",
+                    "@change": minimize_whitespace(
+                        """
+                        end_changed = $event.target.value !== '';
+                        end = roundTime(end);
+"""
+                    ),
+                }
+            ),
+        }
 
 
 class InvoiceForm(forms.ModelForm):
@@ -137,3 +224,36 @@ class ServiceForm(forms.ModelForm):
             "cost_per_additional": SingleMoneyWidget(),
             "display_colour": forms.TextInput(attrs={"type": "color"}),
         }
+
+
+class UninvoicedChargesForm(forms.Form):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput, required=True)
+    charges = forms.ModelMultipleChoiceField(
+        queryset=Charge.objects.none(),
+        widget=CheckboxTable(["name", "amount", "booking.date"]),
+    )
+
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop("customer", None)
+        super().__init__(*args, **kwargs)
+
+        if self.is_bound and (customer_id := self.data.get("customer", None)):
+            self.set_customer(customer_id)
+        elif isinstance(customer, Customer):
+            self.set_customer(customer.pk)
+        elif isinstance(customer, int):
+            self.set_customer(customer)
+        else:
+            raise ValueError("No customer provided")
+
+    def set_customer(self, customer_id: int | None) -> None:
+        self.fields["customer"].initial = customer_id
+        self.fields["charges"].queryset = Charge.objects.filter(customer_id=customer_id, invoice__isnull=True)
+
+
+class InvoiceSendForm(forms.Form):
+    attributes = {"x-data": minimize_whitespace("""{ send: true }""")}
+
+    send_email = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"x-model.boolean.fill": "send"}))
+    to = forms.EmailField(required=True, widget=forms.EmailInput(attrs={":class": "{ 'display-none': ! send }"}))
+    send_notes = forms.CharField(required=False, widget=forms.Textarea(attrs={":class": "{ 'display-none': ! send }"}))

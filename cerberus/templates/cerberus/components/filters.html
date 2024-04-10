@@ -1,24 +1,25 @@
 {% load crispy_forms_tags %}
 
-{% if filter %}
-  <section>
-    <form
-      method="get"
-      {% if url %}
-        hx-get="{{ url }}"
-        hx-trigger="keyup delay:.5s, change"
-        hx-debounce="200ms"
-        hx-swap="outerHTML"
-        hx-sync="this:replace"
-        {% if target %}
-          hx-target="{{ target }}"
-        {% endif %}
-        hx-push-url="true"
+
+<section>
+  <form
+    method="get"
+    {% if url %}
+      hx-get="{{ url }}"
+      hx-trigger="keyup delay:.5s, change"
+      hx-debounce="200ms"
+      hx-swap="outerHTML"
+      hx-sync="this:replace"
+      {% if target %}
+        hx-target="{{ target }}"
       {% endif %}
-      class="inline filter-form"
-    >
-      <input type="hidden" id="sort" name="sort" x-model="sort" value="{{ sort }}" />
-      <input type="hidden" id="sort_order" name="sort_order" x-model="sort_order" value="{{ sort_order }}" />
+      hx-push-url="true"
+    {% endif %}
+    class="inline filter-form"
+  >
+    <input type="hidden" id="sort" name="sort" x-model="sort" value="{{ sort }}" />
+    <input type="hidden" id="sort_order" name="sort_order" x-model="sort_order" value="{{ sort_order }}" />
+    {% if filter %}
       <div>
         {{ filter.form|crispy }}
         <div>
@@ -30,6 +31,6 @@
           </div>
         </noscript>
       </div>
-    </form>
-  </section>
-{% endif %}
+    {% endif %}
+  </form>
+</section>
