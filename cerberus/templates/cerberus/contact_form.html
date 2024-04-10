@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{% load field_tags %}
+
+{% block page_title %}
+    {% include 'utils/page_title.html' with object_name=view.model|verbose_name|capfirst %}
+{% endblock %}
+
+{% block content %}
+    {% if object.pk is None %}
+        <h2>Create new {{ view.model|verbose_name|capfirst }}</h2>
+    {% else %}
+        <h2>Edit {{ view.model|verbose_name|capfirst }}: {{ object.name }}</h2>
+    {% endif %}
+
+    <form method="post" {{ form.attributes|attributes|safe }}>
+        {{ form|crispy }}
+        {% csrf_token %}
+        <input type="submit" class="button" value="Save">
+    </form>
+{% endblock %}

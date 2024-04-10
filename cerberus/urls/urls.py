@@ -46,6 +46,11 @@ urlpatterns = (
             views.InvoiceActionsView.as_view(),
             name="invoice_action",
         ),
+        path(
+            "customer/<int:pk>/contact/create",
+            views.ContactCreateView.as_view(),
+            name="contact_create",
+        ),
     ]
     + views.CustomerCRUD.get_urls()
     + views.PetCRUD.get_urls()

@@ -2,7 +2,7 @@
 from django import forms
 
 # Locals
-from .models import Booking, Charge, Customer, Invoice, Pet, Service, Vet
+from .models import Booking, Charge, Contact, Customer, Invoice, Pet, Service, Vet
 from .utils import minimize_whitespace
 from .widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget
 
@@ -21,6 +21,25 @@ class CustomerForm(forms.ModelForm):
             "tags",
         ]
         widgets = {"tags": forms.TextInput()}
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = [
+            "name",
+            "details",
+            "customer",
+        ]
+        widgets = {
+            "customer": forms.HiddenInput(),
+            "details": forms.TextInput(
+                attrs={
+                    "x-data": "",
+                    "x-mask:dynamic": "$input.startsWith('0') ? '99999 999 999' : false",
+                }
+            ),
+        }
 
 
 class PetForm(forms.ModelForm):

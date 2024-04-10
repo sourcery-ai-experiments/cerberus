@@ -7,12 +7,12 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
 # Third Party
-from vanilla import DetailView, ListView
+from vanilla import CreateView, DetailView, ListView
 
 # Locals
 from ..filters import CustomerFilter
-from ..forms import CustomerForm, UninvoicedChargesForm
-from ..models import Customer
+from ..forms import ContactForm, CustomerForm, UninvoicedChargesForm
+from ..models import Contact, Customer
 from .crud_views import Actions, CRUDViews, Crumb, extra_view
 
 
@@ -63,3 +63,14 @@ class CustomerCRUD(CRUDViews):
                 ],
             },
         )
+
+
+class ContactCreateView(CreateView):
+    model = Contact
+    form_class = ContactForm
+
+    def get(self, request, *args, **kwargs):
+        customer = get_object_or_404(Customer, pk=kwargs["pk"])
+        form = self.get_form(initial={"customer": customer.pk})
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
