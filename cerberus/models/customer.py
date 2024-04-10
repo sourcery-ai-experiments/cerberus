@@ -29,19 +29,21 @@ class CustomerManager(models.Manager["Customer"]):
     def with_pets(self) -> Self:
         return self.prefetch_related("pets")
 
+    def with_totals(self) -> Self:
+        return self.annotate(
+            invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
+            + Sum(
+                (F("invoices__charges__line") * F("invoices__charges__quantity")),
+                filter=Q(invoices__state=Invoice.States.UNPAID.value),
+                default=0,
+            ),
+        )
+
     def with_counts(self) -> Self:
         active_pets_prefetch = Prefetch("pets", queryset=Pet.objects.filter(active=True), to_attr="active_pets")
 
         return (
             self.prefetch_related(active_pets_prefetch)
-            .annotate(
-                invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
-                + Sum(
-                    (F("invoices__charges__line") * F("invoices__charges__quantity")),
-                    filter=Q(invoices__state=Invoice.States.UNPAID.value),
-                    default=0,
-                ),
-            )
             .annotate(
                 unpaid_count=Count(
                     "invoices",
@@ -122,27 +124,38 @@ class Customer(models.Model):
 
     @property
     def invoiced_unpaid(self):
-        return self._invoiced_unpaid
+        return self._invoiced_unpaid or Money(
+            (
+                self.invoices.filter(state=Invoice.States.UNPAID.value).aggregate(
+                    invoiced_unpaid=Sum(F("adjustment") + F("charges__line") * F("charges__quantity"))
+                )["invoiced_unpaid"]
+                or 0
+            ),
+            settings.DEFAULT_CURRENCY,
+        )
 
     @invoiced_unpaid.setter
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
-    # todo: make these fall back properties
-    def _active_pets(self):
-        return self.pets.filter(active=True)
-
-    def _unpaid_count(self):
-        return self.invoices.filter(state=Invoice.States.UNPAID.value).count()
-
-    def _outstanding_invoices(self):
-        return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
-
-    def _uninvoiced_count(self):
-        return self.charges.filter(invoice=None).count()
-
-    def _overdue_count(self):
-        return self.invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today()).count()
+    def __getattr__(self, name):
+        match name:
+            case "invoiced_unpaid":
+                return self.invoices.filter(state=Invoice.States.UNPAID.value).aggregate(
+                    invoiced_unpaid=Sum(F("adjustment") + F("charges__line") * F("charges__quantity"))
+                )["invoiced_unpaid"] or Money(0, settings.DEFAULT_CURRENCY)
+            case "active_pets":
+                return self.pets.filter(active=True)
+            case "unpaid_count":
+                return self.invoices.filter(state=Invoice.States.UNPAID.value).count()
+            case "outstanding_invoices":
+                return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
+            case "uninvoiced_count":
+                return self.charges.filter(invoice=None).count()
+            case "overdue_count":
+                return self.invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today()).count()
+            case _:
+                return super().__getattr__(name)
 
     @property
     def issues(self):

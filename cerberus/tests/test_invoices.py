@@ -186,3 +186,28 @@ def test_totals_match():
         total_totals += total
 
     assert total_totals > settings.DEFAULT_CURRENCY.zero
+
+
+@pytest.mark.django_db
+def test_totals_match_annotation():
+    customers = []
+    for _ in range(10):
+        customers.append(baker.make(Customer, invoice_email="bob@example.com"))
+
+    for i in range(20):
+        invoice: Invoice = baker.make(Invoice, customer=customers[i % len(customers)])
+        for _ in range(3):
+            baker.make(Charge, invoice=invoice)
+
+        invoice.send(send_email=False)
+
+    total_totals = settings.DEFAULT_CURRENCY.zero
+    for customer in Customer.objects.with_totals():
+        total = settings.DEFAULT_CURRENCY.zero
+        for invoice in customer.invoices.all():
+            total += invoice.total
+
+        assert customer.invoiced_unpaid == total
+        total_totals += total
+
+    assert total_totals > settings.DEFAULT_CURRENCY.zero
