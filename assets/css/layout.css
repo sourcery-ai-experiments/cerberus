@@ -28,6 +28,11 @@ nav[aria-label="breadcrumb"] {
     gap: 2em;
   }
 
+  &.row {
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
   & [role="main"] {
     flex: 1;
   }
