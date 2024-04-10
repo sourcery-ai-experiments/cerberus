@@ -137,23 +137,6 @@ class Customer(models.Model):
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
-    def __getattr__(self, name):  # todo: remove this
-        match name:
-            case "invoiced_unpaid":
-                return self.invoices.filter(state=Invoice.States.UNPAID.value).aggregate(
-                    invoiced_unpaid=Sum(F("adjustment") + F("charges__line") * F("charges__quantity"))
-                )["invoiced_unpaid"] or Money(0, settings.DEFAULT_CURRENCY)
-            case "unpaid_count":
-                return self.invoices.filter(state=Invoice.States.UNPAID.value).count()
-            case "outstanding_invoices":
-                return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
-            case "uninvoiced_count":
-                return self.charges.filter(invoice=None).count()
-            case "overdue_count":
-                return self.invoices.filter(state=Invoice.States.UNPAID.value, due__lt=datetime.today()).count()
-            case _:
-                return super().__getattr__(name)
-
     @property
     def issues(self):
         issues = []
