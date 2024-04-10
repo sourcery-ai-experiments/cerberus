@@ -32,6 +32,11 @@ if TYPE_CHECKING:
     from . import Customer, Pet, Service
 
 
+class BookingSlotManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("booking")
+
+
 class BookingSlot(models.Model):
     id: int
     bookings: models.QuerySet["Booking"]
@@ -45,6 +50,8 @@ class BookingSlot(models.Model):
         output_field=models.DurationField(),
         db_persist=True,
     )
+
+    objects = BookingSlotManager()
 
     class Meta:
         unique_together = [("start", "end")]

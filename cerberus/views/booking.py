@@ -113,7 +113,9 @@ class BookingCalenderMonth(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_month.html"
 
     def grouped_bookings(self, start: dt.date, end: dt.date) -> dict[dt.date, list[Booking]]:
-        bookings = Booking.objects.active().filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = (
+            Booking.objects.with_service().with_pets().active().filter(start__gte=start, end__lte=end).order_by("start")
+        )
 
         bookings_by_date: dict[dt.date, list[Booking]] = defaultdict(list)
         for booking in bookings:
@@ -156,7 +158,14 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
     template_name = "cerberus/booking_calender_day.html"
 
     def grouped_bookings(self, start: dt.datetime, end: dt.datetime) -> dict[dt.time, list[Booking]]:
-        bookings = Booking.objects.active().filter(start__gte=start, end__lte=end).order_by("start")
+        bookings = (
+            Booking.objects.with_service()
+            .with_booking_slot()
+            .with_pets()
+            .active()
+            .filter(start__gte=start, end__lte=end)
+            .order_by("start")
+        )
 
         bookings_by_date: dict[dt.time, list[Booking]] = defaultdict(list)
         for booking in bookings:
