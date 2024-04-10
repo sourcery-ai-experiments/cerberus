@@ -28,7 +28,7 @@ class CustomerDetail(DetailView):
 class CustomerList(ListView):
     def get_queryset(self):
         if self.model is not None:
-            return self.model._default_manager.with_counts()
+            return self.model._default_manager.with_counts().with_pets()
         return super().get_queryset()
 
 

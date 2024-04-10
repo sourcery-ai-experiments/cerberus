@@ -202,7 +202,7 @@ def test_totals_match_annotation():
         invoice.send(send_email=False)
 
     total_totals = settings.DEFAULT_CURRENCY.zero
-    for customer in Customer.objects.with_totals():
+    for customer in Customer.objects.with_totals():  # type: ignore
         total = settings.DEFAULT_CURRENCY.zero
         for invoice in customer.invoices.all():
             total += invoice.total

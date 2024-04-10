@@ -25,9 +25,11 @@ from .invoice import Invoice
 from .pet import Pet
 
 
-class CustomerManager(models.Manager["Customer"]):
+class CustomerQuerySet(models.QuerySet["Customer"]):
     def with_pets(self) -> Self:
-        return self.prefetch_related("pets")
+        active_pets_prefetch = Prefetch("pets", queryset=Pet.objects.filter(active=True), to_attr="active_pets")
+
+        return self.prefetch_related("pets", active_pets_prefetch)
 
     def with_totals(self) -> Self:
         return self.annotate(
@@ -40,11 +42,8 @@ class CustomerManager(models.Manager["Customer"]):
         )
 
     def with_counts(self) -> Self:
-        active_pets_prefetch = Prefetch("pets", queryset=Pet.objects.filter(active=True), to_attr="active_pets")
-
         return (
-            self.prefetch_related(active_pets_prefetch)
-            .annotate(
+            self.annotate(
                 unpaid_count=Count(
                     "invoices",
                     distinct=True,
@@ -109,7 +108,7 @@ class Customer(models.Model):
 
     tags = TaggableManager(blank=True)
 
-    objects = money_manager(CustomerManager())
+    objects = money_manager(CustomerQuerySet.as_manager())
 
     _invoiced_unpaid = None
 
@@ -138,14 +137,12 @@ class Customer(models.Model):
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name):  # todo: remove this
         match name:
             case "invoiced_unpaid":
                 return self.invoices.filter(state=Invoice.States.UNPAID.value).aggregate(
                     invoiced_unpaid=Sum(F("adjustment") + F("charges__line") * F("charges__quantity"))
                 )["invoiced_unpaid"] or Money(0, settings.DEFAULT_CURRENCY)
-            case "active_pets":
-                return self.pets.filter(active=True)
             case "unpaid_count":
                 return self.invoices.filter(state=Invoice.States.UNPAID.value).count()
             case "outstanding_invoices":
