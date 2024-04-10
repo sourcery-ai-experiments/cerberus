@@ -45,6 +45,7 @@ class InvoiceManager(models.Manager["Invoice"]):
                 total=F("adjustment") + F("subtotal"),
                 overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )
+            .prefetch_related("charges", "customer")
         )
 
 
