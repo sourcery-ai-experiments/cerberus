@@ -1,0 +1,19 @@
+<h3>Invoices</h3>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Amount</th>
+        <th>Due</th>
+    </tr>
+    {% for invoice in customer.invoices.all %}
+        <tr>
+            <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
+            <td>{{ invoice.total }}</td>
+            <td>{{ invoice.due }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="3">No invoices</td>
+        </tr>
+    {% endfor %}
+</table>

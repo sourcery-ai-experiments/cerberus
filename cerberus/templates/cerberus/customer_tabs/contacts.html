@@ -1,0 +1,18 @@
+{% load string_utils %}
+
+<div class="inline row">
+    <h3>Contacts</h3>
+    <a
+        href="{% url 'contact_create' object.pk %}"
+        hx-get="{% url 'contact_create' object.pk %}"
+        hx-swap="afterend"
+        hx-target="main"
+    >Add a contact</a>
+</div>
+<div class="grid-3">
+    {% for contact in customer.contacts.all %}
+        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+    {% empty %}
+        <p>No contacts</p>
+    {% endfor %}
+</div>

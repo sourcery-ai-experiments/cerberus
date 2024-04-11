@@ -1,6 +1,6 @@
 {% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
-{% load field_tags components string_utils crispy_forms_tags field_tags %}
+{% load field_tags components crispy_forms_tags string_utils %}
 
 {% block page_title %}{{ customer.name }}{% endblock %}
 
@@ -45,64 +45,19 @@
         </nav>
         <div class="tabs">
             <section id="bookings" class="tab-content" x-show="active == 'bookings'">
-                <h3>Bookings</h3>
-                {% include "cerberus/components/booking_list.html" with bookings=customer.upcoming_bookings hide_customer=True %}
+                {% include "cerberus/customer_tabs/bookings.html" %}
             </section>
             <section id="charges" class="tab-content" x-show="active == 'charges'">
-                <h3>Charges</h3>
-                <div>
-                    {% include "cerberus/components/charge_form.html" with form=uninvoiced_charge_form %}
-                </div>
+                {% include "cerberus/customer_tabs/charges.html" %}
             </section>
             <section id="invoices" class="tab-content" x-show="active == 'invoices'">
-                <h3>Invoices</h3>
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Due</th>
-                    </tr>
-                    {% for invoice in customer.invoices.all %}
-                        <tr>
-                            <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
-                            <td>{{ invoice.total }}</td>
-                            <td>{{ invoice.due }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3">No invoices</td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                {% include "cerberus/customer_tabs/invoices.html" %}
             </section>
             <section id="pets" class="tab-content" x-show="active == 'pets'">
-                <h3>Pets</h3>
-                <div class="grid-3">
-                    {% for pet in customer.active_pets %}
-                        {% url 'pet_detail' pet.id as url %}
-                        {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
-                    {% empty %}
-                        <p>No pets</p>
-                    {% endfor %}
-                </div>
+                {% include "cerberus/customer_tabs/pets.html" %}
             </section>
             <section id="contacts" class="tab-content" x-show="active == 'contacts'">
-                <div class="inline row">
-                    <h3>Contacts</h3>
-                    <a
-                        href="{% url 'contact_create' object.pk %}"
-                        hx-get="{% url 'contact_create' object.pk %}"
-                        hx-swap="afterend"
-                        hx-target="main"
-                    >Add a contact</a>
-                </div>
-                <div class="grid-3">
-                    {% for contact in customer.contacts.all %}
-                        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
-                    {% empty %}
-                        <p>No contacts</p>
-                    {% endfor %}
-                </div>
+                {% include "cerberus/customer_tabs/contacts.html" %}
             </section>
         </div>
     {% endcomponent %}
