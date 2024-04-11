@@ -4,7 +4,7 @@ from django import forms
 # Locals
 from .models import Booking, Charge, Contact, Customer, Invoice, Pet, Service, Vet
 from .utils import minimize_whitespace
-from .widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget
+from .widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget, TagsWidget
 
 
 class CustomerForm(forms.ModelForm):
@@ -20,7 +20,7 @@ class CustomerForm(forms.ModelForm):
             "vet",
             "tags",
         ]
-        widgets = {"tags": forms.TextInput()}
+        widgets = {"tags": TagsWidget()}
 
 
 class ContactForm(forms.ModelForm):

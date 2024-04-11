@@ -13,6 +13,16 @@ from djmoney.forms import MoneyWidget
 from .utils import rgetattr
 
 
+class TagsWidget(forms.TextInput):
+    template_name = "forms/widgets/tags.html"
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context.update({"tags": ",".join(f"'{tag}'" for tag in value)})
+
+        return context
+
+
 class SingleMoneyWidget(MoneyWidget):
     def __init__(self, attrs=None, *args, **kwargs):
         attrs = attrs or {}
