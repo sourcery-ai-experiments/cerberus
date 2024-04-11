@@ -1,4 +1,8 @@
 <h3>Charges</h3>
 <div>
-    {% include "cerberus/components/charge_form.html" with form=uninvoiced_charge_form %}
+    {% if uninvoiced_charges|length %}
+        {% include "cerberus/components/charge_form.html" with form=uninvoiced_charge_form %}
+    {% else %}
+        <p>No uninvoiced charges</p>
+    {% endif %}
 </div>
