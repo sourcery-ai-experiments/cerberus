@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
 
 {% load field_tags components string_utils crispy_forms_tags field_tags %}
 
@@ -89,7 +89,12 @@
             <section id="contacts" class="tab-content" x-show="active == 'contacts'">
                 <div class="inline row">
                     <h3>Contacts</h3>
-                    <a href="{% url 'contact_create' object.pk %}">Add a contact</a>
+                    <a
+                        href="{% url 'contact_create' object.pk %}"
+                        hx-get="{% url 'contact_create' object.pk %}"
+                        hx-swap="afterend"
+                        hx-target="main"
+                    >Add a contact</a>
                 </div>
                 <div class="grid-3">
                     {% for contact in customer.contacts.all %}

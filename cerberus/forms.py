@@ -29,10 +29,8 @@ class ContactForm(forms.ModelForm):
         fields = [
             "name",
             "details",
-            "customer",
         ]
         widgets = {
-            "customer": forms.HiddenInput(),
             "details": forms.TextInput(
                 attrs={
                     "x-data": "",

@@ -2,7 +2,7 @@
 from typing import Self
 
 # Django
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 
@@ -70,7 +70,19 @@ class ContactCreateView(CreateView):
     form_class = ContactForm
 
     def get(self, request, *args, **kwargs):
+        form = self.get_form()
         customer = get_object_or_404(Customer, pk=kwargs["pk"])
-        form = self.get_form(initial={"customer": customer.pk})
-        context = self.get_context_data(form=form)
+        context = self.get_context_data(form=form, customer=customer)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        customer = get_object_or_404(Customer, pk=kwargs["pk"])
+        form = self.get_form(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            self.object = form.save(commit=False)
+            self.object.customer = customer
+            self.object.save()
+            return HttpResponseRedirect(self.get_success_url())
+
+        context = self.get_context_data(form=form, customer=customer)
         return self.render_to_response(context)
