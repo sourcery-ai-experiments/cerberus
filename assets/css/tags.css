@@ -23,8 +23,10 @@ body {
     border-radius: 0.5em;
     background-color: var(--pico-secondary-background);
     transition: background-color 0.2s;
-    &:hover {
-      background-color: var(--pico-secondary-hover-background);
+    &:has(.tag-close) {
+      &:hover {
+        background-color: var(--pico-secondary-hover-background);
+      }
     }
     span {
       line-height: 1em;
