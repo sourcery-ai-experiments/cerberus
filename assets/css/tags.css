@@ -1,9 +1,18 @@
+body {
+  --tag-container-margin: var(--pico-spacing);
+}
+.tag-input {
+  --tag-container-margin: calc(var(--pico-spacing) * 0.5);
+}
+
 .tag-container {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
-  margin-bottom: calc(var(--pico-spacing) * 0.5);
   font-size: 0.75em;
+  &:has(.tag) {
+    margin-bottom: var(--tag-container-margin);
+  }
 
   .tag {
     display: flex;

@@ -16,6 +16,11 @@
             <div class="name">{{ customer.name }}</div>
             <div class="email">{{ customer.invoice_email|mailto }}</div>
             {{ customer.invoice_address|linebreaks }}
+            <div class="tag-container">
+                {% for tag in customer.tags.names %}
+                    <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
         </div>
         {% if customer.invoiced_unpaid %}
             <div class="customer finance">
