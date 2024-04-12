@@ -11,7 +11,7 @@
         <template x-for="tag in tags">
             <span class="tag">
                 <span x-text="tag"></span>
-                <span @click="tags = tags.filter(t => t != tag)">&#x2715;</span>
+                <span class="tag-close" @click="tags = tags.filter(t => t != tag)">&#x2715;</span>
             </span>
         </template>
     </div>
