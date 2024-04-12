@@ -372,7 +372,12 @@ class VetViewSet(viewsets.ModelViewSet):
 
 class TagListView(APIView):
     def get_queryset(self):
-        return Tag.objects.all()
+        queryset = Tag.objects.all()
+
+        if startswith := self.request.query_params.get("startswith"):
+            queryset = queryset.filter(name__startswith=startswith)
+
+        return queryset
 
     def get(self, request, format=None):
         tags = self.get_queryset()
