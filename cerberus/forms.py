@@ -21,6 +21,7 @@ class CustomerForm(forms.ModelForm):
             "tags",
         ]
         widgets = {"tags": TagsWidget()}
+        help_texts = {"tags": None}
 
 
 class ContactForm(forms.ModelForm):
@@ -58,6 +59,8 @@ class PetForm(forms.ModelForm):
             "customer",
             "vet",
         ]
+        widgets = {"tags": TagsWidget()}
+        help_texts = {"tags": None}
 
 
 class VetForm(forms.ModelForm):

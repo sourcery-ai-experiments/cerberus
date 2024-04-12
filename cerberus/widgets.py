@@ -19,7 +19,7 @@ class TagsWidget(forms.TextInput):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context.update({"tags": ",".join(f"'{escape(tag)}'" for tag in value)})
+        context.update({"tags": ",".join(f"'{escape(tag)}'" for tag in value or [])})
 
         return context
 
