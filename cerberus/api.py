@@ -377,6 +377,12 @@ class TagListView(APIView):
         if startswith := self.request.query_params.get("startswith"):
             queryset = queryset.filter(name__startswith=startswith)
 
+        if tags := self.request.query_params.get("tags"):
+            queryset = queryset.exclude(name__in=tags.split(","))
+
+        if limit := self.request.query_params.get("limit"):
+            queryset = queryset[: int(limit)]
+
         return queryset
 
     def get(self, request, format=None):

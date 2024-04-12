@@ -10,7 +10,7 @@
         this.current = '';
     },
     async lookupTag(value) {
-        this.lookedUp = value ? await fetchTags('{% url 'tag-list' %}', value) : [];
+        this.lookedUp = value ? await fetchTags('{% url 'tag-list' %}', value, this.tags) : [];
     },
     tab(event) {
         if (!this.lookedUp.length) return;

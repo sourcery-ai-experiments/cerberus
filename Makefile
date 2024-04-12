@@ -9,7 +9,7 @@ REQS=$(wildcard requirements.*.txt)
 CSS_FILES:=$(shell find assets -name *.css)
 COG_FILE:=.cogfiles
 
-TS_FILES:=$(wildcard assets/typescript/*.ts)
+TS_FILES:=$(wildcard assets/typescript/**/*.ts)
 JS_FILES:=$(patsubst %.ts,%.js,$(TS_FILES))
 
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
