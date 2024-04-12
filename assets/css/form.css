@@ -79,6 +79,15 @@ form {
     }
   }
 
+  label {
+    display: inline-block;
+  }
+
+  .help-block {
+    margin-top: calc(-1 * calc(var(--pico-spacing) * 0.5));
+    margin-bottom: var(--pico-spacing);
+  }
+
   .checkbox {
     &:has(input.hidden),
     &:has([x-cloak]) {
