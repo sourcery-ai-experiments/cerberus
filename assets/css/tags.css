@@ -37,3 +37,13 @@ body {
     }
   }
 }
+
+.tag-lookup {
+  position: relative;
+
+  ul {
+    margin-top: calc(-1 * var(--pico-spacing));
+    width: max-content;
+    max-width: 100%;
+  }
+}

@@ -1,9 +1,26 @@
-<div class="tag-input" x-data="{{# fmt:off #}
+<div class="tag-input" x-effect="lookupTag(current)" x-data="{{# fmt:off #}
+    current: '',
+    active: false,
+    canBlur: true,
     tags: [{{ tags }}],
-    addTag(event) {
-        if (!event.target.value) return;
-        this.tags.push(event.target.value);
-        event.target.value = '';
+    lookedUp: [],
+    addTag(tag) {
+        if (!tag) return;
+        this.tags.push(tag);
+        this.current = '';
+    },
+    async lookupTag(value) {
+        this.lookedUp = value ? await fetchTags('{% url 'tag-list' %}', value) : [];
+    },
+    tab(event) {
+        if (!this.lookedUp.length) return;
+        this.addTag(this.lookedUp[0]);
+        event.preventDefault()
+    },
+    blur() {
+        if (!this.canBlur) return;
+        this.active = false;
+        this.addTag(this.current);
     }
 {# fmt:on #}}">
     <div class="tag-container">
@@ -17,8 +34,28 @@
     <input
         type="{{ widget.type }}"
         {% include "django/forms/widgets/attrs.html" %}
-        @keydown.prevent.enter="addTag($event)"
-        @blur="addTag($event)"
+        @keydown.prevent.enter="addTag(current)"
+        @keydown.tab="tab($event)"
+        @focus="active = true"
+        @blur="blur()"
+        x-model="current"
+        x-ref="input"
+        autocomplete="off"
     >
+    <div class="tag-lookup" x-show="lookedUp.length && active" x-transition>
+        <ul role="listbox">
+            <template x-for="tag in lookedUp">
+                <li>
+                    <a
+                        x-text="tag"
+                        @mousedown="canBlur = false"
+                        @click.prevent="addTag(tag);$focus.focus($refs.input)"
+                        @mouseup="canBlur = true"
+                        href="#">
+                    </a>
+                </li>
+            </template>
+        </ul>
+    </div>
     <input name="{{ widget.name }}" type="hidden" x-model="tags" readonly />
 </div>
