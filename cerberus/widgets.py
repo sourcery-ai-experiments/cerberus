@@ -5,6 +5,7 @@ from typing import Any
 # Django
 from django import forms
 from django.forms import widgets
+from django.utils.html import escape
 
 # Third Party
 from djmoney.forms import MoneyWidget
@@ -18,7 +19,7 @@ class TagsWidget(forms.TextInput):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context.update({"tags": ",".join(f"'{tag}'" for tag in value)})
+        context.update({"tags": ",".join(f"'{escape(tag)}'" for tag in value)})
 
         return context
 
