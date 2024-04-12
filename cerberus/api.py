@@ -405,4 +405,4 @@ router.register(r"vet", VetViewSet)
 router.register(r"usersettings", UserSettingsViewSet)
 
 
-urls = [path("tag/", TagListView.as_view())]
+urls = [path("tag/", TagListView.as_view(), name="tag-list")]
