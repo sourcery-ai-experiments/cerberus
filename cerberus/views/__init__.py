@@ -9,7 +9,8 @@ from .booking import (
 )
 from .customer import ContactCreateView, CustomerCRUD
 from .invoice import InvoiceActionsView, InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
-from .views import PetCRUD, ServiceCRUD, VetCRUD, dashboard
+from .pets import PetCRUD
+from .views import ServiceCRUD, VetCRUD, dashboard
 
 __all__ = [
     "dashboard",
