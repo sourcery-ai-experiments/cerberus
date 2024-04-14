@@ -8,7 +8,7 @@ from vanilla import CreateView
 # Locals
 from ..filters import PetFilter
 from ..forms import PetForm
-from ..models import Pet
+from ..models import Customer, Pet
 from .crud_views import Actions, CRUDViews
 
 
@@ -23,7 +23,7 @@ class PetCreateView(CreateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        customer = get_object_or_404(Pet, pk=kwargs["pk"])
+        customer = get_object_or_404(Customer, pk=kwargs["pk"])
         form = self.get_form(data=request.POST, files=request.FILES)
         if form.is_valid():
             self.object = form.save(commit=False)

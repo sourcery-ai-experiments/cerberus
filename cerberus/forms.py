@@ -47,17 +47,15 @@ class PetForm(forms.ModelForm):
         fields = [
             "name",
             "dob",
-            "active",
-            "social_media_concent",
-            "sex",
             "description",
+            "sex",
             "neutered",
-            "medical_conditions",
+            "social_media_concent",
+            "vet",
             "treatment_limit",
+            "medical_conditions",
             "allergies",
             "tags",
-            "customer",
-            "vet",
         ]
         widgets = {"tags": TagsWidget()}
         help_texts = {"tags": None}
