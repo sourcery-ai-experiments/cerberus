@@ -57,10 +57,16 @@ class ContactAdmin(admin.ModelAdmin):
     pass
 
 
+class PetInline(admin.StackedInline):
+    model = Pet
+    extra = 1
+
+
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("active", "first_name", "last_name", "created")
+    list_display = ("first_name", "last_name", "created", "active")
     actions = (make_inactive,)
+    inlines = [PetInline]
 
 
 @admin.register(Pet)
