@@ -1,7 +1,6 @@
 import { moveBooking } from './components/bookings';
 import { toast } from './components/toast';
 import { roundTime, addMinutes, dateToString } from './components/datetime';
-import { fetchTags } from './components/fetchTags';
 
 declare global {
     interface Window {
@@ -10,7 +9,6 @@ declare global {
         roundTime: typeof roundTime;
         addMinutes: typeof addMinutes;
         dateToString: typeof dateToString;
-        fetchTags: typeof fetchTags;
     }
 }
 
@@ -21,4 +19,3 @@ Window.toast = toast;
 Window.roundTime = roundTime;
 Window.addMinutes = addMinutes;
 Window.dateToString = dateToString;
-Window.fetchTags = fetchTags;

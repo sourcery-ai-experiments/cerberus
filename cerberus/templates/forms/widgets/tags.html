@@ -10,7 +10,10 @@
         this.current = '';
     },
     async lookupTag(value) {
-        this.lookedUp = value ? await fetchTags('{% url 'tag-list' %}', value, this.tags) : [];
+        if (!value) return this.lookedUp = [];
+        const pramas = new URLSearchParams({ startswith: value, limit: 5, tags: this.tags.join(','), });
+        const response = await fetch(`{% url 'tag-list' %}?${pramas.toString()}`);
+        this.lookedUp = await response.json();
     },
     tab(event) {
         if (!this.lookedUp.length) return;
@@ -21,7 +24,7 @@
         if (!this.canBlur) return;
         this.active = false;
         this.addTag(this.current);
-    }
+    },
 {# fmt:on #}}">
     <div class="tag-container">
         <template x-for="tag in tags">
