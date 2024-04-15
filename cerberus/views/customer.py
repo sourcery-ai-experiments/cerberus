@@ -17,6 +17,9 @@ from .crud_views import Actions, CRUDViews, Crumb, extra_view
 
 
 class CustomerDetail(DetailView):
+    def get_queryset(self):
+        return Customer.objects.with_pets()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["uninvoiced_charge_form"] = UninvoicedChargesForm(customer=self.object)
