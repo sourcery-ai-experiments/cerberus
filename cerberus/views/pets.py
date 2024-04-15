@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 # Third Party
-from vanilla import CreateView
+from vanilla import CreateView, UpdateView
 
 # Locals
 from ..filters import PetFilter
@@ -36,6 +36,17 @@ class PetCreateView(CreateView):
         return self.render_to_response(context)
 
 
+class PetUpdateView(UpdateView):
+    model = Pet
+    form_class = PetForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["customer"] = self.object.customer
+
+        return context
+
+
 class PetCRUD(CRUDViews):
     model = Pet
     form_class = PetForm
@@ -51,4 +62,6 @@ class PetCRUD(CRUDViews):
     def get_view_class(cls, action: Actions):
         if action == Actions.CREATE:
             return PetCreateView
+        if action == Actions.UPDATE:
+            return PetUpdateView
         return super().get_view_class(action)
