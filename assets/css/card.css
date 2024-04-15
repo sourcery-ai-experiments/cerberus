@@ -1,13 +1,5 @@
 article {
   & header {
-    &:has(hgroup) {
-      display: flex;
-
-      & hgroup {
-        flex: 1;
-      }
-    }
-
     :is(h1, h2, h3, h4, h5, h6):has(+ :is(small)) {
       margin-bottom: 0;
     }
