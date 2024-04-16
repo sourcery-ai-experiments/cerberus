@@ -369,7 +369,6 @@ django==5.0.4 \
     #   django-stubs
     #   django-stubs-ext
     #   django-taggit
-    #   django-typescript-routes
     #   djangorestframework
     #   djangorestframework-simplejwt
     #   drf-spectacular
@@ -443,7 +442,6 @@ django-stubs-ext==4.2.7 \
 django-taggit==5.0.1 \
     --hash=sha256:a0ca8a28b03c4b26c2630fd762cb76ec39b5e41abf727a7b66f897a625c5e647 \
     --hash=sha256:edcd7db1e0f35c304e082a2f631ddac2e16ef5296029524eb792af7430cab4cc
-django-typescript-routes @ git+https://github.com/bengosney/django-typescript-routes.git@e558c7e532e3c544c55ca50a90d7dab2d709c8fb
 django-vanilla-views==3.0.0 \
     --hash=sha256:ab49c4e410f00e04a89eff0403aa14f098c0ba251657deff7a2d5c3ebe23602f \
     --hash=sha256:b65f27b8d5de53f695a397438337be882a6c7b5d8d30333a4cf98c9239fe0b86

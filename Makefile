@@ -137,9 +137,3 @@ lcov.info: .direnv cerberus/tests/test_*.py
 	pytest --cov --cov-report=lcov:$@
 
 coverage: lcov.info
-
-assets/typescript/urls/%.ts: cerberus/urls/%.py
-	@echo "Generating $@"
-	python manage.py generate_typescript_routes --urlconf cerberus.urls.$* > $@
-
-typescript-urls: assets/typescript/urls/urls.ts assets/typescript/urls/api.ts ## Generate typescript urls

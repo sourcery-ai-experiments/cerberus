@@ -54,7 +54,6 @@ dev = [
   "django-debugtools",
   "django-extensions",
   "django-stubs",
-  "django-typescript-routes@ git+https://github.com/bengosney/django-typescript-routes.git",
   "djangorestframework-stubs",
   "faker",
   "freezegun",
