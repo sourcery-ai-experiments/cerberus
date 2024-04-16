@@ -243,6 +243,7 @@ django==5.0.4 \
     #   django-cors-headers
     #   django-crispy-forms
     #   django-filter
+    #   django-fsm-2
     #   django-fsm-admin2
     #   django-fsm-log
     #   django-htmx
@@ -274,6 +275,9 @@ django-fsm==3.0.0 \
     # via
     #   django-fsm-admin2
     #   django-fsm-log
+django-fsm-2==3.0.0 \
+    --hash=sha256:19887dcd6009d9b785f6114527e6542f380c5af7061c47bebefcbad9ace730aa \
+    --hash=sha256:5ca98a4c1f5537a54433f3963cd8473dcdc039d9bc8c8045250d290f84a25b35
 django-fsm-admin2==0.1.3 \
     --hash=sha256:01ad05c8a115783aab8c6a196adfde9ab58f513b00c62d180fcee57a8e9adaf3 \
     --hash=sha256:0f57b860c7ec48a92127ec574ebb469e0285b68fea3f283dea742b11845fde39

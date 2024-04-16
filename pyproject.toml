@@ -19,7 +19,7 @@ dependencies = [
   "django-cors-headers",
   "django-crispy-forms",
   "django-filter",
-  "django-fsm",
+  "django-fsm-2",
   "django-fsm-admin2",
   "django-fsm-log",
   "django-htmx",
