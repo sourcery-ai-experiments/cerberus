@@ -15,7 +15,7 @@ dynamic = [
 dependencies = [
   "crispy-bulma",
   "dj-database-url",
-  "django>=4",
+  "django>=5",
   "django-cors-headers",
   "django-crispy-forms",
   "django-filter",
@@ -54,6 +54,7 @@ dev = [
   "django-debugtools",
   "django-extensions",
   "django-stubs",
+  "django-typescript-routes@ git+https://github.com/bengosney/django-typescript-routes.git",
   "djangorestframework-stubs",
   "faker",
   "freezegun",
