@@ -60,6 +60,7 @@ class Pet(models.Model):
     sex = models.CharField(
         blank=True,
         default=Sex.__empty__,
+        db_default=Sex.__empty__,
         choices=Sex.choices,
         max_length=choice_length(Sex),
     )
@@ -67,6 +68,7 @@ class Pet(models.Model):
     neutered = models.CharField(
         blank=True,
         default=Neutered.__empty__,
+        db_default=Neutered.__empty__,
         choices=Neutered.choices,
         max_length=choice_length(Neutered),
     )
