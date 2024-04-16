@@ -53,11 +53,23 @@ class Pet(models.Model):
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
     social_media_concent = models.CharField(
-        default=Social.YES, choices=Social.choices, max_length=choice_length(Social)
+        default=Social.YES,
+        choices=Social.choices,
+        max_length=choice_length(Social),
     )
-    sex = models.CharField(blank=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))  # noqa: DJ001
+    sex = models.CharField(
+        blank=True,
+        default=Sex.__empty__,
+        choices=Sex.choices,
+        max_length=choice_length(Sex),
+    )
     description = models.TextField(blank=True, default="")
-    neutered = models.CharField(blank=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))  # noqa: DJ001
+    neutered = models.CharField(
+        blank=True,
+        default=Neutered.__empty__,
+        choices=Neutered.choices,
+        max_length=choice_length(Neutered),
+    )
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
