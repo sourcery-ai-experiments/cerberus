@@ -1,7 +1,7 @@
 <div class="tab-wrapper"
 {# fmt:off #}
     x-data="{
-    active: '{{ component_inital }}',
+    active: '{{ inital }}',
     setActive(section) {
         if (section != this.active) {
             this.active = section;
@@ -15,7 +15,7 @@
 {# fmt:on #}
      x-init="active = window.location.hash.replace(/^#/,'') || active"
      :class="active != '' ? 'active' : ''"
-     @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ component_inital }}'"
+     @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ inital }}'"
 >
-    {{ component_block }}
+    {{ slot_default }}
 </div>

@@ -6,5 +6,5 @@
     :open="open"
 >
     <summary aria-haspopup="listbox" role="link">{{ component_title|default:"Menu" }}</summary>
-    {{ component_block }}
+    {{ slot_default }}
 </details>
