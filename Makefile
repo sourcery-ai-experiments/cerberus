@@ -110,7 +110,7 @@ $(ESBUILD_PATH): node_modules
 cerberus_crm/static/js/%.min.js: assets/typescript/%.ts $(TS_FILES) $(ESBUILD_PATH)
 	$(ESBUILD_PATH) $< --bundle --minify --sourcemap --outfile=$@
 
-js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.min.js ## Fetch and build the js
+js: typescript-urls cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.min.js ## Fetch and build the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp
@@ -137,3 +137,9 @@ lcov.info: .direnv cerberus/tests/test_*.py
 	pytest --cov --cov-report=lcov:$@
 
 coverage: lcov.info
+
+assets/typescript/urls/%.ts: cerberus/urls/%.py
+	@echo "Generating $@"
+	python manage.py generate_typescript_routes --urlconf cerberus.urls.$* > $@
+
+typescript-urls: assets/typescript/urls/urls.ts assets/typescript/urls/api.ts ## Generate typescript urls
