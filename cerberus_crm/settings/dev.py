@@ -20,6 +20,7 @@ INSTALLED_APPS += [
     "django_browser_reload",
     "debug_toolbar",
     "django_extensions",
+    "typescript_routes",
 ]
 
 MIDDLEWARE += [
