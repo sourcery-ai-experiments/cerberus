@@ -63,7 +63,7 @@ class Pet(models.Model):
         db_default=Sex.__empty__,
         choices=Sex.choices,
         max_length=choice_length(Sex),
-    )
+    )  # type: ignore
     description = models.TextField(blank=True, default="")
     neutered = models.CharField(
         blank=True,
@@ -71,7 +71,7 @@ class Pet(models.Model):
         db_default=Neutered.__empty__,
         choices=Neutered.choices,
         max_length=choice_length(Neutered),
-    )
+    )  # type: ignore
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
