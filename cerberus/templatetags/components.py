@@ -1,4 +1,6 @@
 # Standard Library
+import re
+from functools import lru_cache
 from typing import Any
 
 # Django
@@ -12,9 +14,17 @@ from ..utils import rget
 
 register = template.Library()
 
+quote_regex = re.compile(r"^(\"|')(.*)(\"|')$")
 
+
+@lru_cache
 def unquote(value: str) -> str:
-    return value.strip('"').strip("'")
+    return quote_regex.sub(r"\2", value)
+
+
+@lru_cache
+def quoted(value: str) -> bool:
+    return quote_regex.match(value) is not None
 
 
 def parse_extra_context(extra_context: list[str]) -> dict[str, Any]:
@@ -34,7 +44,7 @@ class ComponentNode(Node):
     def render(self, context) -> str:
         extra_context = {}
         for key, value in self.extra_context.items():
-            if (value[0] == '"' and value[-1] == '"') or (value[0] == "'" and value[-1] == "'"):
+            if quoted(value):
                 extra_context[key] = unquote(value)
             else:
                 extra_context[key] = rget(context, value, "")
@@ -43,7 +53,7 @@ class ComponentNode(Node):
             rendered_slots = {f"slot_{name}": slot.render(context) for name, slot in self.slots.items()}
 
         inclusion_node = InclusionNode(
-            lambda c: {**rendered_slots, **self.extra_context},
+            lambda c: {**rendered_slots, **extra_context},
             args=[],
             kwargs={},
             takes_context=True,
