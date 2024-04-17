@@ -31,8 +31,18 @@ def minimize_whitespace(value: str) -> str:
     return re.sub(r"(^\s+|[\n\r]+)", "", value, flags=re.MULTILINE).strip()
 
 
-def rgetattr(obj, attr, *args):
+def rgetattr(obj: object, attr: str, *args):
     def _getattr(obj, attr):
         return getattr(obj, attr, *args)
 
     return functools.reduce(_getattr, [obj] + attr.split("."))
+
+
+def rget(obj: object, attr: str, *args):
+    def _get(obj, attr):
+        try:
+            return obj.get(attr, *args)
+        except AttributeError:
+            return getattr(obj, attr, *args)
+
+    return functools.reduce(_get, [obj] + attr.split("."))

@@ -7,6 +7,9 @@ from django.template import Node, NodeList, TemplateSyntaxError
 from django.template.context import Context
 from django.template.library import InclusionNode
 
+# Locals
+from ..utils import rget
+
 register = template.Library()
 
 
@@ -15,7 +18,7 @@ def unquote(value: str) -> str:
 
 
 def parse_extra_context(extra_context: list[str]) -> dict[str, Any]:
-    return {unquote(key): unquote(value) for key, value in (item.split("=") for item in extra_context)}
+    return {unquote(key): value for key, value in (item.split("=") for item in extra_context)}
 
 
 class ComponentNode(Node):
@@ -29,7 +32,14 @@ class ComponentNode(Node):
         self.template_name = template_name
 
     def render(self, context) -> str:
-        with context.update(self.extra_context):
+        extra_context = {}
+        for key, value in self.extra_context.items():
+            if (value[0] == '"' and value[-1] == '"') or (value[0] == "'" and value[-1] == "'"):
+                extra_context[key] = unquote(value)
+            else:
+                extra_context[key] = rget(context, value, "")
+
+        with context.update(extra_context):
             rendered_slots = {f"slot_{name}": slot.render(context) for name, slot in self.slots.items()}
 
         inclusion_node = InclusionNode(
