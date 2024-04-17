@@ -8,12 +8,12 @@
 {% block page_title %}Booking {{ object.name }}{% endblock %}
 
 {% block content %}
-    {% component "cerberus/components/dropdown.html" %}
-        <ul role="listbox">
-            <li><a href="{% url 'booking_update' booking.id %}">Edit</a></li>
-            <li><a hx-get="{% url 'booking_delete' booking.id %}" hx-swap="afterend" href="{% url 'booking_delete' booking.id %}">Delete</a></li>
+    <nav>
+        <ul>
+            <li><a href="{% url 'booking_update' booking.id %}">{% include 'icons/edit.svg' %}Edit</a></li>
+            <li><a hx-get="{% url 'booking_delete' booking.id %}" hx-swap="afterend" href="{% url 'booking_delete' booking.id %}">{% include 'icons/delete.svg' %}Delete</a></li>
         </ul>
-    {% endcomponent %}
+    </nav>
     <div class="grid pair">
         <div>Pets</div>
         <div>
