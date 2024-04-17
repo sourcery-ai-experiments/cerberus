@@ -49,30 +49,29 @@
         {% endif %}
     </div>
     {% component "cerberus/components/tab-wrapper.html" inital="bookings" %}
-        <nav class="tab-nav">
+        {% slot nav %}
             <a href="#bookings" :class="navClass('bookings')" @click.prevent="setActive('bookings')">Bookings</a>
             <a href="#charges" :class="navClass('charges')" @click.prevent="setActive('charges')">Charges</a>
             <a href="#invoices" :class="navClass('invoices')" @click.prevent="setActive('invoices')">Invoices</a>
             <a href="#pets" :class="navClass('pets')" @click.prevent="setActive('pets')">Pets</a>
             <a href="#contacts" :class="navClass('contacts')" @click.prevent="setActive('contacts')">Contacts</a>
-        </nav>
-        <div class="tabs">
-            <section id="bookings" class="tab-content" x-show="active == 'bookings'">
-                {% include "cerberus/customer_tabs/bookings.html" %}
-            </section>
-            <section id="charges" class="tab-content" x-show="active == 'charges'">
-                {% include "cerberus/customer_tabs/charges.html" %}
-            </section>
-            <section id="invoices" class="tab-content" x-show="active == 'invoices'">
-                {% include "cerberus/customer_tabs/invoices.html" %}
-            </section>
-            <section id="pets" class="tab-content" x-show="active == 'pets'">
-                {% include "cerberus/customer_tabs/pets.html" %}
-            </section>
-            <section id="contacts" class="tab-content" x-show="active == 'contacts'">
-                {% include "cerberus/customer_tabs/contacts.html" %}
-            </section>
-        </div>
+        {% endslot %}
+
+        <section id="bookings" class="tab-content" x-show="active == 'bookings'">
+            {% include "cerberus/customer_tabs/bookings.html" %}
+        </section>
+        <section id="charges" class="tab-content" x-show="active == 'charges'">
+            {% include "cerberus/customer_tabs/charges.html" %}
+        </section>
+        <section id="invoices" class="tab-content" x-show="active == 'invoices'">
+            {% include "cerberus/customer_tabs/invoices.html" %}
+        </section>
+        <section id="pets" class="tab-content" x-show="active == 'pets'">
+            {% include "cerberus/customer_tabs/pets.html" %}
+        </section>
+        <section id="contacts" class="tab-content" x-show="active == 'contacts'">
+            {% include "cerberus/customer_tabs/contacts.html" %}
+        </section>
     {% endcomponent %}
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>

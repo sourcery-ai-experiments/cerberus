@@ -1,6 +1,5 @@
 <div class="tab-wrapper"
-{# fmt:off #}
-    x-data="{
+     x-data="{{# fmt:off #}
     active: '{{ inital }}',
     setActive(section) {
         if (section != this.active) {
@@ -11,11 +10,15 @@
     navClass(section) {
         return section == this.active ? 'active' : '';
     }
-}"
-{# fmt:on #}
+{# fmt:on #}}"
      x-init="active = window.location.hash.replace(/^#/,'') || active"
      :class="active != '' ? 'active' : ''"
      @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ inital }}'"
 >
-    {{ slot_default }}
+    <nav class="tab-nav">
+        {{ slot_nav }}
+    </nav>
+    <div class="tabs">
+        {{ slot_default }}
+    </div>
 </div>
