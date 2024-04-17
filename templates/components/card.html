@@ -1,8 +1,12 @@
 <article class="card">
   <header>
-    <h3>{{ title }}</h3>
-    {% if type %}
-      <small>{{ type }}</small>
+    {% if slot_header %}
+      {{ slot_header }}
+    {% else %}
+      <h3>{{ title }}</h3>
+      {% if type %}
+        <small>{{ type }}</small>
+      {% endif %}
     {% endif %}
   </header>
   {{ slot_default }}
