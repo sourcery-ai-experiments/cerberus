@@ -10,7 +10,8 @@ from pytest_django.asserts import assertHTMLEqual
 @pytest.fixture
 def render_template():
     def _render_template(template: str, context: dict[str, str] | None = None) -> str:
-        return Template(template).render(Context(context or {}))
+        rendered = Template(template).render(Context(context or {}))
+        return rendered
 
     yield _render_template
 
@@ -27,8 +28,12 @@ def component_template(tmp_path, settings):
         f.write(
             """
 <div>
-    <h1>{{ component_title }}</h1>
-    <p>{{ component_block }}</p>
+    <h1>{{ title }}</h1>
+    <p>{{ slot_default }}</p>
+
+    {% if slot_footer %}
+    <footer>{{ slot_footer }}</footer>
+    {% endif %}
 </div>
 """
         )
@@ -42,6 +47,20 @@ def template():
 <section>
     {% component "test.html" title="title" %}
         this is body text
+    {% endcomponent %}
+</section>
+"""
+
+
+@pytest.fixture
+def template_with_footer(template):
+    yield """
+{% load components %}
+
+<section>
+    {% component "test.html" title="title" %}
+        this is body text
+        {% slot footer %}footer text{% endslot %}
     {% endcomponent %}
 </section>
 """
@@ -71,6 +90,22 @@ def test_extra_context(render_template, template):
     <div>
         <h1>title</h1>
         <p>this is body text</p>
+    </div>
+</section>
+""",
+    )
+
+
+def test_slot_footer(render_template, template_with_footer):
+    output = render_template(template_with_footer)
+    assertHTMLEqual(
+        output,
+        """
+<section>
+    <div>
+        <h1>title</h1>
+        <p>this is body text</p>
+        <footer>footer text</footer>
     </div>
 </section>
 """,
