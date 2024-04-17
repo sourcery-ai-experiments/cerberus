@@ -1,3 +1,5 @@
+{% load components %}
+
 <div class="inline row">
     <h3>Pets</h3>
     <a href="{% url 'pet_create' object.pk %}" hx-get="{% url 'pet_create' object.pk %}" hx-swap="afterend" hx-target="main">
@@ -6,8 +8,13 @@
 </div>
 <div class="grid-3">
     {% for pet in customer.active_pets %}
-        {% url 'pet_detail' pet.id as url %}
-        {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
+        {% component "components/card.html" size="col-4" title=pet.name type="Pet" %}
+            {{ pet.description }}
+
+            {% slot footer %}
+                <a href="{% url 'pet_detail' pet.id %}"> {% include 'icons/info.svg' %}Details </a>
+            {% endslot %}
+        {% endcomponent %}
     {% empty %}
         <p>No pets</p>
     {% endfor %}

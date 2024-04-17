@@ -5,10 +5,16 @@
       <small>{{ type }}</small>
     {% endif %}
   </header>
-  {{ description }}
-  {% if url %}
+  {{ slot_default }}
+  {% if slot_footer %}
     <footer>
-      <a href="{{ url }}"> {% include 'icons/info.svg' %}Info </a>
+      {{ slot_footer }}
     </footer>
+  {% else %}
+    {% if url %}
+      <footer>
+        <a href="{{ url }}"> {% include 'icons/info.svg' %}Info </a>
+      </footer>
+    {% endif %}
   {% endif %}
 </article>

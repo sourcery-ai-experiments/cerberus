@@ -1,4 +1,4 @@
-{% load string_utils %}
+{% load string_utils components %}
 
 <div class="inline row">
     <h3>Contacts</h3>
@@ -11,7 +11,9 @@
 </div>
 <div class="grid-3">
     {% for contact in customer.contacts.all %}
-        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
+        {% component "components/card.html" title=contact.name type="Contact" %}
+            {{ contact.details|mailto }}
+        {% endcomponent %}
     {% empty %}
         <p>No contacts</p>
     {% endfor %}
