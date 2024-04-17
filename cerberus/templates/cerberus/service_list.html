@@ -11,5 +11,7 @@
 
 {% block content %}
   {% include 'cerberus/components/service_list.html' with services=object_list %}
-  <a href="{% url 'service_create' %}" title="New Service" class="fab">{% include 'icons/plus.svg' %}</a>
+  {% if not request.htmx %}
+    <a href="{% url 'service_create' %}" title="New Service" class="fab">{% include 'icons/plus.svg' %}</a>
+  {% endif %}
 {% endblock %}
