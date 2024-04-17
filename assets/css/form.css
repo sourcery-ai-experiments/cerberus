@@ -2,7 +2,7 @@ form {
   &.inline {
     & > div {
       display: flex;
-      gap: 2em;
+      gap: clamp(1em, 2vw, 2em);
       justify-content: space-between;
 
       & > *:not(:has(label)) {
@@ -129,5 +129,25 @@ form {
 form {
   textarea {
     height: clamp(5em, 25vh, 15em);
+  }
+}
+
+.filter-form {
+  label {
+    white-space: nowrap;
+  }
+
+  input {
+    min-width: 1em;
+  }
+
+  & > div {
+    & > div {
+      flex: 1;
+
+      &:has(a) {
+        max-width: fit-content;
+      }
+    }
   }
 }
