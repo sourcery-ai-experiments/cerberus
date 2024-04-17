@@ -50,10 +50,10 @@ class ComponentNode(Node):
                 extra_context[key] = rget(context, value, "")
 
         with context.update(extra_context):
-            rendered_slots = {f"slot_{name}": slot.render(context) for name, slot in self.slots.items()}
+            rendered_slots = {f"{name}": slot.render(context) for name, slot in self.slots.items()}
 
         inclusion_node = InclusionNode(
-            lambda c: {**rendered_slots, **extra_context},
+            lambda c: {"slots": rendered_slots, "attributes": extra_context},
             args=[],
             kwargs={},
             takes_context=True,

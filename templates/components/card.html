@@ -1,23 +1,23 @@
 <article class="card">
   <header>
-    {% if slot_header %}
-      {{ slot_header }}
+    {% if slots.header %}
+      {{ slots.header }}
     {% else %}
-      <h3>{{ title }}</h3>
-      {% if type %}
-        <small>{{ type }}</small>
+      <h3>{{ attributes.title }}</h3>
+      {% if attributes.type %}
+        <small>{{ attributes.type }}</small>
       {% endif %}
     {% endif %}
   </header>
-  {{ slot_default }}
-  {% if slot_footer %}
+  {{ slots.default }}
+  {% if slots.footer %}
     <footer>
-      {{ slot_footer }}
+      {{ slots.footer }}
     </footer>
   {% else %}
-    {% if url %}
+    {% if attributes.url %}
       <footer>
-        <a href="{{ url }}"> {% include 'icons/info.svg' %}Info </a>
+        <a href="{{ attributes.url }}"> {% include 'icons/info.svg' %}Info </a>
       </footer>
     {% endif %}
   {% endif %}
