@@ -15,6 +15,7 @@ from django.views.generic import RedirectView, TemplateView
 from vanilla import ListView
 
 # Locals
+from ..filters import BookingFilter
 from ..forms import BookingForm
 from ..models import Booking
 from ..utils import make_aware
@@ -34,6 +35,7 @@ class BookingList(ListView):
 class BookingCRUD(CRUDViews):
     model = Booking
     form_class = BookingForm
+    filter_class = BookingFilter
     sortable_fields = ["customer__name", "pets", "service", "start", "length"]
 
     @classmethod

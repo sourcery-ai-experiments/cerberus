@@ -11,6 +11,7 @@ from django_filters.widgets import RangeWidget
 
 # Locals
 from .models import Booking, Customer, Invoice, Pet, Service, Vet
+from .models.booking import BookingStates
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
@@ -94,6 +95,7 @@ class CustomerFilter(FilterDefaults):
 
 
 class BookingFilter(FilterDefaults):
+    state = filters.MultipleChoiceFilter(choices=BookingStates.choices, widget=forms.CheckboxSelectMultiple)
     from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
     to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
     on_date = filters.DateFilter(field_name="start", lookup_expr="date")
