@@ -31,6 +31,17 @@ def parse_extra_context(extra_context: list[str]) -> dict[str, Any]:
     return {unquote(key): value for key, value in (item.split("=") for item in extra_context)}
 
 
+def nest_dict(d: dict) -> dict:
+    result = {}
+    for key, value in d.items():
+        parts = key.split(".")
+        current_dict = result
+        for part in parts[:-1]:
+            current_dict = current_dict.setdefault(part, {})
+        current_dict[parts[-1]] = value
+    return result
+
+
 class ComponentNode(Node):
     extra_context: dict[str, Any]
     template_name: str
@@ -50,7 +61,7 @@ class ComponentNode(Node):
                 extra_context[key] = rget(context, value, "")
 
         with context.update(extra_context):
-            rendered_slots = {f"{name}": slot.render(context) for name, slot in self.slots.items()}
+            rendered_slots = nest_dict({f"{name}": slot.render(context) for name, slot in self.slots.items()})
 
         inclusion_node = InclusionNode(
             lambda c: {"slots": rendered_slots, "attributes": extra_context},
