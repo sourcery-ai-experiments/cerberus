@@ -28,11 +28,11 @@ def component_template(tmp_path, settings):
         f.write(
             """
 <div>
-    <h1>{{ title }}</h1>
-    <p>{{ slot_default }}</p>
+    <h1>{{ attributes.title }}</h1>
+    <p>{{ slots.default }}</p>
 
-    {% if slot_footer %}
-    <footer>{{ slot_footer }}</footer>
+    {% if slots.footer %}
+    <footer>{{ slots.footer }}</footer>
     {% endif %}
 </div>
 """
