@@ -16,9 +16,16 @@
      @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ attributes.inital }}'"
 >
     <nav class="tab-nav">
-        {{ slots.nav }}
+        {% for name in slots.tabs.keys %}
+            <a href="#{{ name }}" :class="navClass('{{ name }}')" @click.prevent="setActive('{{ name }}')">{{ name|title }}</a>
+        {% endfor %}
     </nav>
+
     <div class="tabs">
-        {{ slots.default }}
+        {% for name, tab in slots.tabs.items %}
+            <section id="{{ name }}" class="tab-content" x-show="active == '{{ name }}'">{{ tab }}</section>
+        {% endfor %}
     </div>
+
+    {{ slots.default}}
 </div>
