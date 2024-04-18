@@ -29,6 +29,10 @@ class RangeInput(RangeWidget):
     template_name = "forms/widgets/range_input.html"
 
 
+class DateRangeInput(RangeWidget):
+    template_name = "forms/widgets/date_range_input.html"
+
+
 class FilterDefaults(filters.FilterSet):
     default_filters = {}
 
@@ -96,9 +100,10 @@ class CustomerFilter(FilterDefaults):
 
 class BookingFilter(FilterDefaults):
     state = filters.MultipleChoiceFilter(choices=BookingStates.choices, widget=forms.CheckboxSelectMultiple)
-    from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
-    to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
-    on_date = filters.DateFilter(field_name="start", lookup_expr="date")
+    date = filters.DateFromToRangeFilter(widget=DateRangeInput, field_name="start", lookup_expr="date")
+    service__name = filters.MultipleChoiceFilter(
+        choices=Service.objects.values_list("name", "name"), widget=forms.CheckboxSelectMultiple
+    )
     customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 

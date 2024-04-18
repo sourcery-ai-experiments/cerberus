@@ -1,0 +1,24 @@
+<div
+    class="range-input"
+    x-data="{ start: '{{ widget.subwidgets.0.value|default_if_none:'' }}', stop: '{{ widget.subwidgets.1.value|default_if_none:'' }}' }"
+>
+    {% with widget.subwidgets.0 as widget %}
+        <input
+            x-model="start"
+            type="date"
+            :max="stop"
+            name="{{ widget.name }}"
+            {% include "django/forms/widgets/attrs.html"  %}
+        />
+    {% endwith %}
+    <span>-</span>
+    {% with widget.subwidgets.1 as widget %}
+        <input
+            x-model="stop"
+            type="date"
+            :min="start"
+            name="{{ widget.name }}"
+            {% include "django/forms/widgets/attrs.html"  %}
+        />
+    {% endwith %}
+</div>
