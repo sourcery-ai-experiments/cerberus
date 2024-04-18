@@ -4,10 +4,17 @@ form {
       display: flex;
       gap: clamp(1em, 2vw, 2em);
       justify-content: space-between;
+      align-items: flex-start;
 
       & > *:not(:has(label)) {
         display: flex;
         align-items: flex-end;
+      }
+
+      & > div:has(:not(input, textarea)) {
+        a {
+          margin-top: 1.9em;
+        }
       }
 
       & > div:has(.controls) {
