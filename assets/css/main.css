@@ -38,6 +38,16 @@ body {
   overflow-y: scroll;
 }
 
+@media (min-width: 1840px) {
+  body {
+    & > footer,
+    & > header,
+    & > main {
+      max-width: min(calc(100vw - 10rem), 95vw);
+    }
+  }
+}
+
 [x-cloak],
 .hidden {
   display: none !important;
