@@ -11,10 +11,8 @@ form {
         align-items: flex-end;
       }
 
-      & > div:has(:not(input, textarea)) {
-        a {
-          margin-top: 1.9em;
-        }
+      .form-group:has(.switch) {
+        height: 100%;
       }
 
       & > div:has(.controls) {
@@ -26,6 +24,21 @@ form {
           flex-direction: column;
           display: flex;
           justify-content: center;
+
+          &:has(.switch) {
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+
+            & > div {
+              display: flex;
+              align-items: center;
+
+              input {
+                margin: 0;
+              }
+            }
+          }
         }
       }
 
@@ -38,6 +51,7 @@ form {
 
       & a[role="button"] {
         height: max-content;
+        margin-top: 1.9em;
       }
     }
   }
