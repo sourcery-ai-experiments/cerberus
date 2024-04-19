@@ -33,6 +33,11 @@ class DateRangeInput(RangeWidget):
     template_name = "forms/widgets/date_range_input.html"
 
 
+class CheckboxSelectMultipleDropdown(forms.CheckboxSelectMultiple):
+    template_name = "forms/widgets/checkbox_select_multiple_dropdown.html"
+    option_template_name = "forms/widgets/checkbox_select_multiple_dropdown.html"
+
+
 class FilterDefaults(filters.FilterSet):
     default_filters = {}
 
@@ -99,10 +104,11 @@ class CustomerFilter(FilterDefaults):
 
 
 class BookingFilter(FilterDefaults):
-    state = filters.MultipleChoiceFilter(choices=BookingStates.choices, widget=forms.CheckboxSelectMultiple)
+    state = filters.MultipleChoiceFilter(choices=BookingStates.choices, widget=CheckboxSelectMultipleDropdown)
     date = filters.DateFromToRangeFilter(widget=DateRangeInput, field_name="start", lookup_expr="date")
     service__name = filters.MultipleChoiceFilter(
-        choices=Service.objects.values_list("name", "name"), widget=forms.CheckboxSelectMultiple
+        choices=Service.objects.values_list("name", "name"),
+        widget=CheckboxSelectMultipleDropdown,
     )
     customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
