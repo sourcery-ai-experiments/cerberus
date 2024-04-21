@@ -1,6 +1,20 @@
-<details class="dropdown">
-  <summary>Dropdown</summary>
+{% load crispy_forms_field %}
 
 
+<{% if tag %}{{ tag }}{% else %}div{% endif %} id="div_{{ field.auto_id }}" {% if not field|is_checkbox %}class="form-group{% else %}class="checkbox{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+<details
+  role="list"
+  @click="toggle()"
+  @click.outside="$nextTick(() => open = false)"
+  x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
+  :open="open"
+>
+  <summary aria-haspopup="listbox" role="link">
+    {{ field.label }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+  </summary>
 
+  <div role="listbox">
+    {% include 'pico/layout/checkboxselectmultiple.html' %}
+  </div>
 </details>
+</{% if tag %}{{ tag }}{% else %}div{% endif %}>

@@ -34,8 +34,7 @@ class DateRangeInput(RangeWidget):
 
 
 class CheckboxSelectMultipleDropdown(forms.CheckboxSelectMultiple):
-    template_name = "forms/widgets/checkbox_select_multiple_dropdown.html"
-    option_template_name = "forms/widgets/checkbox_select_multiple_dropdown.html"
+    crispy_template = "forms/widgets/checkbox_select_multiple_dropdown.html"
 
 
 class FilterDefaults(filters.FilterSet):
