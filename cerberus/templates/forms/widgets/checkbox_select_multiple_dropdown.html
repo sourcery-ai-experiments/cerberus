@@ -1,20 +1,34 @@
 {% load crispy_forms_field %}
 
 
-<{% if tag %}{{ tag }}{% else %}div{% endif %} id="div_{{ field.auto_id }}" {% if not field|is_checkbox %}class="form-group{% else %}class="checkbox{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+<{% if tag %}{{ tag }}{% else %}div{% endif %}
+id="div_{{ field.auto_id }}"
+{% if not field|is_checkbox %}class="form-group{% else %}class="checkbox{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}"
+x-data="{{# fmt:off #}
+  open: false,
+  toggle() { $nextTick(() => this.open = ! this.open) },
+  selected: [],
+  setSelected() { this.selected = Array.from($root.querySelectorAll('input[type=checkbox]:checked')).map(cb => cb.value) }
+{# fmt:on #}}"
+x-init="setSelected()"
+>
 <details
   role="list"
   @click="toggle()"
   @click.outside="$nextTick(() => open = false)"
-  x-data="{ open: false, toggle() { $nextTick(() => this.open = ! this.open) } }"
   :open="open"
 >
   <summary aria-haspopup="listbox" role="link">
     {{ field.label }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
   </summary>
 
-  <div role="listbox">
+  <div role="listbox" @click="setSelected()">
     {% include 'pico/layout/checkboxselectmultiple.html' %}
   </div>
 </details>
+<div>
+  <template x-for="sel in selected">
+    <span x-text="sel"></span>
+  </template>
+</div>
 </{% if tag %}{{ tag }}{% else %}div{% endif %}>
