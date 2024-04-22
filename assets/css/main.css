@@ -28,6 +28,7 @@
 
 @import "form.css";
 @import "range-input.css";
+@import "checkbox-dropdown.css";
 @import "htmx.css";
 
 @import "login.css";

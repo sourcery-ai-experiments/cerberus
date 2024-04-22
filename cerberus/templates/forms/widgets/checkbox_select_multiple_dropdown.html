@@ -3,7 +3,7 @@
 
 <{% if tag %}{{ tag }}{% else %}div{% endif %}
 id="div_{{ field.auto_id }}"
-{% if not field|is_checkbox %}class="form-group{% else %}class="checkbox{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}"
+class="checkbox-dropdown checkbox{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}"
 x-data="{{# fmt:off #}
   open: false,
   toggle() { $nextTick(() => this.open = ! this.open) },
@@ -26,7 +26,7 @@ x-init="setSelected()"
     {% include 'pico/layout/checkboxselectmultiple.html' %}
   </div>
 </details>
-<div>
+<div class="selected-items">
   <template x-for="sel in selected">
     <span x-text="sel"></span>
   </template>
