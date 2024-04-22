@@ -20,11 +20,9 @@
       );
       overflow: hidden;
       background: var(--pico-background-color);
+      outline: 0em solid var(--pico-background-color);
 
-      transition: 0.2s max-height ease-in-out;
-      transition-delay: 250ms;
-      box-shadow: 0em 0em 0em 0em
-        color-mix(in lab, transparent 75%, var(--pico-contrast-border));
+      box-shadow: 0em 0em 0em 0em rgba(0, 0, 0, 0.75);
 
       &::after {
         content: "";
@@ -44,10 +42,20 @@
 
       &:hover {
         max-height: max-content;
-        box-shadow: 0em 0em 0.25em 0em
-          color-mix(in lab, transparent 75%, var(--pico-contrast-border));
+        box-shadow: 0 0.25em 1em 0.25em rgba(0, 0, 0, 0.75);
+        outline: 0.5em solid var(--pico-background-color);
+        border-radius: 0.25em;
+
         &::after {
           height: 0%;
+        }
+      }
+      .checkbox {
+        &:last-child {
+          label {
+            padding-bottom: 0;
+            margin-bottom: 0;
+          }
         }
       }
     }
