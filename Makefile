@@ -9,8 +9,8 @@ REQS=$(wildcard requirements.*.txt)
 CSS_FILES:=$(shell find assets -name *.css)
 COG_FILE:=.cogfiles
 
-TS_FILES:=$(wildcard assets/typescript/**/*.ts)
-JS_FILES:=$(patsubst %.ts,%.js,$(TS_FILES))
+TS_FILES:=$(wildcard assets/typescript/*.ts)
+JS_FILES:=$(patsubst assets/typescript/%.ts,cerberus_crm/static/js/%.min.js,$(TS_FILES))
 
 PYTHON_VERSION:=$(shell python --version | cut -d " " -f 2)
 PIP_PATH:=.direnv/python-$(PYTHON_VERSION)/bin/pip
@@ -102,15 +102,12 @@ install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development
 	@echo "Installing $(filter-out $<,$^)"
 	python -m uv pip sync $(filter-out $<,$^)
 
-cerberus_crm/static/js/htmx.min.js:
-	curl -sL https://unpkg.com/htmx.org > $@
-
 $(ESBUILD_PATH): node_modules
 
 cerberus_crm/static/js/%.min.js: assets/typescript/%.ts $(TS_FILES) $(ESBUILD_PATH)
 	$(ESBUILD_PATH) $< --bundle --minify --sourcemap --outfile=$@
 
-js: cerberus_crm/static/js/htmx.min.js cerberus_crm/static/js/alpine.min.js cerberus_crm/static/js/main.min.js ## Fetch and build the js
+js: $(JS_FILES) ## Fetch and build the js
 
 $(COG_PATH): $(UV_PATH) $(WHEEL_PATH)
 	python -m uv pip install cogapp

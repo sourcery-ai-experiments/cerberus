@@ -1,3 +1,6 @@
+import './external/alpine';
+import './external/htmx';
+
 import { moveBooking } from './components/bookings';
 import { toast } from './components/toast';
 import { roundTime, addMinutes, dateToString } from './components/datetime';
