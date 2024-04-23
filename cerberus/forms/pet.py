@@ -1,5 +1,6 @@
 # Django
 from django import forms
+from django.forms import TextInput
 
 # Locals
 from ..models import Pet
@@ -22,5 +23,14 @@ class PetForm(forms.ModelForm):
             "allergies",
             "tags",
         ]
-        widgets = {"tags": TagsWidget()}
+        widgets = {
+            "tags": TagsWidget(),
+            "treatment_limit": TextInput(
+                attrs={
+                    "x-mask:dynamic": "$money($input)",
+                    "x-data": "",
+                    "@focus": "$el.value == 0 && $el.select()",
+                }
+            ),
+        }
         help_texts = {"tags": None}
