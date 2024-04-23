@@ -27,6 +27,7 @@ dependencies = [
   "django-money",
   "django-polymorphic",
   "django-reversion",
+  "django-sqids",
   "django-taggit",
   "django-vanilla-views",
   "djangorestframework",

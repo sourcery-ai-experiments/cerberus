@@ -299,6 +299,9 @@ django-polymorphic==3.1.0 \
 django-reversion==5.0.12 \
     --hash=sha256:5884e9f77f55c341b3f0a8d3b0af000f060530653776997267c8b1e5349d8fee \
     --hash=sha256:c047cc99a9f1ba4aae6db89c3ac243478d6de98ec8a60c7073fcc875d89c5cdb
+django-sqids==0.1.1 \
+    --hash=sha256:c56ad865a3b891fcda40feb8c15843b241265d879aa56fc6147ee24665031772 \
+    --hash=sha256:e5ae677b30d5bf4ce41a1e50e8566f766a81ef68792788fe049d7b255eae8c35
 django-taggit==5.0.1 \
     --hash=sha256:a0ca8a28b03c4b26c2630fd762cb76ec39b5e41abf727a7b66f897a625c5e647 \
     --hash=sha256:edcd7db1e0f35c304e082a2f631ddac2e16ef5296029524eb792af7430cab4cc
@@ -832,6 +835,10 @@ six==1.16.0 \
     # via
     #   html5lib
     #   python-bidi
+sqids==0.4.1 \
+    --hash=sha256:fe48319ae1a7ea4faca77920f454fcf2946bbca540a468a98d979ba490d195bd \
+    --hash=sha256:ffc3fbfef63491bee8b940a98065388345dbefb06d49e415b7a9e475ca200f9d
+    # via django-sqids
 sqlparse==0.5.0 \
     --hash=sha256:714d0a4932c059d16189f58ef5411ec2287a4360f17cdd0edd2d09d4c5087c93 \
     --hash=sha256:c204494cd97479d0e39f28c93d46c0b2d5959c7b9ab904762ea6c7af211c8663
