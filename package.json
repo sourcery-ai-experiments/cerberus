@@ -23,5 +23,8 @@
     "@alpinejs/morph": "^3.13.9",
     "alpinejs": "^3.13.8",
     "htmx.org": "^1.9.12"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }

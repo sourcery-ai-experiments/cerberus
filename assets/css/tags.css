@@ -40,10 +40,40 @@ body {
 
 .tag-lookup {
   position: relative;
+  animation: tag-fade-in 0.1s ease-in-out;
 
   ul {
     margin-top: calc(-1 * var(--pico-spacing));
     width: max-content;
     max-width: 100%;
+
+    li {
+      a {
+        text-shadow: color-mix(in lch, transparent 25%, var(--pico-primary)) 0px 0px 0em;
+        transition: text-shadow 0.1s ease-in-out;
+        &:hover {
+          color: var(--pico-primary);
+        }
+      }
+
+      &.selected {
+        a {
+          text-shadow: color-mix(in lch, transparent 25%, var(--pico-primary)) 0px 0px 0.25em;
+          color: var(--pico-primary-hover);
+          &:hover {
+            color: var(--pico-primary-hover);
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes tag-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

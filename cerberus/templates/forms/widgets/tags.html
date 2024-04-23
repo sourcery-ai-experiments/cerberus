@@ -4,8 +4,9 @@
     canBlur: true,
     tags: [{{ tags }}],
     lookedUp: [],
+    selected: 0,
     addTag(tag) {
-        if (!tag) return;
+        if (!tag || this.tags.includes(tag)) return;
         this.tags.push(tag);
         this.current = '';
     },
@@ -14,10 +15,11 @@
         const pramas = new URLSearchParams({ startswith: value, limit: 5, tags: this.tags.join(','), });
         const response = await fetch(`{% url 'tag-list' %}?${pramas.toString()}`);
         this.lookedUp = await response.json();
+        this.selected = 0;
     },
     tab(event) {
         if (!this.lookedUp.length) return;
-        this.addTag(this.lookedUp[0]);
+        this.addTag(this.lookedUp[this.selected]);
         event.preventDefault()
     },
     blur() {
@@ -45,20 +47,27 @@
         x-ref="input"
         autocomplete="off"
     >
-    <div class="tag-lookup" x-show="lookedUp.length && active" x-transition>
-        <ul role="listbox">
-            <template x-for="tag in lookedUp">
-                <li>
-                    <a
-                        x-text="tag"
-                        @mousedown="canBlur = false"
-                        @click.prevent="addTag(tag);$focus.focus($refs.input)"
-                        @mouseup="canBlur = true"
-                        href="#">
-                    </a>
-                </li>
-            </template>
-        </ul>
-    </div>
+    <template x-if="lookedUp.length && active">
+        <div class="tag-lookup">
+            <ul
+                role="listbox"
+                @keyup.prevent.window.up="selected = Math.max(0, selected - 1)"
+                @keyup.prevent.window.down="selected = Math.min(lookedUp.length - 1, selected + 1)"
+            >
+                <template x-for="(tag, index) in lookedUp">
+                    <li :class="{ 'selected': selected == index }">
+                        <a
+                            x-text="tag"
+                            @mousedown="canBlur = false"
+                            @click.prevent="addTag(tag);$focus.focus($refs.input)"
+                            @mouseup="canBlur = true"
+                            @mouseover="selected = index"
+                            href="#">
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </template>
     <input name="{{ widget.name }}" type="hidden" x-model="tags" readonly />
 </div>
