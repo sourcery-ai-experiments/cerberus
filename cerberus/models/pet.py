@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
+from django_sqids import SqidsField
 from humanize import naturaldelta
 from taggit.managers import TaggableManager
 
@@ -93,6 +94,8 @@ class Pet(models.Model):
         default=None,
     )
 
+    sqid = SqidsField(real_field_name="id")
+
     objects = PetManager()
 
     class Meta:
@@ -102,7 +105,7 @@ class Pet(models.Model):
         return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse("pet_detail", kwargs={"pk": self.pk})
+        return reverse("pet_detail", kwargs={"sqid": self.sqid})
 
     @property
     def name_with_owner(self) -> str:

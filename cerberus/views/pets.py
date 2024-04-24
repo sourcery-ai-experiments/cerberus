@@ -52,6 +52,7 @@ class PetCRUD(CRUDViews):
     form_class = PetForm
     filter_class = PetFilter
     sortable_fields = ["name", "customer"]
+    lookup_field = "sqid"
 
     @classmethod
     def url_parts(cls):
