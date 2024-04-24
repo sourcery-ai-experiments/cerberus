@@ -12,7 +12,7 @@
             {{ pet.description }}
 
             {% slot footer %}
-                <a href="{% url 'pet_detail' pet.id %}"> {% include 'icons/info.svg' %}Details </a>
+                <a href="{% url 'pet_detail' pet.sqid %}"> {% include 'icons/info.svg' %}Details </a>
             {% endslot %}
         {% endcomponent %}
     {% empty %}

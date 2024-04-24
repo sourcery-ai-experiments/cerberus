@@ -18,10 +18,10 @@
         <div>Pets</div>
         <div>
             {% for pet in booking.pets.all %}
-                <a href="{% url 'pet_detail' pet.pk %}">{{ pet }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url 'pet_detail' pet.sqid %}">{{ pet }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
-        <div>Customer</div><div><a href="{% url 'customer_detail' booking.customer.pk %}">{{ booking.customer }}</a></div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' booking.customer.sqid %}">{{ booking.customer }}</a></div>
         <div>Service</div><div>{{ booking.service }}</div>
         <div>Start</div><div>{{ booking.start }}</div>
         <div>End</div><div>{{ booking.end }}</div>
