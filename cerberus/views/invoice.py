@@ -65,6 +65,10 @@ class InvoiceCRUD(CRUDViews):
     sortable_fields = ["id", "customer", "total", "state"]
 
     @classmethod
+    def url_lookup(cls) -> str:
+        return "inv-<pint:pk>"
+
+    @classmethod
     def get_view_class(cls, action: Actions):
         match action:
             case Actions.UPDATE:

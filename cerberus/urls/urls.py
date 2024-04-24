@@ -1,8 +1,22 @@
 # Django
-from django.urls import path
+from django.urls import path, register_converter
 
 # Locals
 from .. import views
+
+
+class PaddedIntConverter:
+    regex = "[0-9]+"
+
+    def to_python(self, value):
+        return int(value)
+
+    def to_url(self, value):
+        return f"{value:05d}"
+
+
+register_converter(PaddedIntConverter, "pint")
+
 
 urlpatterns = (
     [
