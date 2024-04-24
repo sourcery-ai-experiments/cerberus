@@ -10,8 +10,8 @@
 {% block content %}
     <nav>
         <ul>
-            <li><a href="{% url 'booking_update' booking.id %}">{% include 'icons/edit.svg' %}Edit</a></li>
-            <li><a hx-get="{% url 'booking_delete' booking.id %}" hx-swap="afterend" href="{% url 'booking_delete' booking.id %}">{% include 'icons/delete.svg' %}Delete</a></li>
+            <li><a href="{% url 'booking_update' booking.sqid %}">{% include 'icons/edit.svg' %}Edit</a></li>
+            <li><a hx-get="{% url 'booking_delete' booking.sqid %}" hx-swap="afterend" href="{% url 'booking_delete' booking.sqid %}">{% include 'icons/delete.svg' %}Delete</a></li>
         </ul>
     </nav>
     <div class="grid pair">

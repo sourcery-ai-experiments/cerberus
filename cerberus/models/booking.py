@@ -17,6 +17,7 @@ from django.utils.functional import lazy
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
+from django_sqids import SqidsField
 from djmoney.models.fields import MoneyField
 from humanize import naturaldate
 
@@ -273,6 +274,8 @@ class Booking(models.Model):
 
     charges = GenericRelation(Charge)
 
+    sqid = SqidsField(real_field_name="id")
+
     objects = BookingQuerySet.as_manager()
 
     class Meta:
@@ -307,7 +310,7 @@ class Booking(models.Model):
                 self._previous_slot.delete()
 
     def get_absolute_url(self):
-        return reverse("booking_detail", kwargs={"pk": self.pk})
+        return reverse("booking_detail", kwargs={"sqid": self.sqid})
 
     def check_valid(self) -> None:
         if any(pet.customer != self.customer for pet in self.pets.all()):

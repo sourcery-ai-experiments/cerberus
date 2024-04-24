@@ -12,7 +12,7 @@ urlpatterns = (
             name="dashboard",
         ),
         path(
-            "booking/<int:pk>/action/<str:action>/",
+            "booking/<str:sqid>/action/<str:action>/",
             views.BookingStateActions.as_view(),
             name="booking_action",
         ),
