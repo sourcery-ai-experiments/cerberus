@@ -53,10 +53,12 @@ class PetCRUD(CRUDViews):
     filter_class = PetFilter
     sortable_fields = ["name", "customer"]
 
-    url_parts = {
-        **CRUDViews.url_parts,
-        **{Actions.CREATE: "create-for-customer/<int:pk>/"},
-    }
+    @classmethod
+    def url_parts(cls):
+        return {
+            **super().url_parts(),
+            **{Actions.CREATE: f"create-for-customer/{cls.url_lookup()}/"},
+        }
 
     @classmethod
     def get_view_class(cls, action: Actions):

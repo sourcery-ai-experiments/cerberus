@@ -205,16 +205,35 @@ class CRUDViews(GenericModelView):
     requires_login: bool = True
     extra_requires_login: bool | None = None
 
-    url_lookup: str = "<int:pk>"
-    url_parts: dict[Actions, str] = {
-        Actions.CREATE: "create",
-        Actions.DETAIL: f"{url_lookup}",
-        Actions.UPDATE: f"{url_lookup}/edit",
-        Actions.DELETE: f"{url_lookup}/delete",
-        Actions.LIST: "",
-    }
+    lookup_field: str = "pk"
 
     extra_mixins: list = []
+
+    @classmethod
+    def url_lookup(cls) -> str:
+        if cls.lookup_field == "pk" and cls.model._meta.pk:
+            real_lookup_field = cls.model._meta.pk.name
+        else:
+            real_lookup_field = cls.lookup_field
+
+        prefix = "str"
+        match cls.model._meta.get_field(real_lookup_field).get_internal_type():
+            case "BigAutoField":
+                prefix = "int"
+            case "UUIDField":
+                prefix = "uuid"
+
+        return f"<{prefix}:{cls.lookup_field}>"
+
+    @classmethod
+    def url_parts(cls) -> dict[Actions, str]:
+        return {
+            Actions.CREATE: "create",
+            Actions.DETAIL: f"{cls.url_lookup()}",
+            Actions.UPDATE: f"{cls.url_lookup()}/edit",
+            Actions.DELETE: f"{cls.url_lookup()}/delete",
+            Actions.LIST: "",
+        }
 
     @classmethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
@@ -225,6 +244,9 @@ class CRUDViews(GenericModelView):
         match action:
             case Actions.DELETE:
                 defaults["success_url"] = cls.delete_success_url or reverse_lazy(f"{cls.model._meta.model_name}_list")
+
+        if cls.lookup_field:
+            defaults["lookup_field"] = cls.lookup_field
 
         return defaults
 
@@ -278,10 +300,11 @@ class CRUDViews(GenericModelView):
     @classmethod
     def get_urls(cls):
         model_name = cls.model_name()
+        url_parts = cls.url_parts()
 
         paths = [
             path(
-                f"{model_name}/{cls.url_parts[action]}",
+                f"{model_name}/{url_parts[action]}",
                 cls.as_view(action),
                 name=f"{model_name}_{action.value}",
             )

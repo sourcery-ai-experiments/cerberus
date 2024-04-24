@@ -17,10 +17,8 @@ from .crud_views import Actions, CRUDViews, Crumb, extra_view
 
 
 class CustomerDetail(DetailView):
-    lookup_field = "sqid"
-
     def get_queryset(self):
-        return Customer.objects.with_pets()
+        return Customer.objects.with_pets()  # type: ignore
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,14 +40,7 @@ class CustomerCRUD(CRUDViews):
     form_class = CustomerForm
     filter_class = CustomerFilter
     sortable_fields = ["name"]
-    url_lookup: str = "<sqid>"
-    url_parts: dict[Actions, str] = {
-        Actions.CREATE: "create",
-        Actions.DETAIL: f"{url_lookup}",
-        Actions.UPDATE: f"{url_lookup}/edit",
-        Actions.DELETE: f"{url_lookup}/delete",
-        Actions.LIST: "",
-    }
+    lookup_field = "sqid"
 
     @classmethod
     def get_view_class(cls, action: Actions):
