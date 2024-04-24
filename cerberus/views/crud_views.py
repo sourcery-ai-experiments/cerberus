@@ -120,23 +120,25 @@ class BreadcrumbMixin(GenericModelView):
         model_name = self.model._meta.model_name if self.model else ""
         verbose_name_plural = self.model._meta.verbose_name_plural.title() if self.model else ""
 
+        lookup_field = getattr(self, "lookup_field", "pk")
+
         obj = getattr(self, "object", None)
-        obj_id = getattr(obj, "id", 0)
+        obj_id = getattr(obj, lookup_field, None)
 
         def list_crumb() -> Crumb:
             return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
         def detail_crumb() -> Crumb:
-            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
+            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={lookup_field: obj_id}))
 
         def update_crumb() -> Crumb:
-            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={lookup_field: obj_id}))
 
         def create_crumb() -> Crumb:
-            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={lookup_field: obj_id}))
 
         def delete_crumb() -> Crumb:
-            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={lookup_field: obj_id}))
 
         match self.__class__.__name__.split("_"):
             case _, Actions.LIST.value:
@@ -336,11 +338,12 @@ class CRUDViews(GenericModelView):
     @classmethod
     def extra_views(cls, model_name: str) -> list[URLPattern]:
         views: list[URLPattern] = []
+        lookup = cls.url_lookup()
         for name in dir(cls):
             view = getattr(cls, name)
             if all(hasattr(view, attr) for attr in ["methods", "detail", "url_path", "url_name"]):
                 if view.detail:
-                    route = f"{model_name}/<int:pk>/{view.url_path}/"
+                    route = f"{model_name}/{lookup}/{view.url_path}/"
                 else:
                     route = f"{model_name}/{view.url_path}/"
 
