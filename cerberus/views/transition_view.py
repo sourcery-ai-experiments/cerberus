@@ -12,9 +12,10 @@ from django.views import View
 class TransitionView(View):
     model = Model
     field = str
+    lookup_field: str = "pk"
 
-    def get_valid_model(self, pk: int, action: str):
-        model = get_object_or_404(self.model, pk=pk)
+    def get_valid_model(self, lookup_value, action: str):
+        model = get_object_or_404(self.model, **{self.lookup_field: lookup_value})
 
         transitions = getattr(model, f"get_all_{self.field}_transitions")()
         available_transitions = getattr(model, f"get_all_{self.field}_transitions")()
@@ -27,16 +28,19 @@ class TransitionView(View):
 
         return model
 
-    def get(self, request, pk: int, action: str):
-        model = self.get_valid_model(pk, action)
+    def get(self, request, action: str, **kwargs):
+        lookup_value = kwargs.get(self.lookup_field)
+        model = self.get_valid_model(lookup_value, action)
 
         getattr(model, action)()
         redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
         return redirect(redirect_url)
 
-    def post(self, request, pk: int, action: str):
-        model = self.get_valid_model(pk, action)
+    def post(self, request, action: str, **kwargs):
+        lookup_value = kwargs.get(self.lookup_field)
+
+        model = self.get_valid_model(lookup_value, action)
 
         action_function: Callable = getattr(model, action)
 
