@@ -7,6 +7,7 @@ from django.urls import reverse
 
 # Third Party
 import reversion
+from django_extensions.db.fields import AutoSlugField
 from djmoney.models.fields import MoneyField
 
 
@@ -23,6 +24,8 @@ class Service(models.Model):
     max_pet = models.IntegerField(default=1)
     max_customer = models.IntegerField(default=1)
     display_colour = models.CharField(max_length=255)  # ColorField(default="#000000")
+
+    slug = AutoSlugField(populate_from=["name"])
 
     class Meta:
         ordering = ("name",)

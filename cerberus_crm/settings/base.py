@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "fsm_admin2",
     "django_htmx",
+    "django_extensions",
     "crispy_forms",
     "crispy_bulma",
     "polymorphic",

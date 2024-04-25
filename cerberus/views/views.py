@@ -35,3 +35,4 @@ class ServiceCRUD(CRUDViews):
         "max_customer",
         "display_colour",
     ]
+    lookup_field = "slug"
