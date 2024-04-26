@@ -120,23 +120,25 @@ class BreadcrumbMixin(GenericModelView):
         model_name = self.model._meta.model_name if self.model else ""
         verbose_name_plural = self.model._meta.verbose_name_plural.title() if self.model else ""
 
+        lookup_field = getattr(self, "lookup_field", "pk")
+
         obj = getattr(self, "object", None)
-        obj_id = getattr(obj, "id", 0)
+        obj_id = getattr(obj, lookup_field, None)
 
         def list_crumb() -> Crumb:
             return Crumb(verbose_name_plural, reverse_lazy(f"{model_name}_{Actions.LIST.value}"))
 
         def detail_crumb() -> Crumb:
-            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={"pk": obj_id}))
+            return Crumb(str(obj), reverse_lazy(f"{model_name}_{Actions.DETAIL.value}", kwargs={lookup_field: obj_id}))
 
         def update_crumb() -> Crumb:
-            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Edit", reverse_lazy(f"{model_name}_{Actions.UPDATE.value}", kwargs={lookup_field: obj_id}))
 
         def create_crumb() -> Crumb:
-            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Create", reverse_lazy(f"{model_name}_{Actions.CREATE.value}", kwargs={lookup_field: obj_id}))
 
         def delete_crumb() -> Crumb:
-            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={"pk": obj_id}))
+            return Crumb("Delete", reverse_lazy(f"{model_name}_{Actions.DELETE.value}", kwargs={lookup_field: obj_id}))
 
         match self.__class__.__name__.split("_"):
             case _, Actions.LIST.value:
@@ -205,16 +207,35 @@ class CRUDViews(GenericModelView):
     requires_login: bool = True
     extra_requires_login: bool | None = None
 
-    url_lookup: str = "<int:pk>"
-    url_parts: dict[Actions, str] = {
-        Actions.CREATE: "create",
-        Actions.DETAIL: f"{url_lookup}",
-        Actions.UPDATE: f"{url_lookup}/edit",
-        Actions.DELETE: f"{url_lookup}/delete",
-        Actions.LIST: "",
-    }
+    lookup_field: str = "pk"
 
     extra_mixins: list = []
+
+    @classmethod
+    def url_lookup(cls) -> str:
+        if cls.lookup_field == "pk" and cls.model._meta.pk:
+            real_lookup_field = cls.model._meta.pk.name
+        else:
+            real_lookup_field = cls.lookup_field
+
+        prefix = "str"
+        match cls.model._meta.get_field(real_lookup_field).get_internal_type():
+            case "BigAutoField":
+                prefix = "int"
+            case "UUIDField":
+                prefix = "uuid"
+
+        return f"<{prefix}:{cls.lookup_field}>"
+
+    @classmethod
+    def url_parts(cls) -> dict[Actions, str]:
+        return {
+            Actions.CREATE: "create",
+            Actions.DETAIL: f"{cls.url_lookup()}",
+            Actions.UPDATE: f"{cls.url_lookup()}/edit",
+            Actions.DELETE: f"{cls.url_lookup()}/delete",
+            Actions.LIST: "",
+        }
 
     @classmethod
     def get_defaults(cls, action: Actions) -> dict[str, Any]:
@@ -225,6 +246,9 @@ class CRUDViews(GenericModelView):
         match action:
             case Actions.DELETE:
                 defaults["success_url"] = cls.delete_success_url or reverse_lazy(f"{cls.model._meta.model_name}_list")
+
+        if cls.lookup_field:
+            defaults["lookup_field"] = cls.lookup_field
 
         return defaults
 
@@ -278,10 +302,11 @@ class CRUDViews(GenericModelView):
     @classmethod
     def get_urls(cls):
         model_name = cls.model_name()
+        url_parts = cls.url_parts()
 
         paths = [
             path(
-                f"{model_name}/{cls.url_parts[action]}",
+                f"{model_name}/{url_parts[action]}",
                 cls.as_view(action),
                 name=f"{model_name}_{action.value}",
             )
@@ -313,11 +338,12 @@ class CRUDViews(GenericModelView):
     @classmethod
     def extra_views(cls, model_name: str) -> list[URLPattern]:
         views: list[URLPattern] = []
+        lookup = cls.url_lookup()
         for name in dir(cls):
             view = getattr(cls, name)
             if all(hasattr(view, attr) for attr in ["methods", "detail", "url_path", "url_name"]):
                 if view.detail:
-                    route = f"{model_name}/<int:pk>/{view.url_path}/"
+                    route = f"{model_name}/{lookup}/{view.url_path}/"
                 else:
                     route = f"{model_name}/{view.url_path}/"
 

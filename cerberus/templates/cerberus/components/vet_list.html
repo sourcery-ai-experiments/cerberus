@@ -22,7 +22,7 @@
           <td>{{ vet.name }}</td>
           <td>{{ vet.phone }}</td>
           <td>
-            <a href="{% url 'vet_detail' vet.id %}">Details</a>
+            <a href="{% url 'vet_detail' vet.sqid %}">Details</a>
           </td>
         </tr>
       {% empty %}

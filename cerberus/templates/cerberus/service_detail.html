@@ -8,8 +8,8 @@
 {% block content %}
     <nav>
         <ul>
-            <li><a href="{% url 'service_update' service.id %}">{% include 'icons/edit.svg' %}Edit</a></li>
-            <li><a hx-get="{% url 'service_delete' service.id %}" hx-target="main" hx-swap="afterend" href="{% url 'service_delete' service.id %}">{% include 'icons/delete.svg' %}Delete</a></li>
+            <li><a href="{% url 'service_update' service.slug %}">{% include 'icons/edit.svg' %}Edit</a></li>
+            <li><a hx-get="{% url 'service_delete' service.slug %}" hx-target="main" hx-swap="afterend" href="{% url 'service_delete' service.slug %}">{% include 'icons/delete.svg' %}Delete</a></li>
         </ul>
     </nav>
 

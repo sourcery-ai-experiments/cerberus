@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "fsm_admin2",
     "django_htmx",
+    "django_extensions",
     "crispy_forms",
     "crispy_bulma",
     "polymorphic",
@@ -216,3 +217,5 @@ LOGIN_REDIRECT_URL = "dashboard"
 SERIALIZATION_MODULES = {"json": "djmoney.serializers"}
 
 SITE_ID = 1
+
+DJANGO_SQIDS_MIN_LENGTH = 6

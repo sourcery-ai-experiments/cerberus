@@ -59,7 +59,7 @@
                     <ul>
                         {% for booking in bookings %}
                             <li
-                                id="booking-{{ booking.id }}"
+                                id="booking-{{ booking.sqid }}"
                                 class="booking"
                                 :class="{ 'dragging': dragging }"
                                 draggable="{% if booking.can_move %}true{% else %}false{% endif %}"
@@ -71,8 +71,8 @@
                                     event.dataTransfer.setData('text/plain', event.target.id);
                                 {# fmt:on #}"
                                 data-length="{{ booking.length_minutes }}"
-                                data-id="{{ booking.id }}"
-                                data-move-url="{% url 'booking-move' booking.id %}"
+                                data-id="{{ booking.sqid }}"
+                                data-move-url="{% url 'booking-move' booking.sqid %}"
                                 style="--display-colour: {{ booking.service.display_colour }}"
                             >
                                 {{ booking.start|date:"H:i" }} - {{ booking.pets.all|join:", " }}

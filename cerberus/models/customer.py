@@ -16,6 +16,9 @@ from djmoney.models.managers import money_manager
 from moneyed import Money
 from taggit.managers import TaggableManager
 
+# Locals
+from ..fields import SqidsModelField as SqidsField
+
 if TYPE_CHECKING:
     from . import Booking, Charge, Contact, Vet
 
@@ -106,6 +109,8 @@ class Customer(models.Model):
         null=True,
     )
 
+    sqid = SqidsField(real_field_name="id")
+
     tags = TaggableManager(blank=True)
 
     objects = money_manager(CustomerQuerySet.as_manager())
@@ -119,7 +124,7 @@ class Customer(models.Model):
         return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse("customer_detail", kwargs={"pk": self.pk})
+        return reverse("customer_detail", kwargs={"sqid": self.sqid})
 
     @property
     def invoiced_unpaid(self):

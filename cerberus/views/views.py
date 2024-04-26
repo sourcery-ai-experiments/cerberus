@@ -19,6 +19,7 @@ class VetCRUD(CRUDViews):
     form_class = VetForm
     filter_class = VetFilter
     sortable_fields = ["name"]
+    lookup_field = "sqid"
 
 
 class ServiceCRUD(CRUDViews):
@@ -34,3 +35,4 @@ class ServiceCRUD(CRUDViews):
         "max_customer",
         "display_colour",
     ]
+    lookup_field = "slug"

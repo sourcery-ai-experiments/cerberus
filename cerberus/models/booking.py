@@ -23,6 +23,7 @@ from humanize import naturaldate
 # Locals
 from ..decorators import save_after
 from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
+from ..fields import SqidsModelField as SqidsField
 from ..utils import make_aware
 from .charge import Charge
 from .service import Service
@@ -273,6 +274,8 @@ class Booking(models.Model):
 
     charges = GenericRelation(Charge)
 
+    sqid = SqidsField(real_field_name="id")
+
     objects = BookingQuerySet.as_manager()
 
     class Meta:
@@ -307,7 +310,7 @@ class Booking(models.Model):
                 self._previous_slot.delete()
 
     def get_absolute_url(self):
-        return reverse("booking_detail", kwargs={"pk": self.pk})
+        return reverse("booking_detail", kwargs={"sqid": self.sqid})
 
     def check_valid(self) -> None:
         if any(pet.customer != self.customer for pet in self.pets.all()):

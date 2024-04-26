@@ -8,12 +8,12 @@
     <nav>
         <ul>
             <li>
-                <a href="{% url 'customer_update' customer.id %}">
+                <a href="{% url 'customer_update' customer.sqid %}">
                     {% include 'icons/edit.svg' %}Edit
                 </a>
             </li>
             <li>
-                <a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">
+                <a hx-get="{% url 'customer_delete' customer.sqid %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.sqid %}">
                     {% include 'icons/delete.svg' %}Delete
                 </a>
             </li>

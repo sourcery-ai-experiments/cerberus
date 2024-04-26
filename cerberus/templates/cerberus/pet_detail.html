@@ -9,17 +9,17 @@
     <nav>
         <ul>
             <li>
-                <a href="{% url 'pet_update' pet.id %}">{% include 'icons/edit.svg' %}Edit</a>
+                <a href="{% url 'pet_update' pet.sqid %}">{% include 'icons/edit.svg' %}Edit</a>
             </li>
             <li>
-                <a hx-get="{% url 'pet_delete' pet.id %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.id %}">{% include 'icons/delete.svg' %}Delete</a>
+                <a hx-get="{% url 'pet_delete' pet.sqid %}" hx-target="main" hx-swap="afterend" href="{% url 'pet_delete' pet.sqid %}">{% include 'icons/delete.svg' %}Delete</a>
             </li>
         </ul>
     </nav>
 
     <div class="grid pair">
         <div>Name</div><div>{{ pet.name }}</div>
-        <div>Customer</div><div><a href="{% url 'customer_detail' pet.customer.pk %}">{{ pet.customer }}</a></div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' pet.customer.sqid %}">{{ pet.customer }}</a></div>
         <div>Description</div><div>{{ pet.description }}</div>
         <div>Dob</div><div>{{ pet.dob }}</div>
         <div>Sex</div><div>{{ pet.sex|title }}</div>

@@ -37,6 +37,7 @@ class BookingCRUD(CRUDViews):
     form_class = BookingForm
     filter_class = BookingFilter
     sortable_fields = ["customer__name", "pets", "service", "start", "length"]
+    lookup_field = "sqid"
 
     @classmethod
     def get_view_class(cls, action: Actions):
@@ -220,3 +221,4 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
 class BookingStateActions(TransitionView):
     model = Booking
     field = "state"
+    lookup_field = "sqid"
