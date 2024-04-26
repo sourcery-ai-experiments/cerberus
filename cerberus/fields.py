@@ -5,6 +5,7 @@ from functools import lru_cache
 
 # Third Party
 from django_sqids import SqidsField
+from sqids import Sqids
 
 
 @lru_cache
@@ -16,6 +17,18 @@ def shuffled_alphabet(model_name: str) -> str:
 
 
 class SqidsModelField(SqidsField):
+    _sqids_instance: Sqids | None = None
+
+    @property
+    def sqids_instance(self) -> Sqids:
+        if self._sqids_instance is None:
+            raise ValueError("sqids_instance is not set")
+        return self._sqids_instance
+
+    @sqids_instance.setter
+    def sqids_instance(self, value: Sqids) -> None:
+        self._sqids_instance = value
+
     def get_sqid_instance(self):
         if self.alphabet is None:
             self.alphabet = shuffled_alphabet(self.model._meta.object_name)
