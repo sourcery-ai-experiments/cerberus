@@ -17,13 +17,13 @@ from django.utils.functional import lazy
 # Third Party
 import reversion
 from django_fsm import FSMField, Transition, transition
-from django_sqids import SqidsField
 from djmoney.models.fields import MoneyField
 from humanize import naturaldate
 
 # Locals
 from ..decorators import save_after
 from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
+from ..fields import SqidsModelField as SqidsField
 from ..utils import make_aware
 from .charge import Charge
 from .service import Service

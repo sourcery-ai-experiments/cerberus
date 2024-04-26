@@ -4,7 +4,9 @@ from django.urls import reverse
 
 # Third Party
 import reversion
-from django_sqids import SqidsField
+
+# Locals
+from ..fields import SqidsModelField as SqidsField
 
 
 @reversion.register()

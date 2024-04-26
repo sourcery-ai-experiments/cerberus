@@ -10,11 +10,11 @@ from django.utils.translation import gettext_lazy as _
 
 # Third Party
 import reversion
-from django_sqids import SqidsField
 from humanize import naturaldelta
 from taggit.managers import TaggableManager
 
 # Locals
+from ..fields import SqidsModelField as SqidsField
 from ..utils import choice_length
 
 if TYPE_CHECKING:

@@ -12,10 +12,12 @@ from django.urls import reverse
 
 # Third Party
 import reversion
-from django_sqids import SqidsField
 from djmoney.models.managers import money_manager
 from moneyed import Money
 from taggit.managers import TaggableManager
+
+# Locals
+from ..fields import SqidsModelField as SqidsField
 
 if TYPE_CHECKING:
     from . import Booking, Charge, Contact, Vet
