@@ -427,9 +427,9 @@ django-polymorphic==3.1.0 \
 django-reversion==5.0.12 \
     --hash=sha256:5884e9f77f55c341b3f0a8d3b0af000f060530653776997267c8b1e5349d8fee \
     --hash=sha256:c047cc99a9f1ba4aae6db89c3ac243478d6de98ec8a60c7073fcc875d89c5cdb
-django-stubs==4.2.7 \
-    --hash=sha256:4cf4de258fa71adc6f2799e983091b9d46cfc67c6eebc68fe111218c9a62b3b8 \
-    --hash=sha256:8ccd2ff4ee5adf22b9e3b7b1a516d2e1c2191e9d94e672c35cc2bc3dd61e0f6b
+django-stubs==5.0.0 \
+    --hash=sha256:084484cbe16a6d388e80ec687e46f529d67a232f3befaf55c936b3b476be289d \
+    --hash=sha256:b8a792bee526d6cab31e197cb414ee7fa218abd931a50948c66a80b3a2548621
     # via djangorestframework-stubs
 django-stubs-ext==5.0.0 \
     --hash=sha256:5bacfbb498a206d5938454222b843d81da79ea8b6fcd1a59003f529e775bc115 \
