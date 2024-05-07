@@ -233,9 +233,9 @@ cssselect2==0.7.0 \
 dj-database-url==2.1.0 \
     --hash=sha256:04bc34b248d4c21aaa13e4ab419ae6575ef5f10f3df735ce7da97722caa356e0 \
     --hash=sha256:f2042cefe1086e539c9da39fad5ad7f61173bf79665e69bf7e4de55fa88b135f
-django==5.0.5 \
-    --hash=sha256:8af4f166dc9a2bb822f9374cd78e34a10c286b402597fe2c7fb97c131656ba65 \
-    --hash=sha256:dc95c9cb2a37ba54599d9d1c8faf81609d36f3e74cd04395ce1300573e57baf9
+django==5.0.6 \
+    --hash=sha256:8363ac062bb4ef7c3f12d078f6fa5d154031d129a15170a1066412af49d30905 \
+    --hash=sha256:ff1b61005004e476e0aeea47c7f79b85864c70124030e95146315396f1e7951f
     # via
     #   crispy-bulma
     #   dj-database-url
