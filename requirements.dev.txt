@@ -938,9 +938,9 @@ pygments==2.17.2 \
     # via
     #   icecream
     #   rich
-pyhanko==0.24.0 \
-    --hash=sha256:8eb7c0691f6697f8d2524c0e5f5e10aedb2f3bb5047d6e3011fe0d5d22cac4ed \
-    --hash=sha256:d91e6a939ad15387225e38533aeca8369dd34bac3bc79be9b225a41f02daba7a
+pyhanko==0.25.0 \
+    --hash=sha256:02a9b55327c2325fd0a7a074e02590b67e896ebbaec670bff946e1fbb7d7f86a \
+    --hash=sha256:9063151a87dd52bb61ff4937fd76c5ffb1538996b530955cba152585d5659446
     # via xhtml2pdf
 pyhanko-certvalidator==0.26.3 \
     --hash=sha256:47fba8e9dbf846d766f2e0a453572dd4b25b2f1397847a31fe892c8eb00391f5 \
