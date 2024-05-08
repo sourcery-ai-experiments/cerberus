@@ -418,9 +418,9 @@ django-htmx==1.17.3 \
 django-model-utils==4.5.1 \
     --hash=sha256:1220f22d9a467d53a1e0f4cda4857df0b2f757edf9a29955c42461988caa648a \
     --hash=sha256:f1141fc71796242edeffed5ad53a8cc57f00d345eb5a3a63e3f69401cd562ee2
-django-money==3.4.1 \
-    --hash=sha256:0c15c957c4c1571c7492675608c2ce54d1d446bce9957d042669acca14b732c9 \
-    --hash=sha256:aef49da4ae3ff27791d03204062f4a294bdb5dd8554dcd398866c46c54461486
+django-money==3.5.2 \
+    --hash=sha256:161f79dc523b1f57c21b5f46b345f5e5f5b9c5bb40965fd3f6cfe3e41d7dce35 \
+    --hash=sha256:ef51437178e0e15fb1072776556614828ce6239a49ca5b3c3b9bf1370e46d03d
 django-polymorphic==3.1.0 \
     --hash=sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e \
     --hash=sha256:d6955b5308bf6e41dcb22ba7c96f00b51dfa497a8a5ab1e9c06c7951bf417bf8
