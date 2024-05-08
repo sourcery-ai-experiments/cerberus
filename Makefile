@@ -4,7 +4,7 @@
 .FORCE:
 
 HOOKS=$(.git/hooks/pre-commit)
-REQS=$(wildcard requirements.*.txt)
+REQS=$(shell python -c 'import tomllib;[print(f"requirements.{k}.txt") for k in tomllib.load(open("pyproject.toml", "rb"))["project"]["optional-dependencies"].keys()]')
 
 CSS_FILES:=$(shell find assets -name *.css)
 COG_FILE:=.cogfiles
@@ -98,9 +98,17 @@ watch-assets: ## Watch and build the css and js
 		$(MAKE) css js; \
 	done
 
-install: $(UV_PATH) requirements.txt requirements.dev.txt ## Install development requirements (default)
+install: $(UV_PATH) requirements.txt $(REQS) ## Install development requirements (default)
 	@echo "Installing $(filter-out $<,$^)"
 	python -m uv pip sync $(filter-out $<,$^)
+
+_upgrade: $(UV_PATH) requirements.txt
+	@echo "Upgrading pip packages"
+	@python -m pip install --upgrade pip
+	@python -m uv pip compile -q --upgrade -o requirements.txt pyproject.toml
+
+upgrade: _upgrade $(PRE_COMMIT_PATH) .direnv  ## Upgrade the project requirements
+	python -m pre_commit autoupdate
 
 $(ESBUILD_PATH): node_modules
 
