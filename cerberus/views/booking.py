@@ -182,7 +182,7 @@ class BookingCalenderDay(TemplateView, CalendarBreadCrumbs):
         return [BookingGroup(t, bookings_by_date[t.time()]) for t in times]
 
     def get_times(self, date: dt.date, step: int = 15, start: int = 8, end: int = 17) -> list[dt.datetime]:
-        min_time, max_time = Booking.get_mix_max_time(date)
+        min_time, max_time = Booking.get_min_max_time(date)
 
         bookings_start = getattr(min_time, "hour", start + 1) - 1
         bookings_end = getattr(max_time, "hour", end - 1) + 1
