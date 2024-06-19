@@ -8,6 +8,7 @@ requires = [
 
 [project]
 name = "cerberus"
+version = "0.1.0"
 description = "Cerberus, the dog walkers CRM"
 readme = "README.rst"
 license = { file = "LICENSE" }
@@ -18,9 +19,6 @@ requires-python = ">=3.12"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
-]
-dynamic = [
-  "version",
 ]
 dependencies = [
   "crispy-bulma",
@@ -140,3 +138,11 @@ warn_no_return = true
 
 [tool.django-stubs]
 django_settings_module = "cerberus_crm.settings"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver2"
+version_provider = "pep621"
+update_changelog_on_bump = true
+major_version_zero = true
