@@ -163,3 +163,11 @@ class Customer(models.Model):
         return self.bookings.filter(start__gte=datetime.today()).exclude(
             state__in=[BookingStates.CANCELED.value, BookingStates.COMPLETED.value]
         )
+
+    @property
+    def past_bookings(self) -> QuerySet["Booking"]:
+        return (
+            self.bookings.filter(start__lt=datetime.today())
+            .exclude(state__in=[BookingStates.CANCELED.value])
+            .order_by("-start")
+        )

@@ -1,2 +1,6 @@
 <h3>Bookings</h3>
+<h4>Upcoming</h4>
 {% include "cerberus/components/booking_list.html" with bookings=customer.upcoming_bookings hide_customer=True %}
+
+<h4>Past</h4>
+{% include "cerberus/components/booking_list.html" with bookings=customer.past_bookings hide_customer=True %}
