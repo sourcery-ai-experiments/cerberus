@@ -48,7 +48,7 @@ dependencies = [
   "mjml-python",
   "psycopg2",
   "pytz",
-  "reportlab==4.0.9",
+  "reportlab==4.2.0",
   "uritemplate",
   "wheel",
   "whitenoise",

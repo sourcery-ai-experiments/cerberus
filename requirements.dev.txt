@@ -1114,9 +1114,9 @@ referencing==0.35.1 \
     # via
     #   jsonschema
     #   jsonschema-specifications
-reportlab==4.0.9 \
-    --hash=sha256:c9656216321897486e323be138f7aea67851cedc116b8cc35f8ec7f8cc763538 \
-    --hash=sha256:f32bff66a0fda234202e1e33eaf77f25008871a61cb01cd91584a521a04c0047
+reportlab==4.2.0 \
+    --hash=sha256:474fb28d63431a5d47d75c90d580393050df7d491a09c7877df3291a2e9f6d0a \
+    --hash=sha256:53630f9d25a7938def3e6a93d723b72a7a5921d34d23cf7a0930adeb2cb0e6c1
     # via
     #   cerberus (pyproject.toml)
     #   svglib
