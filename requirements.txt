@@ -189,6 +189,7 @@ click==8.1.7 \
 crispy-bulma==0.11.0 \
     --hash=sha256:27eccd09a5a77754d64462f61ff585c00feb8c15f65d0d8f9676ab26f6bc3562 \
     --hash=sha256:bc5406d64649a3da9c61d1aa969cb2c39bb3a1802ba8ee4bccebe94a84ca94e1
+    # via cerberus (pyproject.toml)
 cryptography==42.0.8 \
     --hash=sha256:013629ae70b40af70c9a7a5db40abe5d9054e6f4380e50ce769947b73bf3caad \
     --hash=sha256:2346b911eb349ab547076f47f2e035fc8ff2c02380a7cbbf8d87114fa0f1c583 \
@@ -233,16 +234,20 @@ cssselect2==0.7.0 \
 dj-database-url==2.2.0 \
     --hash=sha256:3e792567b0aa9a4884860af05fe2aa4968071ad351e033b6db632f97ac6db9de \
     --hash=sha256:9f9b05058ddf888f1e6f840048b8d705ff9395e3b52a07165daa3d8b9360551b
+    # via cerberus (pyproject.toml)
 django==5.0.6 \
     --hash=sha256:8363ac062bb4ef7c3f12d078f6fa5d154031d129a15170a1066412af49d30905 \
     --hash=sha256:ff1b61005004e476e0aeea47c7f79b85864c70124030e95146315396f1e7951f
     # via
+    #   cerberus (pyproject.toml)
     #   crispy-bulma
     #   dj-database-url
     #   django-appconf
     #   django-cors-headers
     #   django-crispy-forms
+    #   django-extensions
     #   django-filter
+    #   django-fsm-2
     #   django-fsm-admin2
     #   django-fsm-log
     #   django-htmx
@@ -261,61 +266,90 @@ django-appconf==1.0.6 \
 django-cors-headers==4.4.0 \
     --hash=sha256:5c6e3b7fe870876a1efdfeb4f433782c3524078fa0dc9e0195f6706ce7a242f6 \
     --hash=sha256:92cf4633e22af67a230a1456cb1b7a02bb213d6536d2dcb2a4a24092ea9cebc2
+    # via cerberus (pyproject.toml)
 django-crispy-forms==2.2 \
     --hash=sha256:92cb7b7786fb82646bad739343fd17a99a04b0b736a09e34f3b91f26cbca7e4a \
     --hash=sha256:a681cffd5af270b3082bda02cf8f81bdb5717ed66d2265e87e3df2f4ccf46277
-    # via crispy-bulma
+    # via
+    #   cerberus (pyproject.toml)
+    #   crispy-bulma
+django-extensions==3.2.3 \
+    --hash=sha256:44d27919d04e23b3f40231c4ab7af4e61ce832ef46d610cc650d53e68328410a \
+    --hash=sha256:9600b7562f79a92cbf1fde6403c04fee314608fefbb595502e34383ae8203401
+    # via cerberus (pyproject.toml)
 django-filter==24.2 \
     --hash=sha256:48e5fc1da3ccd6ca0d5f9bb550973518ce977a4edde9d2a8a154a7f4f0b9f96e \
     --hash=sha256:df2ee9857e18d38bed203c8745f62a803fa0f31688c9fe6f8e868120b1848e48
+    # via cerberus (pyproject.toml)
 django-fsm==3.0.0 \
     --hash=sha256:0112bcac573ad14051cf8ebe73bf296b6d5409f093e5f1677eb16e2196e263b3 \
     --hash=sha256:fa28f84f47eae7ce9247585ac6c1895e4ada08efff93fb243a59e9ff77b2d4ec
     # via
     #   django-fsm-admin2
     #   django-fsm-log
+django-fsm-2==3.0.0 \
+    --hash=sha256:19887dcd6009d9b785f6114527e6542f380c5af7061c47bebefcbad9ace730aa \
+    --hash=sha256:5ca98a4c1f5537a54433f3963cd8473dcdc039d9bc8c8045250d290f84a25b35
+    # via cerberus (pyproject.toml)
 django-fsm-admin2==0.1.3 \
     --hash=sha256:01ad05c8a115783aab8c6a196adfde9ab58f513b00c62d180fcee57a8e9adaf3 \
     --hash=sha256:0f57b860c7ec48a92127ec574ebb469e0285b68fea3f283dea742b11845fde39
+    # via cerberus (pyproject.toml)
 django-fsm-log==3.1.0 \
     --hash=sha256:9ef766f5e6d7c573d1953cf91df73538a611373cc1ef97488eff19a3f71d6ed6 \
     --hash=sha256:ac4394f22659e7fb8e5ac42d1cc075490cd5a2af37202377ab2a1cb221c5f3db
+    # via cerberus (pyproject.toml)
 django-htmx==1.18.0 \
     --hash=sha256:48f3b8a784467bfcc30562067b87ecbc4ad9b739cc269eec5f3789c16d2cb2ce \
     --hash=sha256:db8a0cc15bcd0f7ae929bcb9108d9e6be228843092aca7956d977c31c4d95aae
+    # via cerberus (pyproject.toml)
 django-model-utils==4.5.1 \
     --hash=sha256:1220f22d9a467d53a1e0f4cda4857df0b2f757edf9a29955c42461988caa648a \
     --hash=sha256:f1141fc71796242edeffed5ad53a8cc57f00d345eb5a3a63e3f69401cd562ee2
+    # via cerberus (pyproject.toml)
 django-money==3.5.2 \
     --hash=sha256:161f79dc523b1f57c21b5f46b345f5e5f5b9c5bb40965fd3f6cfe3e41d7dce35 \
     --hash=sha256:ef51437178e0e15fb1072776556614828ce6239a49ca5b3c3b9bf1370e46d03d
+    # via cerberus (pyproject.toml)
 django-polymorphic==3.1.0 \
     --hash=sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e \
     --hash=sha256:d6955b5308bf6e41dcb22ba7c96f00b51dfa497a8a5ab1e9c06c7951bf417bf8
+    # via cerberus (pyproject.toml)
 django-reversion==5.0.12 \
     --hash=sha256:5884e9f77f55c341b3f0a8d3b0af000f060530653776997267c8b1e5349d8fee \
     --hash=sha256:c047cc99a9f1ba4aae6db89c3ac243478d6de98ec8a60c7073fcc875d89c5cdb
+    # via cerberus (pyproject.toml)
+django-sqids==0.2.0 \
+    --hash=sha256:fd3e727f0a8d8d50038c367bd1b0976e57678bb429bce9b1079d119a19e6791d \
+    --hash=sha256:fe2620dd78c0de8f500e0ced2ee73d561abd07c93f9b3f396f0e17bf61f05368
+    # via cerberus (pyproject.toml)
 django-taggit==5.0.1 \
     --hash=sha256:a0ca8a28b03c4b26c2630fd762cb76ec39b5e41abf727a7b66f897a625c5e647 \
     --hash=sha256:edcd7db1e0f35c304e082a2f631ddac2e16ef5296029524eb792af7430cab4cc
+    # via cerberus (pyproject.toml)
 django-vanilla-views==3.0.0 \
     --hash=sha256:ab49c4e410f00e04a89eff0403aa14f098c0ba251657deff7a2d5c3ebe23602f \
     --hash=sha256:b65f27b8d5de53f695a397438337be882a6c7b5d8d30333a4cf98c9239fe0b86
+    # via cerberus (pyproject.toml)
 djangorestframework==3.15.2 \
     --hash=sha256:2b8871b062ba1aefc2de01f773875441a961fefbf79f5eed1e32b2f096944b20 \
     --hash=sha256:36fe88cd2d6c6bec23dca9804bab2ba5517a8bb9d8f47ebc68981b56840107ad
     # via
+    #   cerberus (pyproject.toml)
     #   djangorestframework-simplejwt
     #   drf-spectacular
 djangorestframework-simplejwt==5.3.1 \
     --hash=sha256:381bc966aa46913905629d472cd72ad45faa265509764e20ffd440164c88d220 \
     --hash=sha256:6c4bd37537440bc439564ebf7d6085e74c5411485197073f508ebdfa34bc9fae
+    # via cerberus (pyproject.toml)
 drf-spectacular==0.27.2 \
     --hash=sha256:a199492f2163c4101055075ebdbb037d59c6e0030692fc83a1a8c0fc65929981 \
     --hash=sha256:b1c04bf8b2fbbeaf6f59414b4ea448c8787aba4d32f76055c3b13335cf7ec37b
+    # via cerberus (pyproject.toml)
 gunicorn==22.0.0 \
     --hash=sha256:350679f91b24062c86e386e198a15438d53a7a8207235a78ba1b53df4c4378d9 \
     --hash=sha256:4a0b436239ff76fb33f11c07a16482c521a7e09c1ce3cc293c2330afe01bec63
+    # via cerberus (pyproject.toml)
 html5lib==1.1 \
     --hash=sha256:0d78f8fde1c230e99fe37986a60526d7049ed4bf8a9fadbad5f00e22e58e041d \
     --hash=sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f
@@ -323,6 +357,7 @@ html5lib==1.1 \
 humanize==4.9.0 \
     --hash=sha256:582a265c931c683a7e9b8ed9559089dea7edcf6cc95be39a3cbc2c5d5ac2bcfa \
     --hash=sha256:ce284a76d5b1377fd8836733b983bfb0b76f1aa1c090de2566fcf008d7f6ab16
+    # via cerberus (pyproject.toml)
 idna==3.7 \
     --hash=sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc \
     --hash=sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0
@@ -354,6 +389,7 @@ lxml==5.2.2 \
     --hash=sha256:19b4e485cd07b7d83e3fe3b72132e7df70bfac22b14fe4bf7a23822c3a35bff5 \
     --hash=sha256:1a2569a1f15ae6c8c64108a2cd2b4a858fc1e13d25846be0666fc144715e32ab \
     --hash=sha256:1a7aca7964ac4bb07680d5c9d63b9d7028cace3e2d43175cb50bba8c5ad33316 \
+    --hash=sha256:1b590b39ef90c6b22ec0be925b211298e810b4856909c8ca60d27ffbca6c12e6 \
     --hash=sha256:1d8a701774dfc42a2f0b8ccdfe7dbc140500d1049e0632a611985d943fcf12df \
     --hash=sha256:1e275ea572389e41e8b039ac076a46cb87ee6b8542df3fff26f5baab43713bca \
     --hash=sha256:2304d3c93f2258ccf2cf7a6ba8c761d76ef84948d87bf9664e14d203da2cd264 \
@@ -409,6 +445,7 @@ lxml==5.2.2 \
     --hash=sha256:79d1fb9252e7e2cfe4de6e9a6610c7cbb99b9708e2c3e29057f487de5a9eaefa \
     --hash=sha256:7ce7ad8abebe737ad6143d9d3bf94b88b93365ea30a5b81f6877ec9c0dee0a48 \
     --hash=sha256:7ed07b3062b055d7a7f9d6557a251cc655eed0b3152b76de619516621c56f5d3 \
+    --hash=sha256:7ff762670cada8e05b32bf1e4dc50b140790909caa8303cfddc4d702b71ea184 \
     --hash=sha256:8268cbcd48c5375f46e000adb1390572c98879eb4f77910c6053d25cc3ac2c67 \
     --hash=sha256:875a3f90d7eb5c5d77e529080d95140eacb3c6d13ad5b616ee8095447b1d22e7 \
     --hash=sha256:89feb82ca055af0fe797a2323ec9043b26bc371365847dbe83c7fd2e2f181c34 \
@@ -426,6 +463,7 @@ lxml==5.2.2 \
     --hash=sha256:a233bb68625a85126ac9f1fc66d24337d6e8a0f9207b688eec2e7c880f012ec0 \
     --hash=sha256:a2f6a1bc2460e643785a2cde17293bd7a8f990884b822f7bca47bee0a82fc66b \
     --hash=sha256:a6d17e0370d2516d5bb9062c7b4cb731cff921fc875644c3d751ad857ba9c5b1 \
+    --hash=sha256:a6d2092797b388342c1bc932077ad232f914351932353e2e8706851c870bca1f \
     --hash=sha256:ab67ed772c584b7ef2379797bf14b82df9aa5f7438c5b9a09624dd834c1c1aaf \
     --hash=sha256:ac6540c9fff6e3813d29d0403ee7a81897f1d8ecc09a8ff84d2eea70ede1cdbf \
     --hash=sha256:ae4073a60ab98529ab8a72ebf429f2a8cc612619a8c04e08bed27450d52103c0 \
@@ -444,6 +482,7 @@ lxml==5.2.2 \
     --hash=sha256:bcc98f911f10278d1daf14b87d65325851a1d29153caaf146877ec37031d5f36 \
     --hash=sha256:be49ad33819d7dcc28a309b86d4ed98e1a65f3075c6acd3cd4fe32103235222b \
     --hash=sha256:bec4bd9133420c5c52d562469c754f27c5c9e36ee06abc169612c959bd7dbb07 \
+    --hash=sha256:c2faf60c583af0d135e853c86ac2735ce178f0e338a3c7f9ae8f622fd2eb788c \
     --hash=sha256:c689d0d5381f56de7bd6966a4541bff6e08bf8d3871bbd89a0c6ab18aa699573 \
     --hash=sha256:c7079d5eb1c1315a858bbf180000757db8ad904a89476653232db835c3114001 \
     --hash=sha256:cb3942960f0beb9f46e2a71a3aca220d1ca32feb5a398656be934320804c0df9 \
@@ -482,6 +521,7 @@ lxml==5.2.2 \
 markdown==3.6 \
     --hash=sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f \
     --hash=sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224
+    # via cerberus (pyproject.toml)
 mjml-python==1.3.3 \
     --hash=sha256:24083860fd3d6d78bff37d73f1fcf8f1d60c2eeb348bea151c262e60e2d68d95 \
     --hash=sha256:321ad94a7ef39902d69bce4f090ba5b4c1a9277ee759bdd3ce0d56bc6404d26d \
@@ -489,6 +529,7 @@ mjml-python==1.3.3 \
     --hash=sha256:4e8193ed7ac803bfc83b4452dc3dbf8adb017dbf3297dbcba232b4ee7011cb73 \
     --hash=sha256:99c34ce7138d2400ec889d5fc263add31a9b60ce9673790f4c6a2db4563b0dcb \
     --hash=sha256:c4fa9a4eca964889a3d3816750cba92a91abc852f17d8fd9cc3c63765abaf970
+    # via cerberus (pyproject.toml)
 oscrypto==1.3.0 \
     --hash=sha256:2b2f1d2d42ec152ca90ccb5682f3e051fb55986e1b170ebde472b133713e7085 \
     --hash=sha256:6f5fef59cb5b3708321db7cca56aed8ad7e662853351e7991fcf60ec606d47a4
@@ -584,6 +625,7 @@ psycopg2==2.9.9 \
     --hash=sha256:d735786acc7dd25815e89cc4ad529a43af779db2e25aa7c626de864127e5a024 \
     --hash=sha256:de80739447af31525feddeb8effd640782cf5998e1a4e9192ebdf829717e3913 \
     --hash=sha256:ff432630e510709564c01dafdbe996cb552e0b9f3f065eb89bdce5bd31fabf4c
+    # via cerberus (pyproject.toml)
 py-moneyed==3.0 \
     --hash=sha256:4906f0f02cf2b91edba2e156f2d4e9a78f224059ab8c8fa2ff26230c75d894e8 \
     --hash=sha256:9583a14f99c05b46196193d8185206e9b73c8439fc8a5eee9cfc7e733676d9bb
@@ -621,6 +663,7 @@ python-bidi==0.4.2 \
 pytz==2024.1 \
     --hash=sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812 \
     --hash=sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319
+    # via cerberus (pyproject.toml)
 pyyaml==6.0.1 \
     --hash=sha256:04ac92ad1925b2cff1db0cfebffb6ffc43457495c9b3c39d3fcae417d7125dc5 \
     --hash=sha256:062582fca9fabdd2c8b54a3ef1c978d786e0f6b3a1510e0ac93ef59e0ddae2bc \
@@ -690,6 +733,7 @@ reportlab==4.0.9 \
     --hash=sha256:c9656216321897486e323be138f7aea67851cedc116b8cc35f8ec7f8cc763538 \
     --hash=sha256:f32bff66a0fda234202e1e33eaf77f25008871a61cb01cd91584a521a04c0047
     # via
+    #   cerberus (pyproject.toml)
     #   svglib
     #   xhtml2pdf
 requests==2.32.3 \
@@ -811,6 +855,10 @@ six==1.16.0 \
     # via
     #   html5lib
     #   python-bidi
+sqids==0.4.1 \
+    --hash=sha256:fe48319ae1a7ea4faca77920f454fcf2946bbca540a468a98d979ba490d195bd \
+    --hash=sha256:ffc3fbfef63491bee8b940a98065388345dbefb06d49e415b7a9e475ca200f9d
+    # via django-sqids
 sqlparse==0.5.0 \
     --hash=sha256:714d0a4932c059d16189f58ef5411ec2287a4360f17cdd0edd2d09d4c5087c93 \
     --hash=sha256:c204494cd97479d0e39f28c93d46c0b2d5959c7b9ab904762ea6c7af211c8663
@@ -818,9 +866,9 @@ sqlparse==0.5.0 \
 svglib==1.5.1 \
     --hash=sha256:3ae765d3a9409ee60c0fb4d24c2deb6a80617aa927054f5bcd7fc98f0695e587
     # via xhtml2pdf
-tinycss2==1.2.1 \
-    --hash=sha256:2b80a96d41e7c3914b8cda8bc7f705a4d9c49275616e886103dd839dfc847847 \
-    --hash=sha256:8cff3a8f066c2ec677c06dbc7b45619804a6938478d9d73c284b29d14ecb0627
+tinycss2==1.3.0 \
+    --hash=sha256:152f9acabd296a8375fbca5b84c961ff95971fcfc32e79550c8df8e29118c54d \
+    --hash=sha256:54a8dbdffb334d536851be0226030e9505965bb2f30f21a4a82c55fb2a80fae7
     # via
     #   cssselect2
     #   svglib
@@ -838,7 +886,9 @@ tzlocal==5.2 \
 uritemplate==4.1.1 \
     --hash=sha256:4346edfc5c3b79f694bccd6d6099a322bbeb628dbf2cd86eea55a456ce5124f0 \
     --hash=sha256:830c08b8d99bdd312ea4ead05994a38e8936266f84b9a7878232db50b044e02e
-    # via drf-spectacular
+    # via
+    #   cerberus (pyproject.toml)
+    #   drf-spectacular
 uritools==4.0.3 \
     --hash=sha256:bae297d090e69a0451130ffba6f2f1c9477244aa0a5543d66aed2d9f77d0dd9c \
     --hash=sha256:ee06a182a9c849464ce9d5fa917539aacc8edd2a4924d1b7aabeeecabcae3bc2
@@ -857,9 +907,12 @@ webencodings==0.5.1 \
 wheel==0.43.0 \
     --hash=sha256:465ef92c69fa5c5da2d1cf8ac40559a8c940886afcef87dcf14b9470862f1d85 \
     --hash=sha256:55c570405f142630c6b9f72fe09d9b67cf1477fcf543ae5b8dcb1f5b7377da81
+    # via cerberus (pyproject.toml)
 whitenoise==6.7.0 \
     --hash=sha256:58c7a6cd811e275a6c91af22e96e87da0b1109e9a53bb7464116ef4c963bf636 \
     --hash=sha256:a1ae85e01fdc9815d12fa33f17765bc132ed2c54fa76daf9e39e879dd93566f6
+    # via cerberus (pyproject.toml)
 xhtml2pdf==0.2.16 \
     --hash=sha256:7391adac12afb086561667cdc8d6ef0ac4afe5097bd97383622d42b6343dee71 \
     --hash=sha256:b37040127627aee42f76f25ebbd5798308ffc93edaf4850a4d3dd894160ebb53
+    # via cerberus (pyproject.toml)

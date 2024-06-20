@@ -1,25 +1,34 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools",
+  "setuptools-scm",
+  "wheel",
+]
+
 [project]
 name = "cerberus"
+version = "0.1.0"
 description = "Cerberus, the dog walkers CRM"
 readme = "README.rst"
 license = { file = "LICENSE" }
-authors = [{ name = "Ben Gosney", email = "bengosney@googlemail.com" }]
+authors = [
+  { name = "Ben Gosney", email = "bengosney@googlemail.com" },
+]
 requires-python = ">=3.12"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
 ]
-dynamic = [
-  "version",
-]
 dependencies = [
   "crispy-bulma",
   "dj-database-url",
-  "django>=4",
+  "django>=5",
   "django-cors-headers",
   "django-crispy-forms",
+  "django-extensions",
   "django-filter",
-  "django-fsm",
+  "django-fsm-2",
   "django-fsm-admin2",
   "django-fsm-log",
   "django-htmx",
@@ -27,6 +36,7 @@ dependencies = [
   "django-money",
   "django-polymorphic",
   "django-reversion",
+  "django-sqids",
   "django-taggit",
   "django-vanilla-views",
   "djangorestframework",
@@ -44,15 +54,12 @@ dependencies = [
   "whitenoise",
   "xhtml2pdf",
 ]
-[project.optional-dependencies]
-dev = [
+optional-dependencies.dev = [
   "black",
   "cogapp",
   "django-browser-reload",
   "django-debug-toolbar",
-  "django-debug-toolbar",
   "django-debugtools",
-  "django-extensions",
   "django-stubs",
   "djangorestframework-stubs",
   "faker",
@@ -60,7 +67,7 @@ dev = [
   "graphviz",
   "hypothesis[django]",
   "icecream",
-  "model_bakery",
+  "model-bakery",
   "mypy",
   "pip-tools",
   "pre-commit",
@@ -71,41 +78,49 @@ dev = [
   "pytest-django-queries",
   "pytest-freezegun",
   "ruff",
-  "setuptools_scm",
+  "setuptools-scm",
   "types-python-dateutil",
 ]
-[project.urls]
-homepage = "https://cerberus.stretchtheirlegs.co.uk/"
-repository = "http://www.github.com/bengosney/cerberus"
-
-[build-system]
-build-backend = "setuptools.build_meta"
-requires = [
-  "setuptools",
-  "setuptools_scm",
-  "wheel",
-]
+urls.homepage = "https://cerberus.stretchtheirlegs.co.uk/"
+urls.repository = "http://www.github.com/bengosney/cerberus"
 
 [tool.setuptools.package-data]
-cerberus = ["templates/cerberus/*.html", "templates/cerberus/*.svg"]
+cerberus = [
+  "templates/cerberus/*.html",
+  "templates/cerberus/*.svg",
+]
 
 [tool.setuptools_scm]
 
 [tool.ruff]
-line-length = 120
 target-version = "py312"
+line-length = 120
 exclude = [
-    "migrations",
+  "migrations",
 ]
 
-[tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "UP", "DJ", "C90", "N"]
+lint.select = [
+  "C90",
+  "DJ",
+  "E4",
+  "E7",
+  "E9",
+  "F",
+  "N",
+  "UP",
+]
 
 [tool.coverage.run]
-source = ["cerberus", "cerberus_crm"]
+source = [
+  "cerberus",
+  "cerberus_crm",
+]
 
 [tool.mypy]
-plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+plugins = [
+  "mypy_django_plugin.main",
+  "mypy_drf_plugin.main",
+]
 check_untyped_defs = true
 disallow_any_generics = true
 disallow_untyped_calls = true
@@ -123,3 +138,11 @@ warn_no_return = true
 
 [tool.django-stubs]
 django_settings_module = "cerberus_crm.settings"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver2"
+version_provider = "pep621"
+update_changelog_on_bump = true
+major_version_zero = true

@@ -11,6 +11,7 @@ from django_filters.widgets import RangeWidget
 
 # Locals
 from .models import Booking, Customer, Invoice, Pet, Service, Vet
+from .models.booking import BookingStates
 
 ACTIVE_CHOICES = ((True, "Active"), (False, "Inactive"))
 
@@ -26,6 +27,14 @@ class Switch(forms.widgets.Input):
 
 class RangeInput(RangeWidget):
     template_name = "forms/widgets/range_input.html"
+
+
+class DateRangeInput(RangeWidget):
+    template_name = "forms/widgets/date_range_input.html"
+
+
+class CheckboxSelectMultipleDropdown(forms.CheckboxSelectMultiple):
+    crispy_template = "forms/widgets/checkbox_select_multiple_dropdown.html"
 
 
 class FilterDefaults(filters.FilterSet):
@@ -94,9 +103,12 @@ class CustomerFilter(FilterDefaults):
 
 
 class BookingFilter(FilterDefaults):
-    from_date = filters.DateFilter(field_name="end", lookup_expr="gte")
-    to_date = filters.DateFilter(field_name="start", lookup_expr="lte")
-    on_date = filters.DateFilter(field_name="start", lookup_expr="date")
+    state = filters.MultipleChoiceFilter(choices=BookingStates.choices, widget=forms.CheckboxSelectMultiple)
+    date = filters.DateFromToRangeFilter(widget=DateRangeInput, field_name="start", lookup_expr="date")
+    service__name = filters.MultipleChoiceFilter(
+        choices=Service.objects.values_list("name", "name"),
+        widget=forms.CheckboxSelectMultiple,
+    )
     customer__name = filters.CharFilter(lookup_expr="icontains", label="Customer")
     pets__name = filters.CharFilter(lookup_expr="icontains", label="Pet")
 

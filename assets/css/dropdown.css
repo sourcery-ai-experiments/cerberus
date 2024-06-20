@@ -24,52 +24,54 @@ details[role="list"] {
     &::after {
       transform: rotate(0deg);
     }
-    & + ul {
+    & + .ul {
       opacity: 0;
       transform: scaleY(0);
       transition:
         opacity var(--pico-transition),
         transform 0s ease-in-out 1s;
+    }
+  }
+}
 
-      list-style: none;
+[role="listbox"] {
+  list-style: none;
 
-      display: flex;
-      z-index: 99;
-      position: absolute;
-      left: 0;
-      flex-direction: column;
-      width: 100%;
-      min-width: fit-content;
+  display: flex;
+  z-index: 99;
+  position: absolute;
+  left: 0;
+  flex-direction: column;
+  width: 100%;
+  min-width: fit-content;
 
-      margin: 0;
-      margin-top: calc(var(--pico-outline-width) + 0.25em);
-      padding: 0;
-      border: var(--pico-border-width) solid var(--pico-dropdown-border-color);
-      border-radius: var(--pico-border-radius);
-      background-color: var(--pico-dropdown-background-color);
-      box-shadow: var(--pico-dropdown-box-shadow);
-      color: var(--pico-dropdown-color);
-      white-space: nowrap;
+  margin: 0;
+  margin-top: calc(var(--pico-outline-width) + 0.25em);
+  padding: 0;
+  border: var(--pico-border-width) solid var(--pico-dropdown-border-color);
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-dropdown-background-color);
+  box-shadow: var(--pico-dropdown-box-shadow);
+  color: var(--pico-dropdown-color);
+  white-space: nowrap;
 
-      li {
-        width: 100%;
-        margin-bottom: 0;
-        list-style: none;
-        padding: 0 calc(var(--pico-form-element-spacing-horizontal) * 0.5);
+  li {
+    width: 100%;
+    margin-bottom: 0;
+    list-style: none;
+    padding: 0 calc(var(--pico-form-element-spacing-horizontal) * 0.5);
 
-        a {
-          padding: calc(var(--pico-form-element-spacing-vertical) * 0.5)
-            calc(var(--pico-form-element-spacing-horizontal) * 0.5);
-          display: block;
-          text-decoration: none;
-        }
+    a {
+      padding: calc(var(--pico-form-element-spacing-vertical) * 0.5)
+        calc(var(--pico-form-element-spacing-horizontal) * 0.5);
+      display: block;
+      text-decoration: none;
+    }
 
-        & + li {
-          a {
-            border-top: var(--pico-border-width) solid
-              var(--pico-dropdown-border-color);
-          }
-        }
+    & + li {
+      a {
+        border-top: var(--pico-border-width) solid
+          var(--pico-dropdown-border-color);
       }
     }
   }

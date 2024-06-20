@@ -1,11 +1,11 @@
 # Standard Library
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 # Django
 from django.conf import settings
 from django.db import models
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, F, Prefetch, Q, Sum
 from django.db.models.functions import Concat
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -16,28 +16,37 @@ from djmoney.models.managers import money_manager
 from moneyed import Money
 from taggit.managers import TaggableManager
 
+# Locals
+from ..fields import SqidsModelField as SqidsField
+
 if TYPE_CHECKING:
-    from . import Booking, Charge, Contact, Pet, Vet
+    from . import Booking, Charge, Contact, Vet
 
 # Locals
 from .booking import Booking, BookingStates
 from .invoice import Invoice
+from .pet import Pet
 
 
-class CustomerManager(models.Manager["Customer"]):
-    def get_queryset(self):
+class CustomerQuerySet(models.QuerySet["Customer"]):
+    def with_pets(self) -> Self:
+        active_pets_prefetch = Prefetch("pets", queryset=Pet.objects.filter(active=True), to_attr="active_pets")
+
+        return self.prefetch_related("pets", active_pets_prefetch)
+
+    def with_totals(self) -> Self:
+        return self.annotate(
+            invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
+            + Sum(
+                (F("invoices__charges__line") * F("invoices__charges__quantity")),
+                filter=Q(invoices__state=Invoice.States.UNPAID.value),
+                default=0,
+            ),
+        )
+
+    def with_counts(self) -> Self:
         return (
-            super()
-            .get_queryset()
-            .annotate(
-                invoiced_unpaid=Sum(F("invoices__adjustment"), default=0)
-                + Sum(
-                    (F("invoices__charges__line") * F("invoices__charges__quantity")),
-                    filter=Q(invoices__state=Invoice.States.UNPAID.value),
-                    default=0,
-                ),
-            )
-            .annotate(
+            self.annotate(
                 unpaid_count=Count(
                     "invoices",
                     distinct=True,
@@ -54,6 +63,13 @@ class CustomerManager(models.Manager["Customer"]):
                     ),
                 )
             )
+            .annotate(
+                uninvoiced_count=Count(
+                    "charges",
+                    distinct=True,
+                    filter=Q(charges__invoice=None),
+                )
+            )
             .order_by(*Customer._meta.ordering or list())
         )
 
@@ -66,7 +82,6 @@ class Customer(models.Model):
     charges: "QuerySet[Charge]"
     invoices: "QuerySet[Invoice]"
     unpaid_count: int
-    overdue_count: int
 
     # Fields
     first_name = models.CharField(max_length=125)
@@ -94,9 +109,11 @@ class Customer(models.Model):
         null=True,
     )
 
+    sqid = SqidsField(real_field_name="id")
+
     tags = TaggableManager(blank=True)
 
-    objects = money_manager(CustomerManager())
+    objects = money_manager(CustomerQuerySet.as_manager())
 
     _invoiced_unpaid = None
 
@@ -107,25 +124,23 @@ class Customer(models.Model):
         return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse("customer_detail", kwargs={"pk": self.pk})
-
-    @property
-    def active_pets(self):
-        return self.pets.filter(active=True)
+        return reverse("customer_detail", kwargs={"sqid": self.sqid})
 
     @property
     def invoiced_unpaid(self):
-        return self._invoiced_unpaid
+        return self._invoiced_unpaid or Money(
+            (
+                self.invoices.filter(state=Invoice.States.UNPAID.value).aggregate(
+                    invoiced_unpaid=Sum(F("adjustment") + F("charges__line") * F("charges__quantity"))
+                )["invoiced_unpaid"]
+                or 0
+            ),
+            settings.DEFAULT_CURRENCY,
+        )
 
     @invoiced_unpaid.setter
     def invoiced_unpaid(self, value):
         self._invoiced_unpaid = Money(value, settings.DEFAULT_CURRENCY)
-
-    def outstanding_invoices(self):
-        return self.invoices.filter(state=Invoice.States.UNPAID.value).order_by("-due")
-
-    def uninvoiced_count(self):
-        return self.charges.filter(invoice=None).count()
 
     @property
     def issues(self):
@@ -147,4 +162,12 @@ class Customer(models.Model):
     def upcoming_bookings(self) -> QuerySet["Booking"]:
         return self.bookings.filter(start__gte=datetime.today()).exclude(
             state__in=[BookingStates.CANCELED.value, BookingStates.COMPLETED.value]
+        )
+
+    @property
+    def past_bookings(self) -> QuerySet["Booking"]:
+        return (
+            self.bookings.filter(start__lt=datetime.today())
+            .exclude(state__in=[BookingStates.CANCELED.value])
+            .order_by("-start")
         )

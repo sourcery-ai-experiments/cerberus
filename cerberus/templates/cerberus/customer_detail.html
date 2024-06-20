@@ -1,21 +1,34 @@
 {% extends 'base.html' %}
 
-{% load field_tags components string_utils crispy_forms_tags field_tags %}
+{% load field_tags components crispy_forms_tags string_utils %}
 
 {% block page_title %}{{ customer.name }}{% endblock %}
 
 {% block content %}
-    {% component "cerberus/components/dropdown.html" %}
-        <ul role="listbox">
-            <li><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
-            <li><a hx-get="{% url 'customer_delete' customer.id %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.id %}">Delete</a></li>
+    <nav>
+        <ul>
+            <li>
+                <a href="{% url 'customer_update' customer.sqid %}">
+                    {% include 'icons/edit.svg' %}Edit
+                </a>
+            </li>
+            <li>
+                <a hx-get="{% url 'customer_delete' customer.sqid %}" hx-target="main" hx-swap="afterend" href="{% url 'customer_delete' customer.sqid %}">
+                    {% include 'icons/delete.svg' %}Delete
+                </a>
+            </li>
         </ul>
-    {% endcomponent %}
+    </nav>
     <div class="row">
         <div class="details col" role="main">
             <div class="name">{{ customer.name }}</div>
             <div class="email">{{ customer.invoice_email|mailto }}</div>
             {{ customer.invoice_address|linebreaks }}
+            <div class="tag-container">
+                {% for tag in customer.tags.names %}
+                    <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
         </div>
         {% if customer.invoiced_unpaid %}
             <div class="customer finance">
@@ -35,68 +48,22 @@
             </div>
         {% endif %}
     </div>
-    {% component "cerberus/components/tab-wrapper.html" inital="bookings" %}
-        <nav class="tab-nav">
-            <a href="#bookings" :class="navClass('bookings')" @click.prevent="setActive('bookings')">Bookings</a>
-            <a href="#charges" :class="navClass('charges')" @click.prevent="setActive('charges')">Charges</a>
-            <a href="#invoices" :class="navClass('invoices')" @click.prevent="setActive('invoices')">Invoices</a>
-            <a href="#pets" :class="navClass('pets')" @click.prevent="setActive('pets')">Pets</a>
-            <a href="#contacts" :class="navClass('contacts')" @click.prevent="setActive('contacts')">Contacts</a>
-        </nav>
-        <div class="tabs">
-            <section id="bookings" class="tab-content" x-show="active == 'bookings'">
-                <h3>Bookings</h3>
-                {% include "cerberus/components/booking_list.html" with bookings=customer.upcoming_bookings hide_customer=True %}
-            </section>
-            <section id="charges" class="tab-content" x-show="active == 'charges'">
-                <h3>Charges</h3>
-                <div>
-                    {% include "cerberus/components/charge_form.html" with form=uninvoiced_charge_form %}
-                </div>
-            </section>
-            <section id="invoices" class="tab-content" x-show="active == 'invoices'">
-                <h3>Invoices</h3>
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Due</th>
-                    </tr>
-                    {% for invoice in customer.invoices.all %}
-                        <tr>
-                            <td><a href="{% url 'invoice_detail' invoice.id %}">{{ invoice.name }}</a></td>
-                            <td>{{ invoice.total }}</td>
-                            <td>{{ invoice.due }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3">No invoices</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </section>
-            <section id="pets" class="tab-content" x-show="active == 'pets'">
-                <h3>Pets</h3>
-                <div class="grid-3">
-                    {% for pet in customer.active_pets %}
-                        {% url 'pet_detail' pet.id as url %}
-                        {% include "components/card.html" with size="col-4" url=url title=pet.name type="Pet" description=pet.description %}
-                    {% empty %}
-                        <p>No pets</p>
-                    {% endfor %}
-                </div>
-            </section>
-            <section id="contacts" class="tab-content" x-show="active == 'contacts'">
-                <h3>Contacts</h3>
-                <div class="grid-3">
-                    {% for contact in customer.contacts.all %}
-                        {% include "components/card.html" with title=contact.name type="Contact" description=contact.details|mailto %}
-                    {% empty %}
-                        <p>No contacts</p>
-                    {% endfor %}
-                </div>
-            </section>
-        </div>
+    {% component "cerberus/components/tab-wrapper.html" inital="booking" %}
+        {% slot tabs.booking %}
+            {% include "cerberus/customer_tabs/bookings.html" %}
+        {% endslot %}
+        {% slot tabs.charges %}
+            {% include "cerberus/customer_tabs/charges.html" %}
+        {% endslot %}
+        {% slot tabs.invoices %}
+            {% include "cerberus/customer_tabs/invoices.html" %}
+        {% endslot %}
+        {% slot tabs.pets %}
+            {% include "cerberus/customer_tabs/pets.html" %}
+        {% endslot %}
+        {% slot tabs.contacts %}
+            {% include "cerberus/customer_tabs/contacts.html" %}
+        {% endslot %}
     {% endcomponent %}
 
     <a class="fab" href="{% url 'invoice_create' %}?customer={{ object.pk }}" title="Add an invoice">{% include 'icons/plus.svg' %}</a>

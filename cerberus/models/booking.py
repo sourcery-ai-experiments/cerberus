@@ -23,6 +23,7 @@ from humanize import naturaldate
 # Locals
 from ..decorators import save_after
 from ..exceptions import IncorectServiceError, MaxCustomersError, MaxPetsError, SlotOverlapsError
+from ..fields import SqidsModelField as SqidsField
 from ..utils import make_aware
 from .charge import Charge
 from .service import Service
@@ -209,9 +210,24 @@ class BookingStates(models.TextChoices):
         return reduce(or_, [Q(**{field: e.value}) for e in cls])
 
 
-class ActiveBookingManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().exclude(state=BookingStates.CANCELED.value)
+class BookingQuerySet(models.QuerySet):
+    def with_pets(self):
+        return self.prefetch_related("pets")
+
+    def with_service(self):
+        return self.prefetch_related("service")
+
+    def with_booking_slot(self):
+        return self.prefetch_related("_booking_slot")
+
+    def with_charges(self):
+        return self.prefetch_related("charges")
+
+    def with_customers(self):
+        return self.prefetch_related("customer")
+
+    def active(self):
+        return self.exclude(state=BookingStates.CANCELED.value)
 
 
 @reversion.register()
@@ -258,8 +274,9 @@ class Booking(models.Model):
 
     charges = GenericRelation(Charge)
 
-    objects = models.Manager()
-    active = ActiveBookingManager()
+    sqid = SqidsField(real_field_name="id")
+
+    objects = BookingQuerySet.as_manager()
 
     class Meta:
         ordering = ("-created",)
@@ -293,7 +310,7 @@ class Booking(models.Model):
                 self._previous_slot.delete()
 
     def get_absolute_url(self):
-        return reverse("booking_detail", kwargs={"pk": self.pk})
+        return reverse("booking_detail", kwargs={"sqid": self.sqid})
 
     def check_valid(self) -> None:
         if any(pet.customer != self.customer for pet in self.pets.all()):
@@ -303,7 +320,7 @@ class Booking(models.Model):
         return naturaldate(self.start)
 
     @classmethod
-    def get_mix_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
+    def get_min_max_time(cls, date: date) -> tuple[datetime | None, datetime | None]:
         date = make_aware(datetime(date.year, date.month, date.day))
         next_date = date + timedelta(days=1)
 

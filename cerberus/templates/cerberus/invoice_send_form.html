@@ -1,4 +1,6 @@
-{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+{% extends 'base.html' %}
+
+
 
 {% load crispy_forms_tags field_tags %}
 
@@ -8,8 +10,8 @@
 
 {% block content %}
     {% if request.htmx %}
-        <dialog open id="confirmation-modal" x-data @click.outside="$el.closest('dialog').remove()">
-            <article>
+        <dialog open id="confirmation-modal" x-data x-trap="true">
+            <article @click.outside="$root.remove()">
     {% endif %}
     <p>Are you sure you want to send {{ invoice }}?</p>
     <form action="{% url 'invoice_action' invoice.pk 'send' %}" method="post" {{ form.attributes|attributes|safe }}>

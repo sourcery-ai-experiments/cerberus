@@ -10,10 +10,11 @@ from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models import F, Q, Sum
+from django.db.models import Case, F, IntegerField, Q, Sum, Value, When
 from django.http import HttpResponse
 from django.template import loader
 from django.template.loader import get_template
+from django.urls import reverse
 
 # Third Party
 from django_fsm import FSMField, Transition, transition
@@ -44,6 +45,7 @@ class InvoiceManager(models.Manager["Invoice"]):
                 total=F("adjustment") + F("subtotal"),
                 overdue=Q(state=Invoice.States.UNPAID.value, due__lt=date.today()),
             )
+            .prefetch_related("charges", "customer")
         )
 
 
@@ -106,6 +108,9 @@ class Invoice(models.Model):
         self._can_edit = False
 
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("invoice_detail", kwargs={"pk": self.pk})
 
     @classmethod
     def from_customer(cls, customer: "Customer"):
@@ -325,6 +330,20 @@ class Invoice(models.Model):
     def add_open(self):
         o = InvoiceOpen(invoice=self)
         return o.save()
+
+    @staticmethod
+    def sort_state(queryset, dir):
+        symbol = "-" if dir == "desc" else ""
+        return queryset.annotate(
+            state_order=Case(
+                When(state=Invoice.States.DRAFT.value, then=Value(1)),
+                When(state=Invoice.States.VOID.value, then=Value(2)),
+                When(state=Invoice.States.PAID.value, then=Value(3)),
+                When(state=Invoice.States.UNPAID.value, then=Value(4)),
+                default=Value(5),
+                output_field=IntegerField(),
+            )
+        ).order_by(f"{symbol}state_order", "due", "last_updated")
 
 
 class InvoiceOpen(models.Model):

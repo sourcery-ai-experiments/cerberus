@@ -20,6 +20,7 @@
 @import "day.css";
 @import "year.css";
 @import "booking.css";
+@import "tags.css";
 
 @import "list.css";
 @import "list-customer.css";
@@ -27,7 +28,9 @@
 
 @import "form.css";
 @import "range-input.css";
+@import "checkbox-dropdown.css";
 @import "htmx.css";
+@import "filters.css";
 
 @import "login.css";
 
@@ -35,6 +38,16 @@
 
 body {
   overflow-y: scroll;
+}
+
+@media (min-width: 1840px) {
+  body {
+    & > footer,
+    & > header,
+    & > main {
+      max-width: min(calc(100vw - 10rem), 95vw);
+    }
+  }
 }
 
 [x-cloak],

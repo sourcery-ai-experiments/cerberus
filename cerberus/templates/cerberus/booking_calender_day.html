@@ -1,4 +1,6 @@
-{% extends request.htmx|yesno:"base_htmx.html,base.html" %}
+{% extends 'base.html' %}
+
+
 
 {% load date_utils %}
 
@@ -78,7 +80,7 @@
                                 >
                                     {% for booking in bookings %}
                                         <div
-                                            id="booking-{{ booking.id }}"
+                                            id="booking-{{ booking.sqid }}"
                                             class="booking"
                                             :class="{ 'dragging': dragging }"
                                             draggable="{% if booking.can_move %}true{% else %}false{% endif %}"
@@ -90,13 +92,13 @@
                                                 event.dataTransfer.setData('text/plain', event.target.id);
                                             {# fmt:on #}"
                                             data-length="{{ booking.length_minutes }}"
-                                            data-id="{{ booking.id }}"
-                                            data-move-url="{% url 'booking-move' booking.id %}"
+                                            data-id="{{ booking.sqid }}"
+                                            data-move-url="{% url 'booking-move' booking.sqid %}"
                                             style="--display-colour: {{ booking.service.display_colour }}"
                                         >
                                             <div>
                                                 <span>{{ booking.pets.all|join:", " }}</span>
-                                                <a href="{% url 'booking_detail' booking.id %}" class="icon">
+                                                <a href="{% url 'booking_detail' booking.sqid %}" class="icon">
                                                     {% include 'icons/info.svg' %}
                                                 </a>
                                             </div>

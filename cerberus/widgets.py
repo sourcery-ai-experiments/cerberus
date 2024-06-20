@@ -5,6 +5,7 @@ from typing import Any
 # Django
 from django import forms
 from django.forms import widgets
+from django.utils.html import escape
 
 # Third Party
 from djmoney.forms import MoneyWidget
@@ -13,13 +14,23 @@ from djmoney.forms import MoneyWidget
 from .utils import rgetattr
 
 
+class TagsWidget(forms.TextInput):
+    template_name = "forms/widgets/tags.html"
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context.update({"tags": ",".join(f"'{escape(tag)}'" for tag in value or [])})
+
+        return context
+
+
 class SingleMoneyWidget(MoneyWidget):
     def __init__(self, attrs=None, *args, **kwargs):
         attrs = attrs or {}
-        attrs.update({"step": "any", "min": "0"})
+        attrs.update({"x-mask:dynamic": "$money($input)", "x-data": ""})
 
         super().__init__(
-            amount_widget=forms.NumberInput(attrs=attrs),  # type: ignore
+            amount_widget=forms.TextInput(attrs=attrs),  # type: ignore
             currency_widget=forms.HiddenInput(),
             *args,
             **kwargs,

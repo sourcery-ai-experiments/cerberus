@@ -1,7 +1,6 @@
 <div class="tab-wrapper"
-{# fmt:off #}
-    x-data="{
-    active: '{{ component_inital }}',
+     x-data="{{# fmt:off #}
+    active: '{{ attributes.inital }}',
     setActive(section) {
         if (section != this.active) {
             this.active = section;
@@ -11,11 +10,22 @@
     navClass(section) {
         return section == this.active ? 'active' : '';
     }
-}"
-{# fmt:on #}
+{# fmt:on #}}"
      x-init="active = window.location.hash.replace(/^#/,'') || active"
      :class="active != '' ? 'active' : ''"
-     @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ component_inital }}'"
+     @hashchange.window="active = window.location.hash.replace(/^#/,'') || '{{ attributes.inital }}'"
 >
-    {{ component_block }}
+    <nav class="tab-nav">
+        {% for name in slots.tabs.keys %}
+            <a href="#{{ name }}" :class="navClass('{{ name }}')" @click.prevent="setActive('{{ name }}')">{{ name|title }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="tabs">
+        {% for name, tab in slots.tabs.items %}
+            <section id="{{ name }}" class="tab-content" x-show="active == '{{ name }}'">{{ tab }}</section>
+        {% endfor %}
+    </div>
+
+    {{ slots.default }}
 </div>

@@ -1,6 +1,9 @@
-import { moveBooking } from './bookings';
-import { toast } from './toast';
-import { roundTime, addMinutes, dateToString } from './datetime';
+import './external/alpine';
+import './external/htmx';
+
+import { moveBooking } from './components/bookings';
+import { toast } from './components/toast';
+import { roundTime, addMinutes, dateToString } from './components/datetime';
 
 declare global {
     interface Window {

@@ -102,29 +102,30 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
     permission_classes = default_permissions
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = BookingFilter
+    lookup_field = "sqid"
 
     @action(detail=True, methods=["put"])
-    def process(self, request, pk=None):
+    def process(self, request, sqid=None):
         return self.change_state("process", request)
 
     @action(detail=True, methods=["put"])
-    def confirm(self, request, pk=None):
+    def confirm(self, request, sqid=None):
         return self.change_state("confirm", request)
 
     @action(detail=True, methods=["put"])
-    def cancel(self, request, pk=None):
+    def cancel(self, request, sqid=None):
         return self.change_state("cancel", request)
 
     @action(detail=True, methods=["put"])
-    def reopen(self, request, pk=None):
+    def reopen(self, request, sqid=None):
         return self.change_state("reopen", request)
 
     @action(detail=True, methods=["put"])
-    def complete(self, request, pk=None):
+    def complete(self, request, sqid=None):
         return self.change_state("complete", request)
 
     @action(detail=True, methods=["PUT"])
-    def move(self, request, pk=None):
+    def move(self, request, sqid=None):
         booking: Booking = self.get_object()
         incoming = ToDateSerializer(data=request.data)
         if not incoming.is_valid():
@@ -142,7 +143,7 @@ class BookingViewSet(viewsets.ModelViewSet, ChangeStateMixin):
         return Response({"item": serializer.data, "status": status}, status=status)
 
     @action(detail=True, methods=["PUT"])
-    def move_slot(self, request, pk=None):
+    def move_slot(self, request, sqid=None):
         booking: Booking = self.get_object()
         incoming = ToDateSerializer(data=request.data)
         if not incoming.is_valid():
@@ -372,7 +373,18 @@ class VetViewSet(viewsets.ModelViewSet):
 
 class TagListView(APIView):
     def get_queryset(self):
-        return Tag.objects.all()
+        queryset = Tag.objects.all()
+
+        if startswith := self.request.query_params.get("startswith"):
+            queryset = queryset.filter(name__startswith=startswith)
+
+        if tags := self.request.query_params.get("tags"):
+            queryset = queryset.exclude(name__in=tags.split(","))
+
+        if limit := self.request.query_params.get("limit"):
+            queryset = queryset[: int(limit)]
+
+        return queryset
 
     def get(self, request, format=None):
         tags = self.get_queryset()
@@ -400,4 +412,4 @@ router.register(r"vet", VetViewSet)
 router.register(r"usersettings", UserSettingsViewSet)
 
 
-urls = [path("tag/", TagListView.as_view())]
+urls = [path("tag/", TagListView.as_view(), name="tag-list")]

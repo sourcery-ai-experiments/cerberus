@@ -4,6 +4,7 @@ from enum import Enum
 
 # Django
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 # Third Party
@@ -44,6 +45,10 @@ class Contact(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+    def get_absolute_url(self):
+        base = reverse("customer_detail", kwargs={"pk": self.customer.pk})
+        return f"{base}#contacts"
 
     @property
     def type(self) -> Type:

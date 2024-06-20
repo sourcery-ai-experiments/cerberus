@@ -1,20 +1,24 @@
-<article {% if size %}class="{{ size }}"{% endif %}>
-    <header>
-        <hgroup>
-            <h3>
-                {{ title }}
-            </h3>
-            <h4>
-                <small>{{ type }}</small>
-            </h4>
-        </hgroup>
-        {% if url %}
-            <div>
-                <a href="{{ url }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
-                </a>
-            </div>
-        {% endif %}
-    </header>
-    {{ description }}
+<article class="card">
+  <header>
+    {% if slots.header %}
+      {{ slots.header }}
+    {% else %}
+      <h3>{{ attributes.title }}</h3>
+      {% if attributes.type %}
+        <small>{{ attributes.type }}</small>
+      {% endif %}
+    {% endif %}
+  </header>
+  {{ slots.default }}
+  {% if slots.footer %}
+    <footer>
+      {{ slots.footer }}
+    </footer>
+  {% else %}
+    {% if attributes.url %}
+      <footer>
+        <a href="{{ attributes.url }}"> {% include 'icons/info.svg' %}Info </a>
+      </footer>
+    {% endif %}
+  {% endif %}
 </article>

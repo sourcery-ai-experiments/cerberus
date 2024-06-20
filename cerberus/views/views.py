@@ -1,13 +1,11 @@
-# Standard Library
-
 # Django
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Locals
-from ..filters import PetFilter, ServiceFilter, VetFilter
-from ..forms import PetForm, ServiceForm, VetForm
-from ..models import Pet, Service, Vet
+from ..filters import ServiceFilter, VetFilter
+from ..forms import ServiceForm, VetForm
+from ..models import Service, Vet
 from .crud_views import CRUDViews
 
 
@@ -16,18 +14,12 @@ def dashboard(request):
     return render(request, "cerberus/dashboard.html", {})
 
 
-class PetCRUD(CRUDViews):
-    model = Pet
-    form_class = PetForm
-    filter_class = PetFilter
-    sortable_fields = ["name", "customer"]
-
-
 class VetCRUD(CRUDViews):
     model = Vet
     form_class = VetForm
     filter_class = VetFilter
     sortable_fields = ["name"]
+    lookup_field = "sqid"
 
 
 class ServiceCRUD(CRUDViews):
@@ -43,3 +35,4 @@ class ServiceCRUD(CRUDViews):
         "max_customer",
         "display_colour",
     ]
+    lookup_field = "slug"

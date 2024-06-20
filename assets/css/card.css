@@ -1,10 +1,21 @@
 article {
   & header {
-    &:has(hgroup) {
-      display: flex;
+    :is(h1, h2, h3, h4, h5, h6):has(+ :is(small)) {
+      margin-bottom: 0;
+    }
+  }
 
-      & hgroup {
-        flex: 1;
+  footer {
+    a {
+      &:has(svg) {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+      }
+      svg {
+        height: 1em;
+        width: 1em;
+        aspect-ratio: 1;
       }
     }
   }

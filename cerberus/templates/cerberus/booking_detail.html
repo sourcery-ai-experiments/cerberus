@@ -8,20 +8,20 @@
 {% block page_title %}Booking {{ object.name }}{% endblock %}
 
 {% block content %}
-    {% component "cerberus/components/dropdown.html" %}
-        <ul role="listbox">
-            <li><a href="{% url 'booking_update' booking.id %}">Edit</a></li>
-            <li><a hx-get="{% url 'booking_delete' booking.id %}" hx-swap="afterend" href="{% url 'booking_delete' booking.id %}">Delete</a></li>
+    <nav>
+        <ul>
+            <li><a href="{% url 'booking_update' booking.sqid %}">{% include 'icons/edit.svg' %}Edit</a></li>
+            <li><a hx-get="{% url 'booking_delete' booking.sqid %}" hx-swap="afterend" href="{% url 'booking_delete' booking.sqid %}">{% include 'icons/delete.svg' %}Delete</a></li>
         </ul>
-    {% endcomponent %}
+    </nav>
     <div class="grid pair">
         <div>Pets</div>
         <div>
             {% for pet in booking.pets.all %}
-                <a href="{% url 'pet_detail' pet.pk %}">{{ pet }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url 'pet_detail' pet.sqid %}">{{ pet }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
-        <div>Customer</div><div><a href="{% url 'customer_detail' booking.customer.pk %}">{{ booking.customer }}</a></div>
+        <div>Customer</div><div><a href="{% url 'customer_detail' booking.customer.sqid %}">{{ booking.customer }}</a></div>
         <div>Service</div><div>{{ booking.service }}</div>
         <div>Start</div><div>{{ booking.start }}</div>
         <div>End</div><div>{{ booking.end }}</div>

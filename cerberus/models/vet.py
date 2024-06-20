@@ -1,12 +1,12 @@
-# Standard Library
-
-# Django
 # Django
 from django.db import models
 from django.urls import reverse
 
 # Third Party
 import reversion
+
+# Locals
+from ..fields import SqidsModelField as SqidsField
 
 
 @reversion.register()
@@ -17,6 +17,8 @@ class Vet(models.Model):
     details = models.TextField(blank=True, default="")
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
+
+    sqid = SqidsField(real_field_name="id")
 
     class Meta:
         ordering = ("name",)

@@ -1,8 +1,22 @@
 # Django
-from django.urls import path
+from django.urls import path, register_converter
 
 # Locals
 from .. import views
+
+
+class PaddedIntConverter:
+    regex = "[0-9]+"
+
+    def to_python(self, value):
+        return int(value)
+
+    def to_url(self, value):
+        return f"{value:05d}"
+
+
+register_converter(PaddedIntConverter, "pint")
+
 
 urlpatterns = (
     [
@@ -12,7 +26,7 @@ urlpatterns = (
             name="dashboard",
         ),
         path(
-            "booking/<int:pk>/action/<str:action>/",
+            "booking/<str:sqid>/action/<str:action>/",
             views.BookingStateActions.as_view(),
             name="booking_action",
         ),
@@ -45,6 +59,11 @@ urlpatterns = (
             "invoice/<int:pk>/action/<str:action>/",
             views.InvoiceActionsView.as_view(),
             name="invoice_action",
+        ),
+        path(
+            "customer/<int:pk>/contact/create",
+            views.ContactCreateView.as_view(),
+            name="contact_create",
         ),
     ]
     + views.CustomerCRUD.get_urls()

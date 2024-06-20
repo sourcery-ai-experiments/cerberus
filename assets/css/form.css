@@ -2,12 +2,17 @@ form {
   &.inline {
     & > div {
       display: flex;
-      gap: 2em;
+      gap: clamp(1em, 2vw, 2em);
       justify-content: space-between;
+      align-items: flex-start;
 
       & > *:not(:has(label)) {
         display: flex;
         align-items: flex-end;
+      }
+
+      .form-group:has(.switch) {
+        height: 100%;
       }
 
       & > div:has(.controls) {
@@ -19,6 +24,21 @@ form {
           flex-direction: column;
           display: flex;
           justify-content: center;
+
+          &:has(.switch) {
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+
+            & > div {
+              display: flex;
+              align-items: center;
+
+              input {
+                margin: 0;
+              }
+            }
+          }
         }
       }
 
@@ -31,6 +51,7 @@ form {
 
       & a[role="button"] {
         height: max-content;
+        margin-top: 1.9em;
       }
     }
   }
@@ -79,6 +100,15 @@ form {
     }
   }
 
+  label {
+    display: inline-block;
+  }
+
+  .help-block {
+    margin-top: calc(-1 * calc(var(--pico-spacing) * 0.5));
+    margin-bottom: var(--pico-spacing);
+  }
+
   .checkbox {
     &:has(input.hidden),
     &:has([x-cloak]) {
@@ -120,5 +150,25 @@ form {
 form {
   textarea {
     height: clamp(5em, 25vh, 15em);
+  }
+}
+
+.filter-form {
+  label {
+    white-space: nowrap;
+  }
+
+  input {
+    min-width: 1em;
+  }
+
+  & > div {
+    & > div {
+      flex: 1;
+
+      &:has(a, input.switch) {
+        max-width: fit-content;
+      }
+    }
   }
 }

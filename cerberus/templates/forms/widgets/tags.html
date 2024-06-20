@@ -1,0 +1,73 @@
+<div class="tag-input" x-effect="lookupTag(current)" x-data="{{# fmt:off #}
+    current: '',
+    active: false,
+    canBlur: true,
+    tags: [{{ tags }}],
+    lookedUp: [],
+    selected: 0,
+    addTag(tag) {
+        if (!tag || this.tags.includes(tag)) return;
+        this.tags.push(tag);
+        this.current = '';
+    },
+    async lookupTag(value) {
+        if (!value) return this.lookedUp = [];
+        const pramas = new URLSearchParams({ startswith: value, limit: 5, tags: this.tags.join(','), });
+        const response = await fetch(`{% url 'tag-list' %}?${pramas.toString()}`);
+        this.lookedUp = await response.json();
+        this.selected = 0;
+    },
+    tab(event) {
+        if (!this.lookedUp.length) return;
+        this.addTag(this.lookedUp[this.selected]);
+        event.preventDefault()
+    },
+    blur() {
+        if (!this.canBlur) return;
+        this.active = false;
+        this.addTag(this.current);
+    },
+{# fmt:on #}}">
+    <div class="tag-container">
+        <template x-for="tag in tags">
+            <span class="tag">
+                <span x-text="tag"></span>
+                <span class="tag-close" @click="tags = tags.filter(t => t != tag)">&#x2715;</span>
+            </span>
+        </template>
+    </div>
+    <input
+        type="{{ widget.type }}"
+        {% include "django/forms/widgets/attrs.html" %}
+        @keydown.prevent.enter="addTag(current)"
+        @keydown.tab="tab($event)"
+        @focus="active = true"
+        @blur="blur()"
+        x-model="current"
+        x-ref="input"
+        autocomplete="off"
+    >
+    <template x-if="lookedUp.length && active">
+        <div class="tag-lookup">
+            <ul
+                role="listbox"
+                @keyup.prevent.window.up="selected = Math.max(0, selected - 1)"
+                @keyup.prevent.window.down="selected = Math.min(lookedUp.length - 1, selected + 1)"
+            >
+                <template x-for="(tag, index) in lookedUp">
+                    <li :class="{ 'selected': selected == index }">
+                        <a
+                            x-text="tag"
+                            @mousedown="canBlur = false"
+                            @click.prevent="addTag(tag);$focus.focus($refs.input)"
+                            @mouseup="canBlur = true"
+                            @mouseover="selected = index"
+                            href="#">
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </template>
+    <input name="{{ widget.name }}" type="hidden" x-model="tags" readonly />
+</div>

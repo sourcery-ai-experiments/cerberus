@@ -14,6 +14,7 @@ from humanize import naturaldelta
 from taggit.managers import TaggableManager
 
 # Locals
+from ..fields import SqidsModelField as SqidsField
 from ..utils import choice_length
 
 if TYPE_CHECKING:
@@ -53,16 +54,30 @@ class Pet(models.Model):
     dob = models.DateField(blank=True, null=True)
     active = models.BooleanField(default=True)
     social_media_concent = models.CharField(
-        default=Social.YES, choices=Social.choices, max_length=choice_length(Social)
+        default=Social.YES,
+        choices=Social.choices,
+        max_length=choice_length(Social),
     )
-    sex = models.CharField(null=True, default=None, choices=Sex.choices, max_length=choice_length(Sex))  # noqa: DJ001
+    sex = models.CharField(
+        blank=True,
+        default=Sex.__empty__,
+        db_default=Sex.__empty__,
+        choices=Sex.choices,
+        max_length=choice_length(Sex),
+    )  # type: ignore
     description = models.TextField(blank=True, default="")
-    neutered = models.CharField(null=True, default=None, choices=Neutered.choices, max_length=choice_length(Neutered))  # noqa: DJ001
+    neutered = models.CharField(
+        blank=True,
+        default=Neutered.__empty__,
+        db_default=Neutered.__empty__,
+        choices=Neutered.choices,
+        max_length=choice_length(Neutered),
+    )  # type: ignore
     medical_conditions = models.TextField(blank=True, default="")
     treatment_limit = models.IntegerField(default=0)
     allergies = models.TextField(blank=True, default="")
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     # Relationship Fields
     customer = models.ForeignKey(
@@ -79,6 +94,8 @@ class Pet(models.Model):
         default=None,
     )
 
+    sqid = SqidsField(real_field_name="id")
+
     objects = PetManager()
 
     class Meta:
@@ -88,7 +105,7 @@ class Pet(models.Model):
         return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse("pet_detail", kwargs={"pk": self.pk})
+        return reverse("pet_detail", kwargs={"sqid": self.sqid})
 
     @property
     def name_with_owner(self) -> str:
