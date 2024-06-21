@@ -404,7 +404,7 @@ class Booking(models.Model):
         return self.state in self.STATES_MOVEABLE
 
     def can_complete(self) -> bool:
-        return self.end < make_aware(datetime.now())
+        return self.end < make_aware(datetime.now()) or self.state == BookingStates.CONFIRMED.value
 
     def move_booking(self, to: datetime | date) -> bool:
         if not self.can_move:
@@ -466,7 +466,7 @@ class Booking(models.Model):
     @save_after
     @transition(
         field=state,
-        source=BookingStates.CONFIRMED.value,
+        source=[BookingStates.CONFIRMED.value, BookingStates.PRELIMINARY.value],
         target=BookingStates.COMPLETED.value,
         conditions=[can_complete],
     )
