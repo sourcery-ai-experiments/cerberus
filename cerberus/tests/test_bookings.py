@@ -258,6 +258,7 @@ def test_transitions(booking):
         ("confirmed", "canceled"),
         ("confirmed", "completed"),
         ("preliminary", "confirmed"),
+        ("preliminary", "completed"),
         ("enquiry", "preliminary"),
         ("canceled", "enquiry"),
     ]
