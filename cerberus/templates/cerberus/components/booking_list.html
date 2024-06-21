@@ -26,20 +26,7 @@
     </thead>
     <tbody>
       {% for booking in bookings %}
-        <tr>
-          <td>{{ booking.pets.all|join:", " }}</td>
-          {% if hide_customer != True %}<td>{{ booking.customer.name }}</td>{% endif %}
-          <td>{{ booking.service }}</td>
-          <td><span data-tooltip="{{ booking.start|naturaltime }}">{{ booking.start }}</span></td>
-          <td><span data-tooltip="{{ booking.length|precisedelta }}">{{ booking.length|naturaldelta }}</span></td>
-          <td>{{ booking.state|title }}</td>
-          <td>
-            <a href="{% url 'booking_detail' booking.sqid %}">Details</a>
-            {% for transition in booking.available_state_transitions %}
-              <a href="{% url 'booking_action' booking.sqid transition %}">{{ transition|title }}</a>
-            {% endfor %}
-          </td>
-        </tr>
+        {% include "cerberus/components/booking_row.html" with booking=booking hide_customer=hide_customer %}
       {% empty %}
         <tr>
           <td colspan="7">No bookings found</td>
