@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from django.contrib.humanize.templatetags import humanize
 from django.db.models import Count
 from django.http import Http404
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
@@ -222,3 +223,26 @@ class BookingStateActions(TransitionView):
     model = Booking
     field = "state"
     lookup_field = "sqid"
+
+    def htmx_render(self, request, action: str, **kwargs):
+        lookup_value = kwargs.get(self.lookup_field)
+        model = self.get_valid_model(lookup_value, action)
+        return render(
+            request,
+            "cerberus/components/booking_row.html",
+            {"booking": model, "hide_customer": True},
+        )
+
+    def get(self, request, action: str, **kwargs):
+        redirect = super().get(request, action, **kwargs)
+        if not request.htmx:
+            return redirect
+
+        return self.htmx_render(request, action, **kwargs)
+
+    def post(self, request, action: str, **kwargs):
+        redirect = super().post(request, action, **kwargs)
+        if not request.htmx:
+            return redirect
+
+        return self.htmx_render(request, action, **kwargs)
