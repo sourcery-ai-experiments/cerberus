@@ -36,3 +36,29 @@
     }
   }
 }
+
+#booking-list {
+  a:has(.icon) {
+    white-space: nowrap;
+  }
+
+  .actions {
+    container-type: inline-size;
+    container-name: table-icons;
+    display: block;
+
+    @container table-icons (max-width: 200px) {
+      a:has(.icon) {
+        .title {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .icon {
+    display: inline-block;
+    width: 1em;
+    margin-right: 0.1em;
+  }
+}
