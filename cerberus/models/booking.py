@@ -1,5 +1,6 @@
 # Standard Library
 from collections.abc import Callable, Iterable, Iterator
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from functools import reduce
 from operator import or_
@@ -31,6 +32,19 @@ from .service import Service
 if TYPE_CHECKING:
     # Locals
     from . import Customer, Pet, Service
+
+
+@dataclass(slots=True)
+class BookingTransition:
+    name: str
+    icon: str = ""
+    sort: int = 0
+
+    def __str__(self) -> str:
+        return self.name
+
+    def get(self, key: str, default: str) -> str:
+        return getattr(self, key, default)
 
 
 class BookingSlot(models.Model):
@@ -242,6 +256,10 @@ class Booking(models.Model):
         BookingStates.PRELIMINARY.value,
         BookingStates.CONFIRMED.value,
     ]
+    STATES_COMPLETABLE: list[str] = [
+        BookingStates.CONFIRMED.value,
+        BookingStates.PRELIMINARY.value,
+    ]
 
     id: int
     get_all_state_transitions: Callable[[], Iterable[Transition]]
@@ -444,38 +462,68 @@ class Booking(models.Model):
         return self.length_seconds() // 60
 
     @save_after
-    @transition(field=state, source=BookingStates.ENQUIRY.value, target=BookingStates.PRELIMINARY.value)
+    @transition(
+        field=state,
+        source=BookingStates.ENQUIRY.value,
+        target=BookingStates.PRELIMINARY.value,
+        custom={"icon": "icons/calendar-question.svg", "sort": 40},
+    )
     def process(self) -> None:
         pass
 
     @save_after
-    @transition(field=state, source=BookingStates.PRELIMINARY.value, target=BookingStates.CONFIRMED.value)
+    @transition(
+        field=state,
+        source=BookingStates.PRELIMINARY.value,
+        target=BookingStates.CONFIRMED.value,
+        custom={"icon": "icons/calendar.svg", "sort": 60},
+    )
     def confirm(self) -> None:
         pass
 
     @save_after
-    @transition(field=state, source=STATES_CANCELABLE, target=BookingStates.CANCELED.value)  # type: ignore
+    @transition(
+        field=state,
+        source=STATES_CANCELABLE,  # type: ignore
+        target=BookingStates.CANCELED.value,
+        custom={"icon": "icons/cancel.svg", "sort": 90},
+    )
     def cancel(self) -> None:
         self._booking_slot = None
 
     @save_after
-    @transition(field=state, source=BookingStates.CANCELED.value, target=BookingStates.ENQUIRY.value)
+    @transition(
+        field=state,
+        source=BookingStates.CANCELED.value,
+        target=BookingStates.ENQUIRY.value,
+        custom={"icon": "icons/reopen.svg", "sort": 80},
+    )
     def reopen(self) -> None:
         self._booking_slot = self._get_new_booking_slot()
 
     @save_after
     @transition(
         field=state,
-        source=[BookingStates.CONFIRMED.value, BookingStates.PRELIMINARY.value],
+        source=STATES_COMPLETABLE,  # type: ignore
         target=BookingStates.COMPLETED.value,
         conditions=[can_complete],
+        custom={"icon": "icons/calendar-check.svg", "sort": 70},
     )
     def complete(self) -> list[Charge]:
         return self.create_charges()
 
     @property
-    def available_state_transitions(self) -> list[str]:
-        return [i.name for i in self.get_available_state_transitions()]
+    def available_state_transitions(self) -> Iterable[BookingTransition]:
+        transitions = [
+            BookingTransition(
+                name=t.name,
+                icon=t.custom.get("icon", ""),
+                sort=t.custom.get("sort", 0),
+            )
+            for t in self.get_available_state_transitions()
+        ]
+        transitions.sort(key=lambda x: x.sort)
+        return transitions
 
 
 class BookingCharge(Charge):

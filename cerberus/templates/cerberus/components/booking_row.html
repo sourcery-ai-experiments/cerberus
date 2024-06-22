@@ -8,16 +8,27 @@
     <td><span data-tooltip="{{ booking.length|precisedelta }}">{{ booking.length|naturaldelta }}</span></td>
     <td>{{ booking.state|title }}</td>
     <td>
-        <a href="{% url 'booking_detail' booking.sqid %}">Details</a>
-        {% for transition in booking.available_state_transitions %}
-            <a
-                hx-target="#{{ booking.sqid }}"
-                hx-swap="outerHTML"
-                hx-get="{% url 'booking_action' booking.sqid transition %}"
-                href="{% url 'booking_action' booking.sqid transition %}"
-            >
-                {{ transition|title }}
-            </a>
-        {% endfor %}
+        {% spaceless %}
+            <div class="actions">
+                <a href="{% url 'booking_detail' booking.sqid %}" data-tooltip="Details">
+                    <span class="icon">{% include "icons/details.svg" %}</span>
+                    <span class="title">Details</span>
+                </a>
+                {% for transition in booking.available_state_transitions %}
+                    <a
+                        hx-target="#{{ booking.sqid }}"
+                        hx-swap="outerHTML"
+                        hx-get="{% url 'booking_action' booking.sqid transition %}"
+                        href="{% url 'booking_action' booking.sqid transition %}"
+                        data-tooltip="{{ transition|title }}"
+                    >
+                        {% if transition.icon %}
+                            <span class="icon">{% include transition.icon %}</span>
+                        {% endif %}
+                        <span class="title">{{ transition|title }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endspaceless %}
     </td>
 </tr>
