@@ -248,23 +248,32 @@ def test_max_customer_booking(now, walk_service):
         baker.make(Booking, pets=[pet(c3)], customer=c3, service=walk_service, start=start, end=end)
 
 
+valid_transitions = [
+    ("enquiry", "canceled"),
+    ("enquiry", "confirmed"),
+    ("preliminary", "canceled"),
+    ("confirmed", "canceled"),
+    ("confirmed", "completed"),
+    ("preliminary", "confirmed"),
+    ("preliminary", "completed"),
+    ("canceled", "preliminary"),
+]
+
+
 @pytest.mark.django_db
-def test_transitions(booking):
-    transitions = list(booking.get_all_state_transitions())
+@pytest.mark.parametrize("source,target", valid_transitions)
+def test_transitions(booking, source, target):
+    transitions = booking.get_all_state_transitions()
+    assert any(t.source == source and t.target == target for t in transitions)
 
-    valid_transitions = [
-        ("enquiry", "canceled"),
-        ("preliminary", "canceled"),
-        ("confirmed", "canceled"),
-        ("confirmed", "completed"),
-        ("preliminary", "confirmed"),
-        ("preliminary", "completed"),
-        ("enquiry", "preliminary"),
-        ("canceled", "enquiry"),
-    ]
 
-    assert all((t.source, t.target) in valid_transitions for t in transitions)
-    assert len(valid_transitions) == len(transitions)
+@pytest.mark.django_db
+def test_transition_count(booking):
+    transitions = {(t.source, t.target) for t in booking.get_all_state_transitions()}
+    expected = set(valid_transitions)
+    missing = expected - transitions
+    unexpected = transitions - expected
+    assert not (missing or unexpected), f"Missing transitions: {missing}, Unexpected transitions: {unexpected}"
 
 
 @pytest.mark.django_db
