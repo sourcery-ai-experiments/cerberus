@@ -256,6 +256,10 @@ class Booking(models.Model):
         BookingStates.PRELIMINARY.value,
         BookingStates.CONFIRMED.value,
     ]
+    STATES_CONFIRMABLE: list[str] = [
+        BookingStates.ENQUIRY.value,
+        BookingStates.PRELIMINARY.value,
+    ]
     STATES_COMPLETABLE: list[str] = [
         BookingStates.CONFIRMED.value,
         BookingStates.PRELIMINARY.value,
@@ -464,17 +468,7 @@ class Booking(models.Model):
     @save_after
     @transition(
         field=state,
-        source=BookingStates.ENQUIRY.value,
-        target=BookingStates.PRELIMINARY.value,
-        custom={"icon": "icons/calendar-question.svg", "sort": 40},
-    )
-    def process(self) -> None:
-        pass
-
-    @save_after
-    @transition(
-        field=state,
-        source=BookingStates.PRELIMINARY.value,
+        source=STATES_CONFIRMABLE,  # type: ignore
         target=BookingStates.CONFIRMED.value,
         custom={"icon": "icons/calendar.svg", "sort": 60},
     )
@@ -495,7 +489,7 @@ class Booking(models.Model):
     @transition(
         field=state,
         source=BookingStates.CANCELED.value,
-        target=BookingStates.ENQUIRY.value,
+        target=BookingStates.PRELIMINARY.value,
         custom={"icon": "icons/reopen.svg", "sort": 80},
     )
     def reopen(self) -> None:
