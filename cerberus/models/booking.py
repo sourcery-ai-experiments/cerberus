@@ -372,6 +372,9 @@ class Booking(models.Model):
 
         self._booking_slot = value
 
+    def upcoming(self) -> bool:
+        return self.start > make_aware(datetime.now())
+
     def create_charges(self) -> list[Charge]:
         cost = self.cost
         if self.cost_per_additional is None:

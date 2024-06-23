@@ -26,6 +26,11 @@
     </thead>
     <tbody>
       {% for booking in bookings %}
+        {% ifchanged %}
+          <tr class="heading">
+            <th colspan="6">{{ booking.upcoming|yesno:'Upcoming,Past' }}</th>
+          </tr>
+        {% endifchanged %}
         {% include "cerberus/components/booking_row.html" with booking=booking hide_customer=hide_customer %}
       {% empty %}
         <tr>
