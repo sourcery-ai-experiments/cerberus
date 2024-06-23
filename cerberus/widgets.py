@@ -1,5 +1,5 @@
 # Standard Library
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 # Django
@@ -179,6 +179,8 @@ class CheckboxTable(forms.CheckboxSelectMultiple):
                     col_value = col_value()
 
                 col_name = model_field.replace(".", "__")
+                if isinstance(col_value, Iterable):
+                    col_value = ", ".join(str(i) for i in col_value)
                 option["columns"][f"{col_name}"] = col_value
 
         return option
