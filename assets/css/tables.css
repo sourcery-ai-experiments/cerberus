@@ -1,48 +1,15 @@
-/*
 *:has(> table) {
   display: block;
   max-width: 100%;
   overflow: auto;
-
-  --shadow-size: 15px;
-  --shadow-background: var(--pico-background-color);
-  background-image: linear-gradient(
-      to right,
-      var(--shadow-background),
-      var(--shadow-background)
-    ),
-    linear-gradient(
-      to right,
-      var(--shadow-background),
-      var(--shadow-background)
-    ),
-    radial-gradient(
-      ellipse closest-side,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0) 100%
-    ),
-    radial-gradient(
-      ellipse closest-side,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  background-position:
-    left center,
-    right center,
-    -(var(--shadow-size) / 2) center,
-    right (-(var(--shadow-size) / 2)) center;
-  background-repeat: no-repeat;
-  background-color: var(--shadow-background);
-  background-size:
-    var(--shadow-size) 100%,
-    var(--shadow-size) 100%,
-    var(--shadow-size) 100%,
-    var(--shadow-size) 100%;
-  background-attachment: local, local, scroll, scroll;
 }
-*/
-*:has(> table) {
-  display: block;
-  max-width: 100%;
-  overflow: auto;
+
+table {
+  tbody {
+    tr {
+      th {
+        font-weight: bold;
+      }
+    }
+  }
 }

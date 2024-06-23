@@ -6,6 +6,7 @@ from functools import partial
 # Django
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.utils import timezone
 from django.utils.timezone import make_aware
 
 # Third Party
@@ -37,6 +38,22 @@ def booking() -> Generator[Booking, None, None]:
     start = make_aware(datetime.now()) + timedelta(hours=-3)
     end = start + timedelta(hours=1)
     yield baker.make(Booking, start=start, end=end)
+
+
+@pytest.fixture
+def booking_in_future(db) -> Booking:
+    """Fixture for creating a booking in the future."""
+    future_date = timezone.now() + timedelta(days=1)
+    end = future_date + timedelta(hours=1)
+    return baker.make(Booking, start=future_date, end=end)  # Add other required fields as necessary
+
+
+@pytest.fixture
+def booking_in_past(db) -> Booking:
+    """Fixture for creating a booking in the past."""
+    past_date = timezone.now() - timedelta(days=1)
+    end = past_date + timedelta(hours=1)
+    return baker.make(Booking, start=past_date, end=end)  # Add other required fields as necessary
 
 
 @pytest.fixture
@@ -377,3 +394,13 @@ def test_move_booking(booking):
 @pytest.mark.django_db
 def test_length_seconds(booking):
     assert booking.length_seconds() == 3600  # 1 hour = 3600 seconds
+
+
+def test_upcoming_with_future_booking(booking_in_future):
+    """Test that upcoming() returns True for a booking in the future."""
+    assert booking_in_future.upcoming() is True
+
+
+def test_upcoming_with_past_booking(booking_in_past):
+    """Test that upcoming() returns False for a booking in the past."""
+    assert booking_in_past.upcoming() is False
