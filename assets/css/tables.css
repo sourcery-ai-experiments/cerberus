@@ -1,9 +1,3 @@
-*:has(> table) {
-  display: block;
-  max-width: 100%;
-  overflow: auto;
-}
-
 table {
   tbody {
     tr {
