@@ -6,6 +6,7 @@ from .booking import (
     BookingCalenderYear,
     BookingCRUD,
     BookingStateActions,
+    CompleteBookings,
 )
 from .customer import ContactCreateView, CustomerCRUD
 from .invoice import InvoiceActionsView, InvoiceCreateView, InvoiceCRUD, InvoiceUpdateView
@@ -29,4 +30,5 @@ __all__ = [
     "InvoiceCRUD",
     "InvoiceActionsView",
     "ContactCreateView",
+    "CompleteBookings",
 ]

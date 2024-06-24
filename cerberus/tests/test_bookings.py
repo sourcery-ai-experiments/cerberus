@@ -16,6 +16,7 @@ from model_bakery import baker
 # Locals
 from ..exceptions import MaxCustomersError, MaxPetsError
 from ..models import Booking, BookingSlot, Charge, Customer, Pet, Service
+from ..models.booking import BookingStates
 
 
 @pytest.fixture
@@ -396,11 +397,27 @@ def test_length_seconds(booking):
     assert booking.length_seconds() == 3600  # 1 hour = 3600 seconds
 
 
+@pytest.mark.django_db
 def test_upcoming_with_future_booking(booking_in_future):
     """Test that upcoming() returns True for a booking in the future."""
     assert booking_in_future.upcoming() is True
 
 
+@pytest.mark.django_db
 def test_upcoming_with_past_booking(booking_in_past):
     """Test that upcoming() returns False for a booking in the past."""
     assert booking_in_past.upcoming() is False
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "state,start",
+    [
+        (BookingStates.CONFIRMED.value, make_aware(datetime.now() + timedelta(days=1))),
+        (BookingStates.CONFIRMED.value, make_aware(datetime.now() - timedelta(days=1))),
+        (BookingStates.PRELIMINARY.value, make_aware(datetime.now() - timedelta(days=1))),
+    ],
+)
+def test_completable(state, start):
+    booking = baker.make(Booking, state=state, start=start, end=start + timedelta(hours=1))
+    assert Booking.objects.completable().filter(id=booking.id).exists()

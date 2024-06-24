@@ -56,6 +56,11 @@ urlpatterns = (
             name="booking_calender_day",
         ),
         path(
+            "booking/completable",
+            views.CompleteBookings.as_view(),
+            name="booking_completable",
+        ),
+        path(
             "invoice/<int:pk>/action/<str:action>/",
             views.InvoiceActionsView.as_view(),
             name="invoice_action",

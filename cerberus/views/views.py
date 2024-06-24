@@ -11,7 +11,8 @@ from .crud_views import CRUDViews
 
 @login_required
 def dashboard(request):
-    return render(request, "cerberus/dashboard.html", {})
+    context = {}
+    return render(request, "cerberus/dashboard.html", context)
 
 
 class VetCRUD(CRUDViews):

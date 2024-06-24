@@ -4,7 +4,7 @@ from django import forms
 # Locals
 from ..models import Booking
 from ..utils import minimize_whitespace
-from ..widgets import CheckboxDataOptionAttr, SelectDataAttrField, SingleMoneyWidget
+from ..widgets import CheckboxDataOptionAttr, CheckboxTable, SelectDataAttrField, SingleMoneyWidget
 
 
 class BookingForm(forms.ModelForm):
@@ -132,3 +132,18 @@ class BookingForm(forms.ModelForm):
                 }
             ),
         }
+
+
+class CompletableBookingForm(forms.Form):
+    bookings = forms.ModelMultipleChoiceField(
+        queryset=Booking.objects.completable(),
+        widget=CheckboxTable(
+            [
+                "pets.all",
+                "customer",
+                "service",
+                "start",
+            ],
+            {"pets.all": "Pets"},
+        ),
+    )

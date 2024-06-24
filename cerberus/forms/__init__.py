@@ -1,5 +1,5 @@
 # Locals
-from .booking import BookingForm
+from .booking import BookingForm, CompletableBookingForm
 from .charge import ChargeForm
 from .contact import ContactForm
 from .customer import CustomerForm
@@ -12,6 +12,7 @@ __all__ = [
     "BookingForm",
     "ChargeForm",
     "ContactForm",
+    "CompletableBookingForm",
     "CustomerForm",
     "InvoiceForm",
     "InvoiceSendForm",

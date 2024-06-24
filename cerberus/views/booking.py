@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 # Django
 from django.contrib.humanize.templatetags import humanize
+from django.db import transaction
 from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import render
@@ -13,11 +14,11 @@ from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
 # Third Party
-from vanilla import ListView
+from vanilla import FormView, ListView
 
 # Locals
 from ..filters import BookingFilter
-from ..forms import BookingForm
+from ..forms import BookingForm, CompletableBookingForm
 from ..models import Booking
 from ..utils import make_aware
 from .crud_views import Actions, CRUDViews, Crumb
@@ -246,3 +247,21 @@ class BookingStateActions(TransitionView):
             return redirect
 
         return self.htmx_render(request, action, **kwargs)
+
+
+class CompleteBookings(FormView):
+    form_class = CompletableBookingForm
+    template_name = "cerberus/booking_completable.html"
+
+    def form_valid(self, form):
+        bookings = form.cleaned_data["bookings"]
+        with transaction.atomic():
+            for booking in bookings:
+                booking.complete()
+
+        clean_form = self.get_form()
+        context = self.get_context_data(form=clean_form)
+        context["success"] = True
+        context["completed"] = len(bookings)
+
+        return self.render_to_response(context)

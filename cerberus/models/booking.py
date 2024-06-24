@@ -243,6 +243,11 @@ class BookingQuerySet(models.QuerySet):
     def active(self):
         return self.exclude(state=BookingStates.CANCELED.value)
 
+    def completable(self):
+        confirmed = Q(state=BookingStates.CONFIRMED.value)
+        preliminary = Q(state=BookingStates.PRELIMINARY.value, start__lt=make_aware(datetime.now()))
+        return self.filter(confirmed | preliminary)
+
 
 @reversion.register()
 class Booking(models.Model):

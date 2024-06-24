@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags field_tags %}
+
+{% block content %}
+    {% if completed %}
+        <div class="alert">
+            {{ completed }} booking{{ completed|pluralize }} {{ completed|pluralize:"has,have" }} been completed.
+        </div>
+    {% endif %}
+    <form
+        method="post"
+        action="{% url 'booking_completable' %}"
+        {{ form.attributes|attributes|safe }}
+    >
+        {{ form|crispy }}
+        {% csrf_token %}
+        <input type="submit" class="button" value="Complete Bookings">
+    </form>
+{% endblock %}
