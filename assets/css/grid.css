@@ -2,6 +2,27 @@
   --grid-gap: 1rem;
 }
 
+/* prettier-ignore */
+.grid {
+  display: grid;
+  gap: var(--grid-gap);
+
+  /*[[[cog
+import cog
+for i in range(1, 9):
+  cog.outl(f"""&.x{i} {{ grid-template-columns: repeat({i}, 1fr); }}""")
+]]]*/
+&.x1 { grid-template-columns: repeat(1, 1fr); }
+&.x2 { grid-template-columns: repeat(2, 1fr); }
+&.x3 { grid-template-columns: repeat(3, 1fr); }
+&.x4 { grid-template-columns: repeat(4, 1fr); }
+&.x5 { grid-template-columns: repeat(5, 1fr); }
+&.x6 { grid-template-columns: repeat(6, 1fr); }
+&.x7 { grid-template-columns: repeat(7, 1fr); }
+&.x8 { grid-template-columns: repeat(8, 1fr); }
+  /*[[[end]]] (checksum: c84ad6656c8756bc63e891ea0cc979f4) */
+}
+
 /*[[[cog
 import cog
 for i in range(1, 9):
