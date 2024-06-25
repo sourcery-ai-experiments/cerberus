@@ -253,6 +253,11 @@ class CompleteBookings(FormView):
     form_class = CompletableBookingForm
     template_name = "cerberus/booking_completable.html"
 
+    def get_form(self, data=None, files=None, **kwargs):
+        cls = self.get_form_class()
+        timeframe = self.kwargs.get("timeframe", None)
+        return cls(data=data, files=files, timeframe=timeframe, **kwargs)
+
     def form_valid(self, form):
         bookings = form.cleaned_data["bookings"]
         with transaction.atomic():
