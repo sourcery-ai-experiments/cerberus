@@ -1,0 +1,19 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto 1fr;
+  gap: 1em;
+
+  .card {
+    .heading {
+      display: flex;
+      gap: 1em;
+      justify-content: space-between;
+
+      & select {
+        padding: 0.25em 1.5em 0.25em 0.5em;
+        background-position: center right 0.25rem;
+      }
+    }
+  }
+}

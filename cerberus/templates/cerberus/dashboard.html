@@ -1,6 +1,30 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-    <h1>This is dashboard!</h1>
+    <div class="dashboard">
+        <div class="card">
+            <h1>Dashboard</h1>
+            <p>Welcome to the Cerberus dashboard. Here you can manage your bookings.</p>
+        </div>
+        <div class="card htmx-container">
+            <div class="heading">
+                <h2>Complete Bookings</h2>
+                <div>
+                    <label for="timeframe">Timeframe</label>
+                    <select
+                        name="timeframe"
+                        hx-get="{% url 'booking_completable' %}"
+                        hx-target="#completeable"
+                        hx-trigger="change, load"
+                    >
+                        <option value="all">All</option>
+                        <option value="day" selected>Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </div>
+            <div id="completeable" class="htmx-load-target">Loading...</div>
+        </div>
+    </div>
 {% endblock %}

@@ -3,16 +3,21 @@
 {% load crispy_forms_tags field_tags %}
 
 {% block content %}
-    {% if completed %}
-        <div class="alert">
-            {{ completed }} booking{{ completed|pluralize }} {{ completed|pluralize:"has,have" }} been completed.
-        </div>
-    {% endif %}
     <form
         method="post"
         action="{% url 'booking_completable' %}"
+        hx-post="{% url 'booking_completable' %}"
+        hx-swap="outerHTML show:top"
         {{ form.attributes|attributes|safe }}
     >
+        {% if timeframe %}
+            <h2>Bookings for the {{ timeframe }}</h2>
+        {% endif %}
+        {% if completed %}
+            <div class="alert">
+                {{ completed }} booking{{ completed|pluralize }} {{ completed|pluralize:"has,have" }} been completed.
+            </div>
+        {% endif %}
         {{ form|crispy }}
         {% csrf_token %}
         <input type="submit" class="button" value="Complete Bookings">

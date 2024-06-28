@@ -1,3 +1,6 @@
+# Standard Library
+from datetime import datetime, timedelta
+
 # Django
 from django import forms
 
@@ -134,6 +137,14 @@ class BookingForm(forms.ModelForm):
         }
 
 
+CompletableBookingTimeFrames = [
+    ("day", "Day"),
+    ("week", "Week"),
+    ("month", "Month"),
+    (None, "All"),
+]
+
+
 class CompletableBookingForm(forms.Form):
     bookings = forms.ModelMultipleChoiceField(
         queryset=Booking.objects.completable(),
@@ -147,3 +158,20 @@ class CompletableBookingForm(forms.Form):
             {"pets.all": "Pets"},
         ),
     )
+
+    def __init__(self, *args, **kwargs):
+        timeframe = kwargs.pop("timeframe", None)
+        super().__init__(*args, **kwargs)
+        if timeframe is not None:
+            match timeframe:
+                case "day":
+                    delta = timedelta(days=0)
+                case "week":
+                    delta = timedelta(days=7)
+                case "month":
+                    delta = timedelta(days=30)
+                case invalid:
+                    raise ValueError(f"Invalid timeframe: {invalid}")
+            self.fields["bookings"].queryset = self.fields["bookings"].queryset.filter(
+                start__gte=datetime.now() - delta
+            )

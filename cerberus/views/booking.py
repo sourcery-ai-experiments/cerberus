@@ -255,7 +255,8 @@ class CompleteBookings(FormView):
 
     def get_form(self, data=None, files=None, **kwargs):
         cls = self.get_form_class()
-        timeframe = self.kwargs.get("timeframe", None)
+        timeframe = self.request.GET.get("timeframe", None)
+        timeframe = None if timeframe == "all" else timeframe
         return cls(data=data, files=files, timeframe=timeframe, **kwargs)
 
     def form_valid(self, form):
@@ -270,3 +271,9 @@ class CompleteBookings(FormView):
         context["completed"] = len(bookings)
 
         return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["timeframe"] = self.kwargs.get("timeframe", None)
+
+        return context
