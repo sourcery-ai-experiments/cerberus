@@ -168,7 +168,8 @@ class CompletableBookingForm(forms.Form):
                 case "day":
                     delta = timedelta(days=0)
                 case "week":
-                    delta = timedelta(days=7)
+                    now = datetime.now()
+                    delta = timedelta(days=now.weekday(), hours=now.hour, minutes=now.minute)
                 case "month":
                     delta = timedelta(days=30)
                 case invalid:
