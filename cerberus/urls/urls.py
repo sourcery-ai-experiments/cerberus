@@ -56,7 +56,7 @@ urlpatterns = (
             name="booking_calender_day",
         ),
         path(
-            "booking/completable",
+            "booking/completable/",
             views.CompleteBookings.as_view(),
             name="booking_completable",
         ),
