@@ -150,13 +150,14 @@ class CheckboxDataOptionAttr(OptionAttrs, DataAttrField, forms.CheckboxSelectMul
 
 class CheckboxTable(forms.CheckboxSelectMultiple):
     model_fields: list[str]
-    model_titles: list[str]
+    model_titles: list[str] = []
 
     crispy_template = "cerberus/widgets/checkbox_table.html"
 
-    def __init__(self, model_fields: list[str], model_titles: dict[str, str] = {}, *args, **kwargs):
+    def __init__(self, model_fields: list[str], model_titles: dict[str, str] | None = None, *args, **kwargs):
         self.model_fields = model_fields
-        self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
+        if model_titles:
+            self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
         super().__init__(*args, **kwargs)
 
     def create_option(
