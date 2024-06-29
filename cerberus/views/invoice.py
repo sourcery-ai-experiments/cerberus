@@ -16,7 +16,7 @@ from vanilla import CreateView, UpdateView
 
 # Locals
 from ..filters import InvoiceFilter
-from ..forms import ChargeForm, InvoiceForm, InvoiceSendForm, UninvoicedChargesForm
+from ..forms import ChargeForm, CustomerUninvoicedChargesForm, InvoiceForm, InvoiceSendForm
 from ..models import Charge, Invoice
 from .crud_views import Actions, CRUDViews, extra_view
 from .transition_view import TransitionView
@@ -98,7 +98,7 @@ class InvoiceCRUD(CRUDViews):
 
     @extra_view(detail=False, methods=["get", "post"], url_name="invoice_from_charges")
     def from_charges(self: Self, request: HttpRequest) -> HttpResponse:
-        charge_form = UninvoicedChargesForm(request.POST)
+        charge_form = CustomerUninvoicedChargesForm(request.POST)
 
         if charge_form.is_valid():
             with transaction.atomic():

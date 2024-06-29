@@ -25,7 +25,7 @@ class InvoiceForm(forms.ModelForm):
         }
 
 
-class UninvoicedChargesForm(forms.Form):
+class CustomerUninvoicedChargesForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput, required=True)
     charges = forms.ModelMultipleChoiceField(
         queryset=Charge.objects.none(),

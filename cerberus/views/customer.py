@@ -11,7 +11,7 @@ from vanilla import CreateView, DetailView, ListView
 
 # Locals
 from ..filters import CustomerFilter
-from ..forms import ContactForm, CustomerForm, UninvoicedChargesForm
+from ..forms import ContactForm, CustomerForm, CustomerUninvoicedChargesForm
 from ..models import Contact, Customer
 from .crud_views import Actions, CRUDViews, Crumb, extra_view
 
@@ -22,7 +22,7 @@ class CustomerDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["uninvoiced_charge_form"] = UninvoicedChargesForm(customer=self.object)
+        context["uninvoiced_charge_form"] = CustomerUninvoicedChargesForm(customer=self.object)
         context["uninvoiced_charges"] = self.object.charges.filter(invoice=None)
 
         return context
@@ -53,7 +53,7 @@ class CustomerCRUD(CRUDViews):
     @extra_view(detail=True)
     def uninvoiced_charges(self: Self, request: HttpRequest, pk: int) -> HttpResponse:
         customer = get_object_or_404(Customer, pk=pk)
-        form = UninvoicedChargesForm(customer=customer)
+        form = CustomerUninvoicedChargesForm(customer=customer)
 
         return render(
             request,
