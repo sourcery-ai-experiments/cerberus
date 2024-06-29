@@ -1,9 +1,22 @@
 .htmx-container:has(.htmx-request) {
   .htmx-load-target {
-    opacity: 0.5;
+    position: relative;
+    animation: pulse 2s infinite ease-in-out;
   }
 }
 
 .htmx-load-target {
   transition: opacity 0.2s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0.25;
+  }
 }
