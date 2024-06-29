@@ -156,6 +156,7 @@ class CompletableBookingForm(forms.Form):
                 "start",
             ],
             {"pets.all": "Pets"},
+            "No completable bookings found.",
         ),
     )
 
