@@ -164,8 +164,8 @@ class CheckboxTable(forms.CheckboxSelectMultiple):
         **kwargs,
     ):
         self.model_fields = model_fields
-        if model_titles:
-            self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
+        model_titles = model_titles or {}
+        self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
         self.empty_text = empty_text
         super().__init__(*args, **kwargs)
 
