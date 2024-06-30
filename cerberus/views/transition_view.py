@@ -8,6 +8,9 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 
+# Third Party
+from django_htmx.http import HttpResponseClientRedirect
+
 
 class TransitionView(View):
     model = Model
@@ -35,6 +38,8 @@ class TransitionView(View):
         getattr(model, action)()
         redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
+        if request.htmx:
+            return HttpResponseClientRedirect(redirect_url)
         return redirect(redirect_url)
 
     def post(self, request, action: str, **kwargs):
@@ -52,4 +57,6 @@ class TransitionView(View):
         action_function(**args)
         redirect_url = getattr(model, "get_absolute_url", lambda: "/")()
 
+        if request.htmx:
+            return HttpResponseClientRedirect(redirect_url)
         return redirect(redirect_url)
