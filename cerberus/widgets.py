@@ -189,7 +189,7 @@ class CheckboxTable(forms.CheckboxSelectMultiple):
                     col_value = col_value()
 
                 col_name = model_field.replace(".", "__")
-                if isinstance(col_value, Iterable):
+                if isinstance(col_value, Iterable) and not isinstance(col_value, str):
                     col_value = ", ".join(str(i) for i in col_value)
                 option["columns"][f"{col_name}"] = col_value
 
