@@ -164,8 +164,8 @@ class CheckboxTable(forms.CheckboxSelectMultiple):
         **kwargs,
     ):
         self.model_fields = model_fields
-        if model_titles:
-            self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
+        model_titles = model_titles or {}
+        self.model_titles = [model_titles.get(field, field.replace(".", " ").title()) for field in model_fields]
         self.empty_text = empty_text
         super().__init__(*args, **kwargs)
 
@@ -189,7 +189,7 @@ class CheckboxTable(forms.CheckboxSelectMultiple):
                     col_value = col_value()
 
                 col_name = model_field.replace(".", "__")
-                if isinstance(col_value, Iterable):
+                if isinstance(col_value, Iterable) and not isinstance(col_value, str):
                     col_value = ", ".join(str(i) for i in col_value)
                 option["columns"][f"{col_name}"] = col_value
 
