@@ -19,9 +19,12 @@
     </thead>
     <tbody>
       {% for group, options, index in field|optgroups %}
+        {% if group %}
+          <tr>
+            <td colspan="999"><strong>{{ group }}</strong></td>
+          </tr>
+        {% endif %}
         <tr>
-          {% if group %}
-            <tr><td colspan="{{ option.columns.items|length }}"><strong>{{ group }}</strong></td></tr>{% endif %}
           {% for option in options %}
             <td>
               <input type="checkbox" x-model.fill="selected" name="{{ field.html_name }}" value="{{ option.value|unlocalize }}" {% include "pico/layout/attrs.html" with widget=option %}>
@@ -31,8 +34,8 @@
                 <label for="{{ option.attrs.id }}">{{ val }}</label>
               </td>
             {% endfor %}
+            </tr>
           {% endfor %}
-        </tr>
       {% empty %}
         <tr>
           <td colspan="999">{{ field.field.widget.empty_text|default:"No items available" }}</td>

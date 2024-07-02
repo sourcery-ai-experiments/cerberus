@@ -65,6 +65,7 @@ urlpatterns = (
             views.InvoiceActionsView.as_view(),
             name="invoice_action",
         ),
+        path("invoice/invoiceable", views.InvoiceableView.as_view(), name="invoiceable"),
         path(
             "customer/<int:pk>/contact/create",
             views.ContactCreateView.as_view(),
