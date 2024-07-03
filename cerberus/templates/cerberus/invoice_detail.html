@@ -41,7 +41,11 @@
                             hx-swap="afterend"
                         >
                     {% else %}
-                        <a href="{% url 'invoice_action' invoice.id action.name %}">
+                        <a
+                            href="{% url 'invoice_action' invoice.id action.name %}"
+                            hx-get="{% url 'invoice_action' invoice.id action.name %}"
+                            hx-replace-url="false"
+                        >
                     {% endif %}
                     {% if action.custom.icon %}{% include action.custom.icon %}{% endif %}
                     {{ action.name|title }}

@@ -13,6 +13,7 @@ from djmoney.models.fields import MoneyField
 from model_utils.fields import MonitorField
 from moneyed import Money
 from polymorphic.models import PolymorphicModel
+from polymorphic.query import PolymorphicQuerySet
 
 # Locals
 from ..decorators import save_after
@@ -21,6 +22,20 @@ from ..exceptions import ChargeRefundError
 if TYPE_CHECKING:
     # Locals
     from . import Customer, Invoice
+
+
+class ChargeQuerySet(PolymorphicQuerySet):
+    def uninvoiced(self):
+        return self.filter(invoice__isnull=True)
+
+    def refundable(self):
+        return self.filter(state=Charge.States.PAID.value)
+
+    def refunded(self):
+        return self.filter(state=Charge.States.REFUND.value)
+
+    def voided(self):
+        return self.filter(state=Charge.States.VOID.value)
 
 
 @reversion.register()
@@ -69,6 +84,8 @@ class Charge(PolymorphicModel):
         null=True,
         related_name="charges",
     )
+
+    objects = ChargeQuerySet.as_manager()
 
     class Meta:
         ordering = ("created",)

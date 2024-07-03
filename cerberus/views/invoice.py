@@ -1,6 +1,5 @@
 # Standard Library
-
-# Standard Library
+from collections import defaultdict
 from typing import Self
 
 # Django
@@ -12,11 +11,12 @@ from django.urls import reverse_lazy
 
 # Third Party
 from django_htmx.http import HttpResponseClientRedirect
-from vanilla import CreateView, UpdateView
+from vanilla import CreateView, FormView, UpdateView
 
 # Locals
 from ..filters import InvoiceFilter
-from ..forms import ChargeForm, InvoiceForm, InvoiceSendForm, UninvoicedChargesForm
+from ..forms.charge import ChargeForm
+from ..forms.invoice import CustomerUninvoicedChargesForm, InvoiceForm, InvoiceSendForm, UninvoicedChargesForm
 from ..models import Charge, Invoice
 from .crud_views import Actions, CRUDViews, extra_view
 from .transition_view import TransitionView
@@ -98,7 +98,7 @@ class InvoiceCRUD(CRUDViews):
 
     @extra_view(detail=False, methods=["get", "post"], url_name="invoice_from_charges")
     def from_charges(self: Self, request: HttpRequest) -> HttpResponse:
-        charge_form = UninvoicedChargesForm(request.POST)
+        charge_form = CustomerUninvoicedChargesForm(request.POST)
 
         if charge_form.is_valid():
             with transaction.atomic():
@@ -130,3 +130,31 @@ class InvoiceCRUD(CRUDViews):
 class InvoiceActionsView(TransitionView):
     model = Invoice
     field = "state"
+
+
+class InvoiceableView(FormView):
+    form_class = UninvoicedChargesForm
+    template_name = "cerberus/invoiceable.html"
+
+    def form_valid(self, form):
+        grouped = defaultdict(list)
+        charges = form.cleaned_data["charges"]
+
+        for charge in charges:
+            grouped[charge.customer].append(charge)
+
+        invoice_count = 0
+        for customer, charges in grouped.items():
+            with transaction.atomic():
+                invoice = Invoice.from_customer(customer)
+                invoice_count += 1
+                for charge in charges:
+                    charge.invoice = invoice
+                    charge.save()
+
+        clean_form = self.get_form()
+        context = self.get_context_data(form=clean_form)
+        context["success"] = True
+        context["completed"] = invoice_count
+
+        return self.render_to_response(context)

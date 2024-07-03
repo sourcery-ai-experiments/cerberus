@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags field_tags %}
+
+{% block content %}
+    <form
+        method="post"
+        action="{% url 'invoiceable' %}"
+        hx-post="{% url 'invoiceable' %}"
+        hx-swap="outerHTML show:top"
+        {{ form.attributes|attributes|safe }}
+    >
+        {% if completed %}
+            <div class="alert">
+                {{ completed }} booking{{ completed|pluralize }} {{ completed|pluralize:"has,have" }} been completed.
+            </div>
+        {% endif %}
+        {{ form|crispy }}
+        {% csrf_token %}
+        <input type="submit" class="button" value="Create Invoices">
+    </form>
+{% endblock %}

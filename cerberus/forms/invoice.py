@@ -2,6 +2,7 @@
 from django import forms
 
 # Locals
+from ..fields import GroupedMultipleModelChoiceField
 from ..models import Charge, Customer, Invoice
 from ..utils import minimize_whitespace
 from ..widgets import CheckboxTable, SingleMoneyWidget
@@ -26,6 +27,14 @@ class InvoiceForm(forms.ModelForm):
 
 
 class UninvoicedChargesForm(forms.Form):
+    charges = GroupedMultipleModelChoiceField(
+        queryset=Charge.objects.uninvoiced(),
+        choices_groupby="customer",
+        widget=CheckboxTable(["name", "amount", "booking.date"]),
+    )
+
+
+class CustomerUninvoicedChargesForm(forms.Form):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput, required=True)
     charges = forms.ModelMultipleChoiceField(
         queryset=Charge.objects.none(),
